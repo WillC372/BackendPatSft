@@ -12,5 +12,7 @@ public interface DeviceRepository extends JpaRepository<Device, UUID> {
 
     Optional<Device> findByIdAndOwnerId(UUID id, UUID ownerId);
 
+    long countByOwnerId(UUID ownerId);
+
     boolean existsByOwnerIdAndExternalId(UUID ownerId, String externalId);
 }

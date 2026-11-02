@@ -16,5 +16,7 @@ public interface WaterProfileRepository extends JpaRepository<WaterProfile, UUID
     @Query("select p from WaterProfile p where p.id = :id and (p.ownerId is null or p.ownerId = :userId)")
     Optional<WaterProfile> findVisibleById(@Param("id") UUID id, @Param("userId") UUID userId);
 
+    long countByOwnerId(UUID ownerId);
+
     Optional<WaterProfile> findByIdAndOwnerId(UUID id, UUID ownerId);
 }

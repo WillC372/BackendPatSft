@@ -49,3 +49,4 @@ aquasense:
   mail:
     enabled: ${MAIL_ENABLED:false}
     from: ${MAIL_FROM:no-reply@aquasense.local}
+  admin-email: ${ADMIN_EMAIL:}

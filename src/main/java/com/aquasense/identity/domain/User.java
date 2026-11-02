@@ -93,6 +93,11 @@ public class User {
         this.updatedAt = Instant.now();
     }
 
+    public void grantRole(RoleName role) {
+        roles.add(role);
+        updatedAt = Instant.now();
+    }
+
     public UUID getId() {
         return id;
     }

@@ -1,5 +1,6 @@
 package com.aquasense.waterprofile.service;
 
+import com.aquasense.billing.service.LimitGuard;
 import com.aquasense.shared.DomainException;
 import com.aquasense.waterprofile.api.ProfileDtos.ProfileRequest;
 import com.aquasense.waterprofile.domain.WaterProfile;
@@ -15,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class WaterProfileService {
 
     private final WaterProfileRepository profiles;
+    private final LimitGuard limits;
 
-    public WaterProfileService(WaterProfileRepository profiles) {
+    public WaterProfileService(WaterProfileRepository profiles, LimitGuard limits) {
         this.profiles = profiles;
+        this.limits = limits;
     }
 
     @Transactional(readOnly = true)
@@ -32,12 +35,14 @@ public class WaterProfileService {
 
     @Transactional
     public WaterProfile create(UUID userId, ProfileRequest r) {
+        limits.requireProfileSlot(userId);
         return profiles.save(new WaterProfile(userId, WaterType.CUSTOM, r.name().trim(), r.description().trim(),
                 r.optimalMin(), r.optimalMax(), r.cautionMin(), r.cautionMax(), null));
     }
 
     @Transactional
     public WaterProfile duplicate(UUID id, UUID userId, String name) {
+        limits.requireProfileSlot(userId);
         return profiles.save(get(id, userId).copyFor(userId, name.trim()));
     }
 

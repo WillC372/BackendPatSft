@@ -2,6 +2,7 @@ package com.aquasense.device.service;
 
 import com.aquasense.device.domain.ConnectionType;
 import com.aquasense.device.domain.Device;
+import com.aquasense.billing.service.LimitGuard;
 import com.aquasense.device.repository.DeviceRepository;
 import com.aquasense.shared.DomainException;
 import java.util.List;
@@ -15,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeviceService {
 
     private final DeviceRepository devices;
+    private final LimitGuard limits;
 
-    public DeviceService(DeviceRepository devices) {
+    public DeviceService(DeviceRepository devices, LimitGuard limits) {
         this.devices = devices;
+        this.limits = limits;
     }
 
     @Transactional
@@ -27,6 +30,7 @@ public class DeviceService {
             throw new DomainException(HttpStatus.CONFLICT, "DEVICE_ALREADY_REGISTERED",
                     "Este dispositivo ya está vinculado a su cuenta.");
         }
+        limits.requireDeviceSlot(ownerId);
         try {
             return devices.saveAndFlush(new Device(ownerId, name.trim(), blankToNull(manufacturer),
                     blankToNull(model), externalId.trim(), type));
