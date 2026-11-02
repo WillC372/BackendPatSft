@@ -28,6 +28,9 @@ server:
     include-stacktrace: never
 
 management:
+  health:
+    mail:
+      enabled: ${MAIL_ENABLED:false}
   endpoints:
     web:
       exposure:
