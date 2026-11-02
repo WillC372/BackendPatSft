@@ -1,4 +1,12 @@
 spring:
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
   application:
     name: aquasense-backend
   datasource:
@@ -14,6 +22,7 @@ spring:
 
 server:
   port: ${PORT:8080}
+  forward-headers-strategy: framework
   error:
     include-message: never
     include-stacktrace: never
@@ -34,3 +43,6 @@ aquasense:
     refresh-token-days: 7
     refresh-token-remember-days: 30
     reset-token-minutes: 30
+  mail:
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:no-reply@aquasense.local}
