@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: aquasense-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/aquasense}
+    username: ${DB_USERNAME:aquasense}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+aquasense:
+  security:
+    jwt-secret: ${JWT_SECRET:}
+    access-token-minutes: 15
+    refresh-token-days: 7
+    refresh-token-remember-days: 30
+    reset-token-minutes: 30
