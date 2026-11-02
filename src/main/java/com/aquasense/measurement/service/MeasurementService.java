@@ -120,4 +120,29 @@ public class MeasurementService {
                 Sort.by(Sort.Direction.DESC, "measuredAt"));
         return measurements.findAll(spec, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public List<Measurement> forAnalysis(UUID ownerId, UUID profileId, Instant from, Instant to,
+                                         boolean includeSimulated, int limit) {
+        org.springframework.data.jpa.domain.Specification<Measurement> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("ownerId"), ownerId));
+            predicates.add(cb.equal(root.get("profileId"), profileId));
+            if (from != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("measuredAt"), from));
+            }
+            if (to != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("measuredAt"), to));
+            }
+            if (!includeSimulated) {
+                predicates.add(cb.equal(root.get("sourceKind"), SourceKind.REAL));
+            }
+            return cb.and(predicates.toArray(Predicate[]::new));
+        };
+        List<Measurement> newestFirst = measurements.findAll(spec,
+                PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "measuredAt"))).getContent();
+        List<Measurement> ascending = new ArrayList<>(newestFirst);
+        java.util.Collections.reverse(ascending);
+        return ascending;
+    }
 }
