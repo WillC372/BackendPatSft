@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: ${TEST_DB_URL:jdbc:postgresql://localhost:5432/aquasense_test}
+    username: ${TEST_DB_USERNAME:aquasense}
+    password: ${TEST_DB_PASSWORD:aquasense_dev}
+aquasense:
+  security:
+    jwt-secret: test-only-secret-not-for-production-use-0123456789
