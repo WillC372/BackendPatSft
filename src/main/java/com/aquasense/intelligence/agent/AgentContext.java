@@ -1,8 +1,8 @@
 package com.aquasense.intelligence.agent;
 
 /**
- * Contexto fijo de una ejecución del agente. El usuario lo determina el servidor, nunca el modelo:
- * las herramientas solo pueden leer datos de este usuario y dentro de los límites de su plan.
+ * Fixed context of an agent run. The user is set by the server, never by the model:
+ * the tools can only read data of this user and within the limits of their plan.
  */
 public record AgentContext(Long userId, int periodDays, int maxDays, int maxHorizon) {
 

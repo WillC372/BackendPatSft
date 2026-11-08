@@ -14,7 +14,7 @@ public class DeepForecastController {
         this.service = service;
     }
 
-    /** Predicción con la red LSTM. {@code includeSimulated} solo sirve para pruebas: el simulador no es agua real. */
+    /** Forecast with the LSTM network. {@code includeSimulated} is only for tests: the simulator is not real water. */
     @GetMapping("/api/v1/intelligence/deep/forecast")
     public DeepForecastResponse forecast(@RequestParam(defaultValue = "false") boolean includeSimulated) {
         return service.forecast(CurrentUser.id(), includeSimulated);

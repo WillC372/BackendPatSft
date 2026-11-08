@@ -5,8 +5,8 @@ import com.aquasense.knowledge.Citation;
 import java.util.List;
 
 /**
- * Explicación de un escenario hipotético. Los cálculos ({@code hydrogenFactor}, {@code timeToReach}) los hace el sistema;
- * la IA solo redacta efectos, señales y acciones, y sus cifras se verifican contra los hechos entregados.
+ * Explanation of a hypothetical scenario. The computations ({@code hydrogenFactor}, {@code timeToReach}) are done by the system;
+ * the AI only writes effects, signs and actions, and its figures are checked against the provided facts.
  */
 public record ScenarioExplanation(String source, String sourceLabel, String provider, String model, String profileName,
                                   Double currentPh, double hypotheticalPh, String hypotheticalStatus, Double hydrogenFactor,

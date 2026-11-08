@@ -23,9 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /**
- * Proxy: se interpone entre la aplicación y el proveedor real de IA para controlar
- * disponibilidad, cuota diaria por plan (costos), cache de respuestas y registro de consumo.
- * La cache usa un Read-Write Lock: muchas lecturas concurrentes, escrituras exclusivas.
+ * Proxy: sits between the application and the real AI provider to control
+ * availability, daily quota per plan (costs), response cache and usage logging.
+ * The cache uses a Read-Write Lock: many concurrent reads, exclusive writes.
  */
 @Primary
 @Component
@@ -65,7 +65,7 @@ public class AiProviderProxy implements AiTextProvider, AiCallListener {
         }
     }
 
-    /** Registra un proveedor que falló durante una tarea de varios turnos (agente). */
+    /** Records a provider that failed during a multi-turn task (agent). */
     public void recordFailure(Long userId, String purpose, String provider, String model, long latencyMs, String error) {
         recorder.save(AiUsage.failure(userId, purpose, provider, model, latencyMs, error));
     }
@@ -118,7 +118,7 @@ public class AiProviderProxy implements AiTextProvider, AiCallListener {
     }
 
     /**
-     * Verifica la cuota antes de una tarea de varios turnos (agente). La tarea completa cuenta como una consulta.
+     * Checks the quota before a multi-turn task (agent). The whole task counts as one request.
      */
     public void ensureQuota(Long userId) {
         int quota = quotaFor(userId);

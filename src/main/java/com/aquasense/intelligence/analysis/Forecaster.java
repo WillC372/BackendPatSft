@@ -8,8 +8,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * Predicción por regresión lineal de mínimos cuadrados con intervalo de predicción del 95 %.
- * Se niega a predecir si no hay suficientes datos o si el horizonte supera lo observado.
+ * Forecast by least-squares linear regression with a 95 % prediction interval.
+ * It refuses to forecast if there is not enough data or if the horizon exceeds what was observed.
  */
 @Component
 public class Forecaster {

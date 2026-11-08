@@ -16,9 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
 /**
- * Entrena y guarda en memoria un modelo Isolation Forest por usuario con sus últimos 90 días de mediciones.
- * Es observador de mediciones: cuando llega una nueva, descarta el modelo de ese usuario y se reentrena
- * en la siguiente consulta (entrenar cientos de puntos toma milisegundos).
+ * Trains and keeps in memory one Isolation Forest model per user with their last 90 days of measurements.
+ * It observes measurements: when a new one arrives, it discards that user's model and retrains it
+ * on the next request (training hundreds of points takes milliseconds).
  */
 @Service
 public class MlModelService implements MeasurementListener {
@@ -52,9 +52,9 @@ public class MlModelService implements MeasurementListener {
     }
 
     /**
-     * Evalúa una medición. Isolation Forest no extrapola: un punto fuera del rango visto en el entrenamiento recibe
-     * el mismo puntaje que el punto más extremo del entrenamiento. Por eso, si la medición aún no forma parte del modelo,
-     * se reentrena incluyéndola (milisegundos) y se puntúa dentro de la muestra, como asume el algoritmo.
+     * Scores a measurement. Isolation Forest does not extrapolate: a point outside the range seen in training gets
+     * the same score as the most extreme training point. That is why, if the measurement is not part of the model yet,
+     * the model is retrained including it (milliseconds) and the point is scored in-sample, as the algorithm assumes.
      */
     public Optional<Evaluation> evaluate(Measurement candidate) {
         Training training = model(candidate.getUserId(), false);

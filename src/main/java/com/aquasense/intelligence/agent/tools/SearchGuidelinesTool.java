@@ -15,8 +15,8 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 /**
- * Herramienta RAG del agente: busca fragmentos literales de normas oficiales aplicables al perfil activo.
- * El tipo de perfil lo fija el servidor; el modelo solo decide la consulta.
+ * RAG tool of the agent: searches literal fragments of official guidelines that apply to the active profile.
+ * The profile type is set by the server; the model only decides the query.
  */
 @Component
 public class SearchGuidelinesTool implements AgentTool {

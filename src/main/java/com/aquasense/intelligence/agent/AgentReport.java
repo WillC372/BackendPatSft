@@ -3,7 +3,7 @@ package com.aquasense.intelligence.agent;
 import java.util.List;
 
 /**
- * Informe entregado por el agente mediante la herramienta submit_report (ya validado).
+ * Report delivered by the agent through the submit_report tool (already validated).
  */
 public record AgentReport(String title, String executiveSummary, List<Metric> keyMetrics, List<Section> sections,
                           List<Recommendation> recommendations, List<String> limitations, List<String> citedSourceIds) {
@@ -17,7 +17,7 @@ public record AgentReport(String title, String executiveSummary, List<Metric> ke
         this(title, executiveSummary, keyMetrics, sections, recommendations, limitations, List.of());
     }
 
-    /** Copia del informe con solo las citas permitidas. */
+    /** Copy of the report with only the allowed citations. */
     public AgentReport withCitations(List<String> ids) {
         return new AgentReport(title, executiveSummary, keyMetrics, sections, recommendations, limitations, ids);
     }

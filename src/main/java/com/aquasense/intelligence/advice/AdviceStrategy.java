@@ -5,7 +5,7 @@ import com.aquasense.profile.ProfileType;
 import com.aquasense.profile.WaterProfile;
 
 /**
- * Strategy: cada contexto de uso del agua interpreta el mismo pH de forma distinta.
+ * Strategy: every water use context interprets the same pH differently.
  */
 public interface AdviceStrategy {
 

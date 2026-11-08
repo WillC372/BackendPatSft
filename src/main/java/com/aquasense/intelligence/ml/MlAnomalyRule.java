@@ -13,9 +13,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Regla basada en aprendizaje automático (Strategy): se suma a las reglas fijas del detector de anomalías.
- * Usa el modelo Isolation Forest del usuario y, si la medición es inusual para su historial, explica por qué.
- * Así las alertas, el diagnóstico y el agente de informes también la aprovechan.
+ * Machine learning rule (Strategy): it is added to the fixed rules of the anomaly detector.
+ * It uses the user's Isolation Forest model and, if the measurement is unusual for their history, explains why.
+ * This way alerts, the diagnosis and the report agent also benefit from it.
  */
 @Component
 @Order(4)

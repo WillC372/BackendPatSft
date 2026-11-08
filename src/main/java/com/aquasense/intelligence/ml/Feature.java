@@ -1,8 +1,8 @@
 package com.aquasense.intelligence.ml;
 
 /**
- * Variables que describen cada medición para el modelo. La hora se codifica como seno y coseno
- * para que las 23:00 y las 00:00 queden cerca; en las explicaciones ambas se reportan como "hora del día".
+ * Variables that describe each measurement for the model. The hour is encoded as sine and cosine
+ * so 23:00 and 00:00 stay close; in the explanations both are reported as "time of day".
  */
 public enum Feature {
     PH("Valor de pH", "pH"),

@@ -3,7 +3,7 @@ package com.aquasense.intelligence.analysis;
 import java.util.Arrays;
 
 /**
- * Funciones estadísticas puras usadas por los algoritmos de AquaSense Intelligence.
+ * Pure statistical functions used by the AquaSense Intelligence algorithms.
  */
 public final class Statistics {
 

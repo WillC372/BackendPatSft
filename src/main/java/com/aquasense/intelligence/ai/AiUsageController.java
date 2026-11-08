@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Consumo y costos de IA: cada usuario ve el suyo; la administración ve el global (ruta protegida por rol ADMIN).
+ * AI usage and costs: each user sees their own; administration sees the global view (route protected by the ADMIN role).
  */
 @RestController
 public class AiUsageController {

@@ -1,7 +1,7 @@
 package com.aquasense.intelligence.ai;
 
 /**
- * Abstraccion del proveedor de IA generativa. Cambiar de proveedor solo requiere otra implementacion.
+ * Abstraction of the generative AI provider. Switching providers only requires another implementation.
  */
 public interface AiTextProvider {
 
@@ -20,8 +20,8 @@ public interface AiTextProvider {
     }
 
     /**
-     * Un turno de conversación con herramientas (formato de OpenAI). Devuelve el mensaje del asistente tal como
-     * llegó, para reenviarlo sin cambios en el siguiente turno (Gemini exige conservar su firma de razonamiento).
+     * One conversation turn with tools (OpenAI format). It returns the assistant message as it
+     * arrived, to send it back unchanged in the next turn (Gemini requires keeping its thought signature).
      */
     default ToolTurn chatWithTools(com.fasterxml.jackson.databind.node.ArrayNode messages,
                                    com.fasterxml.jackson.databind.node.ArrayNode tools) {

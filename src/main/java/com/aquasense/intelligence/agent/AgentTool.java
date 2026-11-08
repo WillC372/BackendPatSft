@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Herramienta que el agente puede invocar (patrón Command): encapsula una consulta de solo lectura con su nombre,
- * descripción y esquema de parámetros, para que el modelo decida cuándo usarla.
+ * Tool the agent can invoke (Command pattern): wraps a read-only query with its name,
+ * description and parameter schema, so the model decides when to use it.
  */
 public interface AgentTool {
 
@@ -22,7 +22,7 @@ public interface AgentTool {
 
     String summarize(Object result);
 
-    /** Ids de fragmentos normativos que este resultado permite citar. Solo la herramienta RAG devuelve alguno. */
+    /** Ids of the guideline fragments this result allows to cite. Only the RAG tool returns any. */
     default Set<String> citableIds(Object result) {
         return Set.of();
     }

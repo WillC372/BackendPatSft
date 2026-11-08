@@ -3,9 +3,9 @@ package com.aquasense.intelligence.diagnosis;
 import java.util.List;
 
 /**
- * Diagnóstico estructurado. La IA debe devolver exactamente esta forma (validada por {@link DiagnosisValidator});
- * el diagnóstico por reglas produce la misma estructura, así la interfaz no depende de quién lo generó.
- * {@code citedSourceIds} son ids de fragmentos normativos que el sistema entregó en los hechos.
+ * Structured diagnosis. The AI must return exactly this shape (validated by {@link DiagnosisValidator});
+ * the rule-based diagnosis produces the same structure, so the UI does not depend on who generated it.
+ * {@code citedSourceIds} are ids of guideline fragments the system provided in the facts.
  */
 public record Diagnosis(RiskLevel riskLevel, String summary, List<Finding> findings, List<Cause> probableCauses,
                         List<Action> actions, List<String> dataGaps, double confidence, int nextMeasurementHours,

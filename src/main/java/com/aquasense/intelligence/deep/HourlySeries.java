@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Convierte mediciones irregulares en una serie horaria: promedia las mediciones de cada hora e interpola
- * linealmente los huecos cortos. Un hueco mayor que {@code maxGapHours} corta la serie en segmentos, porque
- * inventar varias horas seguidas de datos enseñaría a la red patrones que no existen.
+ * Turns irregular measurements into an hourly series: averages the measurements of each hour and linearly
+ * interpolates short gaps. A gap longer than {@code maxGapHours} splits the series into segments, because
+ * inventing several consecutive hours of data would teach the network patterns that do not exist.
  */
 public final class HourlySeries {
 

@@ -9,9 +9,9 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 /**
- * Valida la respuesta de la IA antes de mostrarla y aplica salvaguardas basadas en los hechos:
- * la confianza no puede superar lo que permiten los datos y el riesgo no puede ser menor
- * que el que indica la última medición clasificada por el sistema.
+ * Validates the AI answer before showing it and applies safeguards based on the facts:
+ * the confidence cannot exceed what the data allows and the risk cannot be lower
+ * than the one indicated by the last measurement classified by the system.
  */
 @Component
 public class DiagnosisValidator {

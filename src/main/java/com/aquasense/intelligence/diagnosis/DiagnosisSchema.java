@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Esquema JSON que se envía al proveedor para obligarlo a responder con salida estructurada.
- * Verificado con Gemini (endpoint compatible con OpenAI) y Groq en modo "strict".
+ * JSON schema sent to the provider to force a structured output.
+ * Verified with Gemini (OpenAI-compatible endpoint) and Groq in "strict" mode.
  */
 public final class DiagnosisSchema {
 
@@ -17,8 +17,8 @@ public final class DiagnosisSchema {
     }
 
     /**
-     * Esquema para una solicitud concreta: {@code citedSourceIds} solo admite los ids de los fragmentos entregados,
-     * así el modelo no puede citar una norma que no recibió (el validador lo vuelve a comprobar).
+     * Schema for one specific request: {@code citedSourceIds} only accepts the ids of the provided fragments,
+     * so the model cannot cite a guideline it did not receive (the validator checks it again).
      */
     public static Map<String, Object> forSources(List<String> sourceIds) {
         return sourceIds == null || sourceIds.isEmpty() ? SCHEMA : build(sourceIds);

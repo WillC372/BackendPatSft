@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * Red neuronal recurrente LSTM de una capa con salida densa, implementada en Java sin dependencias.
+ * Single-layer LSTM recurrent neural network with a dense output, implemented in Java with no dependencies.
  *
- * <p>Por cada paso t: z = Wx·x(t) + Wh·h(t-1) + b, con las compuertas i (entrada), f (olvido), g (candidata) y
- * o (salida); c(t) = f·c(t-1) + i·g y h(t) = o·tanh(c(t)). La salida es y = Wy·h(T) + by (una predicción por horizonte).
- * Se entrena con retropropagación en el tiempo (BPTT), error cuadrático medio, Adam y recorte del gradiente.
- * Todos los parámetros viven en un solo arreglo, lo que simplifica el optimizador y la verificación numérica del gradiente.
+ * <p>For every step t: z = Wx·x(t) + Wh·h(t-1) + b, with the gates i (input), f (forget), g (candidate) and
+ * o (output); c(t) = f·c(t-1) + i·g and h(t) = o·tanh(c(t)). The output is y = Wy·h(T) + by (one prediction per horizon).
+ * It is trained with backpropagation through time (BPTT), mean squared error, Adam and gradient clipping.
+ * All parameters live in a single array, which simplifies the optimizer and the numerical gradient check.
  */
 public final class LstmNetwork {
 
@@ -64,7 +64,7 @@ public final class LstmNetwork {
         return forward(sequence).y;
     }
 
-    /** Error cuadrático medio de una muestra; si {@code grad} no es nulo, acumula su gradiente. */
+    /** Mean squared error of one sample; if {@code grad} is not null, it accumulates its gradient. */
     double lossAndGradient(double[][] sequence, double[] target, double[] grad) {
         Trace tr = forward(sequence);
         double loss = 0;
@@ -184,7 +184,7 @@ public final class LstmNetwork {
     }
 
     /**
-     * Entrena con Adam en mini-lotes y detención temprana: se conserva la época con menor error de validación.
+     * Trains with Adam in mini-batches and early stopping: the epoch with the lowest validation error is kept.
      */
     public TrainingLog train(double[][][] trainX, double[][] trainY, double[][][] valX, double[][] valY, Options options) {
         double[] m = new double[params.length];

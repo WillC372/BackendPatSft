@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Ventana de memoria del asistente: toma los mensajes más recientes que caben en el presupuesto (cantidad y caracteres),
- * empezando siempre por un mensaje del usuario para que los turnos queden bien alternados.
+ * Memory window of the assistant: takes the most recent messages that fit in the budget (count and characters),
+ * always starting with a user message so the turns stay properly alternated.
  */
 public final class ChatMemory {
 

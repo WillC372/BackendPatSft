@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 /**
- * Una llamada a la IA: tokens, proveedor, latencia, si vino de la caché, si falló y su costo estimado.
- * Los intentos fallidos se guardan con {@code success = false} y no cuentan para la cuota diaria.
+ * One AI call: tokens, provider, latency, whether it came from the cache, whether it failed and its estimated cost.
+ * Failed attempts are stored with {@code success = false} and do not count toward the daily quota.
  */
 @Entity
 @Table(name = "ai_usage")

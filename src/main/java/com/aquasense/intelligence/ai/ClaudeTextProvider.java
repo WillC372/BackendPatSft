@@ -15,8 +15,8 @@ import java.time.Duration;
 import java.util.stream.Collectors;
 
 /**
- * Proveedor real: API de Claude (Anthropic) con el SDK oficial de Java.
- * La clave se lee de ANTHROPIC_API_KEY en el servidor y nunca llega al frontend.
+ * Real provider: Claude API (Anthropic) with the official Java SDK.
+ * The key is read from ANTHROPIC_API_KEY on the server and never reaches the frontend.
  */
 public class ClaudeTextProvider implements AiTextProvider {
 

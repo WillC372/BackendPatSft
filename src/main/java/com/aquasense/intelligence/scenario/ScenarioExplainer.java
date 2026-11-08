@@ -39,10 +39,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 /**
- * Explica con IA un escenario "¿qué pasaría si el pH fuera X?". El sistema calcula los hechos (clasificación,
- * cambio en la concentración de H+, tiempo para llegar con la tendencia actual, reglas del perfil y normas aplicables);
- * la IA redacta efectos, señales tempranas y acciones preventivas en JSON estricto; el sistema valida citas y cifras.
- * Si la IA no está disponible o responde mal, se genera la misma estructura con reglas.
+ * Explains with AI a "what if the pH were X?" scenario. The system computes the facts (classification,
+ * change in the H+ concentration, time to get there with the current trend, profile rules and applicable guidelines);
+ * the AI writes effects, early signs and preventive actions in strict JSON; the system validates citations and figures.
+ * If the AI is not available or answers badly, the same structure is generated with rules.
  */
 @Service
 public class ScenarioExplainer {
@@ -123,7 +123,7 @@ public class ScenarioExplainer {
             timeToReach(current, hypotheticalPh, trend), advice, citations);
     }
 
-    /** Cuántas veces cambia la concentración de H+ (calculado por el sistema, con 3 cifras significativas). */
+    /** How many times the H+ concentration changes (computed by the system, with 3 significant figures). */
     static double hydrogenFactor(double current, double hypothetical) {
         double factor = Math.pow(10, current - hypothetical);
         return new java.math.BigDecimal(factor).round(new java.math.MathContext(3)).doubleValue();

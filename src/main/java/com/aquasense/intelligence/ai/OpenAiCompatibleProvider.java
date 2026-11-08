@@ -14,9 +14,9 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 
 /**
- * Proveedor para APIs con formato de OpenAI "chat/completions". Una sola clase sirve para
- * Google Gemini (endpoint /v1beta/openai) y Groq; cambia solo la configuración.
- * La clave se envia en "Authorization: Bearer" y nunca sale del servidor.
+ * Provider for APIs with the OpenAI "chat/completions" format. A single class serves
+ * Google Gemini (endpoint /v1beta/openai) and Groq; only the configuration changes.
+ * The key is sent in "Authorization: Bearer" and never leaves the server.
  */
 public class OpenAiCompatibleProvider implements AiTextProvider {
 
@@ -97,9 +97,9 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
     }
 
     /**
-     * Retry: si el proveedor responde 429 o 503 e indica una espera corta (Retry-After o x-ratelimit-reset-*),
-     * espera ese tiempo y reintenta una vez. Si la espera es larga (por ejemplo, cuota diaria agotada),
-     * falla de inmediato para que la cadena pase al siguiente proveedor.
+     * Retry: if the provider answers 429 or 503 and asks for a short wait (Retry-After or x-ratelimit-reset-*),
+     * it waits that long and retries once. If the wait is long (for example, the daily quota is exhausted),
+     * it fails right away so the chain moves to the next provider.
      */
     private String send(String json) {
         HttpResponse<String> response = exchange(json);

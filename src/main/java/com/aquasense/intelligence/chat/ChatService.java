@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Asistente con memoria: guarda cada conversación y envía a la IA los turnos recientes, así el usuario puede
- * repreguntar ("¿y eso es grave?") sin repetir el contexto. Las conversaciones son privadas y se pueden borrar.
+ * Assistant with memory: stores every conversation and sends the recent turns to the AI, so the user can
+ * ask follow-up questions ("is that serious?") without repeating the context. Conversations are private and can be deleted.
  */
 @Service
 public class ChatService {

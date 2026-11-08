@@ -9,8 +9,8 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 /**
- * Registro de herramientas del agente. Spring inyecta todas las implementaciones de {@link AgentTool};
- * agregar una herramienta nueva no requiere cambiar el agente.
+ * Registry of the agent tools. Spring injects every {@link AgentTool} implementation;
+ * adding a new tool does not require changing the agent.
  */
 @Component
 public class AgentToolRegistry {

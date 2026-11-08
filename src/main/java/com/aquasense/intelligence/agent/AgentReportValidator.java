@@ -11,8 +11,8 @@ import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 /**
- * Valida el informe del agente y verifica sus cifras: cada número decimal entre 0 y 14 que aparezca en el texto
- * debe coincidir (con el redondeo usado) con algún valor devuelto por las herramientas. Los que no coinciden se reportan.
+ * Validates the agent report and checks its figures: every decimal number between 0 and 14 that appears in the text
+ * must match (with the rounding used) some value returned by the tools. Those that do not match are reported.
  */
 @Component
 public class AgentReportValidator {

@@ -6,8 +6,8 @@ import com.aquasense.measurement.dto.MeasurementResponse;
 import java.util.List;
 
 /**
- * Recomendación por reglas del perfil, acompañada de los fragmentos normativos que la respaldan
- * ({@code sources}) y de una nota de cobertura cuando la base no tiene una norma para ese uso.
+ * Rule-based recommendation of the profile, together with the guideline fragments that support it
+ * ({@code sources}) and a coverage note when the knowledge base has no guideline for that use.
  */
 public record RecommendationResponse(MeasurementResponse basedOn, String profileName, Advice advice, String disclaimer,
                                      List<Citation> sources, String coverageNote) {

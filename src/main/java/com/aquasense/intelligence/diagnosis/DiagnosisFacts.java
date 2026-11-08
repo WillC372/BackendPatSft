@@ -11,8 +11,8 @@ import com.aquasense.profile.WaterProfile;
 import java.util.List;
 
 /**
- * Hechos calculados por el sistema (estadística y reglas) que alimentan el diagnóstico.
- * La IA razona solo sobre estos hechos; no recibe datos personales.
+ * Facts computed by the system (statistics and rules) that feed the diagnosis.
+ * The AI reasons only on these facts; it receives no personal data.
  */
 public record DiagnosisFacts(WaterProfile profile, int periodDays, List<Measurement> measurements,
                              Classification latest, TrendResult trend, List<Anomaly> anomalies, Forecast forecast,

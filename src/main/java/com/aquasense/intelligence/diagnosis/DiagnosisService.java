@@ -34,9 +34,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 /**
- * Diagnóstico inteligente: 1) el sistema calcula los hechos (estadística, anomalías, tendencia, predicción, reglas);
- * 2) la IA (Gemini, Groq...) razona sobre ellos y responde con JSON estructurado; 3) el validador revisa la respuesta
- * y aplica salvaguardas; 4) si algo falla, se usa el diagnóstico por reglas con la misma estructura. Se guarda el resultado.
+ * Smart diagnosis: 1) the system computes the facts (statistics, anomalies, trend, forecast, rules);
+ * 2) the AI (Gemini, Groq...) reasons on them and answers with structured JSON; 3) the validator reviews the answer
+ * and applies safeguards; 4) if something fails, the rule-based diagnosis with the same structure is used. The result is stored.
  */
 @Service
 public class DiagnosisService {

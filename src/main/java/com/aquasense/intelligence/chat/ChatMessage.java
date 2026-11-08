@@ -29,7 +29,7 @@ public class ChatMessage {
     private String content;
     private String model;
 
-    /** Ids de fragmentos normativos validados, separados por comas. */
+    /** Ids of validated guideline fragments, separated by commas. */
     private String citations;
 
     @Column(name = "created_at")

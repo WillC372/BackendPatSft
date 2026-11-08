@@ -4,8 +4,8 @@ import java.time.Instant;
 import java.util.List;
 
 /**
- * Resultado de la capa de aprendizaje profundo: datos usados, arquitectura, curva de entrenamiento, comparación con
- * referencias simples en datos no vistos, predicción de las próximas 12 horas con intervalo y alerta anticipada.
+ * Result of the deep learning layer: data used, architecture, training curve, comparison with
+ * simple baselines on unseen data, forecast of the next 12 hours with an interval and an early warning.
  */
 public record DeepForecastResponse(boolean trained, String reason, boolean includesSimulated, DataSummary data,
                                    Architecture architecture, Training training, Evaluation evaluation, Forecast forecast,

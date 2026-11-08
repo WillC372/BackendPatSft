@@ -5,8 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Resumen de consumo de IA de un periodo: totales, por modelo, por función, por día y (solo administración) por usuario.
- * {@code estimatedUsd} es lo que costaría con facturación; {@code chargedUsd} es el cargo real según el modo de facturación.
+ * AI usage summary for a period: totals, per model, per feature, per day and (administration only) per user.
+ * {@code estimatedUsd} is what it would cost with billing; {@code chargedUsd} is the real charge for the billing mode.
  */
 public record AiUsageReport(int periodDays, String billing, String pricingNote, Totals totals, List<ModelRow> byModel,
                             List<PurposeRow> byPurpose, List<DayRow> daily, List<UserRow> topUsers, Long usedToday,

@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Guarda cada llamada a la IA en su propia transacción: si la operación que la usó falla y se revierte,
- * el consumo (tokens ya gastados) y los intentos fallidos quedan registrados igual.
+ * Stores every AI call in its own transaction: if the operation that used it fails and rolls back,
+ * the usage (tokens already spent) and the failed attempts are still recorded.
  */
 @Component
 public class AiUsageRecorder {

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Ventanas deslizantes para la red: 24 horas de entrada y 12 horas a predecir. La red predice el cambio de pH
- * respecto de la última hora (escalado), así "no cambiar" equivale a la referencia de persistencia.
- * También calcula las tres referencias simples con las que se compara la red.
+ * Sliding windows for the network: 24 input hours and 12 hours to predict. The network predicts the pH change
+ * from the last hour (scaled), so "no change" is the same as the persistence baseline.
+ * It also computes the three simple baselines the network is compared with.
  */
 public final class ForecastDataset {
 
@@ -19,7 +19,7 @@ public final class ForecastDataset {
     private ForecastDataset() {
     }
 
-    /** Una ventana: los puntos de entrada y, si existen, los 12 valores reales siguientes. */
+    /** One window: the input points and, if they exist, the next 12 real values. */
     public record Window(List<HourlySeries.Point> input, double[] future) {
 
         public double last() {
@@ -82,7 +82,7 @@ public final class ForecastDataset {
         return y;
     }
 
-    /** Pasa la salida de la red (cambios escalados) a valores de pH. */
+    /** Turns the network output (scaled changes) into pH values. */
     public static double[] toPh(double[] output, double last, Scaling scaling) {
         double[] ph = new double[output.length];
         for (int k = 0; k < output.length; k++) {
@@ -91,14 +91,14 @@ public final class ForecastDataset {
         return ph;
     }
 
-    /** Persistencia: el pH se queda como en la última hora. */
+    /** Persistence: the pH stays as in the last hour. */
     public static double[] persistence(Window w) {
         double[] p = new double[HORIZON];
         java.util.Arrays.fill(p, w.last());
         return p;
     }
 
-    /** Estacional diaria: el pH de cada hora futura repite el de la misma hora del día anterior. */
+    /** Daily seasonal: the pH of every future hour repeats the one of the same hour on the previous day. */
     public static double[] seasonal(Window w) {
         double[] p = new double[HORIZON];
         for (int k = 1; k <= HORIZON; k++) {
@@ -107,7 +107,7 @@ public final class ForecastDataset {
         return p;
     }
 
-    /** Tendencia lineal: recta de mínimos cuadrados sobre las 24 horas de entrada, extrapolada. */
+    /** Linear trend: least-squares line over the 24 input hours, extrapolated. */
     public static double[] linear(Window w) {
         int n = w.input().size();
         double mx = (n - 1) / 2.0;

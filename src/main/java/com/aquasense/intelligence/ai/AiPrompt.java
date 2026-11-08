@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Solicitud a la IA. Si {@code responseSchema} no es nulo, el proveedor debe devolver JSON que cumpla ese esquema.
- * {@code image} adjunta una foto (solo la atienden proveedores con visión) y {@code excludedModels} permite pedir
- * una segunda opinión a un modelo distinto del que ya respondió. {@code history} son los turnos previos de una
- * conversación (memoria del asistente) y se envían antes del mensaje actual.
+ * Request to the AI. If {@code responseSchema} is not null, the provider must return JSON that matches that schema.
+ * {@code image} attaches a photo (only providers with vision handle it) and {@code excludedModels} allows asking
+ * a model other than the one that already answered for a second opinion. {@code history} holds the previous turns of a
+ * conversation (assistant memory) and they are sent before the current message.
  */
 public record AiPrompt(Long userId, String purpose, String system, String user, String schemaName,
                        Map<String, Object> responseSchema, AiImage image, Set<String> excludedModels,
@@ -51,7 +51,7 @@ public record AiPrompt(Long userId, String purpose, String system, String user, 
         return new AiPrompt(userId, purpose, system, user, schemaName, responseSchema, image, excludedModels, turns);
     }
 
-    /** Un turno previo: {@code assistant} indica si lo escribió la IA. */
+    /** A previous turn: {@code assistant} tells whether the AI wrote it. */
     public record Turn(boolean assistant, String content) {
     }
 }

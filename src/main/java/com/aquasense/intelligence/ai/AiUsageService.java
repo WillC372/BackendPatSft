@@ -18,13 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Seguimiento de costos de IA: agrega el registro de llamadas por modelo, por función y por día.
+ * AI cost tracking: aggregates the call log per model, per feature and per day.
  */
 @Service
 public class AiUsageService {
 
     static final int MAX_DAYS = 90;
-    /** Llamadas registradas antes de la migración V7, sin proveedor, latencia ni costo. */
+    /** Calls recorded before migration V7, without provider, latency or cost. */
     static final String LEGACY = "Registro anterior al seguimiento de costos";
     private static final Map<String, String> PURPOSES = Map.of(
         "DIAGNOSIS", "Diagnóstico", "CHAT", "Asistente", "CONCLUSION", "Conclusión", "AGENT_REPORT", "Agente de informes",

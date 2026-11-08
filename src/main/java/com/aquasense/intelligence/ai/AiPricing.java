@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 /**
- * Calcula el costo estimado de cada llamada con el precio configurado del modelo. El costo se guarda con la llamada,
- * así un cambio de precio posterior no reescribe el historial.
+ * Computes the estimated cost of every call with the configured price of the model. The cost is stored with the call,
+ * so a later price change does not rewrite the history.
  */
 @Component
 public class AiPricing {
@@ -31,7 +31,7 @@ public class AiPricing {
             .orElse(BigDecimal.ZERO);
     }
 
-    /** Lo que realmente se cobra: 0 con el plan gratuito de los proveedores. */
+    /** What is actually charged: 0 with the free plan of the providers. */
     public BigDecimal charged(BigDecimal estimated) {
         return isFreeBilling() ? BigDecimal.ZERO : estimated;
     }

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Convierte una serie cronológica de mediciones en vectores de variables. Cada vector usa solo la medición
- * y las anteriores (nunca datos futuros), así el mismo cálculo sirve para entrenar y para evaluar una medición nueva.
+ * Turns a chronological series of measurements into feature vectors. Each vector only uses the measurement
+ * and the previous ones (never future data), so the same computation serves for training and for scoring a new measurement.
  */
 public final class FeatureExtractor {
 

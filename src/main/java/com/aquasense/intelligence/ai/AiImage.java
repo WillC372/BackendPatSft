@@ -1,7 +1,7 @@
 package com.aquasense.intelligence.ai;
 
 /**
- * Imagen adjunta a una solicitud de IA (ya saneada: JPEG reducido y sin metadatos).
+ * Image attached to an AI request (already sanitized: reduced JPEG without metadata).
  */
 public record AiImage(String mimeType, byte[] data) {
 }

@@ -9,8 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Verificación de cifras: cada número decimal entre 0 y 14 de un texto generado por IA debe coincidir, con el redondeo
- * usado, con algún valor que el sistema le entregó. Los que no coinciden se devuelven para mostrarlos como no verificados.
+ * Figure check: every decimal number between 0 and 14 in an AI-generated text must match, with the rounding
+ * used, some value the system gave it. Those that do not match are returned to be shown as unverified.
  */
 public final class FigureCheck {
 

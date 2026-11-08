@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 /**
- * Selecciona la estrategia según el tipo de perfil. Los perfiles personalizados usan la estrategia general.
+ * Selects the strategy for the profile type. Custom profiles use the general strategy.
  */
 @Component
 public class AdviceStrategyResolver {

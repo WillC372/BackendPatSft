@@ -43,9 +43,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Facade de AquaSense Intelligence: una sola entrada para anomalías, tendencias, predicciones,
- * recomendaciones, escenarios, conclusiones e IA conversacional. Primero calcula con estadística y
- * reglas de dominio; la IA generativa solo redacta sobre esos resultados ya calculados.
+ * Facade of AquaSense Intelligence: a single entry point for anomalies, trends, forecasts,
+ * recommendations, scenarios, conclusions and conversational AI. It first computes with statistics and
+ * domain rules; generative AI only writes on top of those already computed results.
  */
 @Service
 public class IntelligenceFacade {
@@ -220,9 +220,9 @@ public class IntelligenceFacade {
     }
 
     /**
-     * Responde una pregunta con los datos actuales del usuario, los fragmentos normativos recuperados y los turnos
-     * previos de la conversación ({@code history}). Las citas válidas son las del contexto actual y las que ya se
-     * validaron en turnos anteriores ({@code previouslyCited}).
+     * Answers a question with the user's current data, the retrieved guideline fragments and the previous turns
+     * of the conversation ({@code history}). Valid citations are those of the current context and those already
+     * validated in previous turns ({@code previouslyCited}).
      */
     @Transactional
     public ChatAnswer chat(Long userId, String question, List<AiPrompt.Turn> history, java.util.Set<String> previouslyCited,
@@ -242,8 +242,8 @@ public class IntelligenceFacade {
     }
 
     /**
-     * Fragmentos para el chat: primero los que coinciden con la pregunta y, si faltan, los que aplican a la última
-     * medición del perfil. Así una pregunta general ("¿cómo está mi agua?") también recibe el rango normativo.
+     * Fragments for the chat: first those that match the question and, if missing, those that apply to the last
+     * measurement of the profile. This way a general question ("how is my water?") also receives the official range.
      */
     List<Citation> chatContext(Long userId, String question, WaterProfile profile) {
         List<Citation> context = new ArrayList<>(guidelines.search(question + " " + profile.getType().label(),

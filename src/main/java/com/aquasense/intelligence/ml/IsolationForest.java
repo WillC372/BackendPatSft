@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Isolation Forest (Liu, Ting y Zhou, 2008), implementado sin dependencias externas.
- * Idea: un punto anómalo se aísla con pocas particiones aleatorias. Se construyen árboles con subconjuntos
- * aleatorios de los datos; la profundidad media a la que queda aislado un punto define su puntaje de anomalía
- * s(x) = 2^(-E[h(x)] / c(n)), entre 0 y 1: cerca de 1 es anómalo, alrededor de 0,5 o menos es normal.
+ * Isolation Forest (Liu, Ting and Zhou, 2008), implemented without external dependencies.
+ * Idea: an anomalous point is isolated with few random partitions. Trees are built with random
+ * subsets of the data; the average depth at which a point gets isolated defines its anomaly score
+ * s(x) = 2^(-E[h(x)] / c(n)), between 0 and 1: close to 1 is anomalous, around 0.5 or less is normal.
  */
 public final class IsolationForest {
 
@@ -53,7 +53,7 @@ public final class IsolationForest {
         return sampleSize;
     }
 
-    /** c(n): longitud media de una búsqueda fallida en un árbol binario de búsqueda con n elementos. */
+    /** c(n): average length of an unsuccessful search in a binary search tree with n elements. */
     static double averagePathLength(int n) {
         if (n <= 1) {
             return 0;

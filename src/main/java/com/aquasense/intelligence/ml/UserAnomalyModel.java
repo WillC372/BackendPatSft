@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Modelo entrenado para un usuario: escalador, bosque de aislamiento, umbral y forma de explicar sus resultados.
+ * Model trained for one user: scaler, isolation forest, threshold and the way to explain its results.
  */
 public final class UserAnomalyModel {
 
@@ -48,7 +48,7 @@ public final class UserAnomalyModel {
         return score >= threshold;
     }
 
-    /** Las variables que más se alejan de lo típico para este usuario, explicadas en español. */
+    /** The variables that deviate most from what is typical for this user, explained in Spanish. */
     public List<Factor> explain(double[] vector, Measurement measurement) {
         double[] scaled = scaler.transform(vector);
         List<Factor> factors = new ArrayList<>();

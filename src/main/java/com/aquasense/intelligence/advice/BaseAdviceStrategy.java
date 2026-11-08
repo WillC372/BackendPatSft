@@ -6,8 +6,8 @@ import com.aquasense.profile.WaterProfile;
 import java.util.List;
 
 /**
- * Template Method: define el flujo comun (óptimo, bajo o alto) y deja a cada perfil
- * las causas y acciones especificas.
+ * Template Method: defines the common flow (optimal, low or high) and leaves to each profile
+ * its specific causes and actions.
  */
 public abstract class BaseAdviceStrategy implements AdviceStrategy {
 

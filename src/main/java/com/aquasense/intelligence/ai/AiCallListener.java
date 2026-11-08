@@ -1,7 +1,7 @@
 package com.aquasense.intelligence.ai;
 
 /**
- * Observer de los intentos fallidos de la cadena de proveedores, para registrar fallos y latencia por proveedor.
+ * Observer of the failed attempts of the provider chain, to record failures and latency per provider.
  */
 public interface AiCallListener {
 

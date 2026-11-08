@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Chain of Responsibility sobre proveedores de IA: intenta cada proveedor configurado en orden
- * (por ejemplo Gemini, Gemini Lite, Groq, Claude). Si uno esta saturado, sin cuota o devuelve un JSON
- * inválido, pasa al siguiente. Si todos fallan, lanza una excepcion y el sistema usa sus reglas propias.
+ * Chain of Responsibility over AI providers: tries every configured provider in order
+ * (for example Gemini, Gemini Lite, Groq, Claude). If one is overloaded, out of quota or returns invalid
+ * JSON, it moves to the next. If all fail, it throws an exception and the system uses its own rules.
  */
 public class FallbackAiProvider implements AiTextProvider {
 

@@ -9,8 +9,8 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 /**
- * Simulador de escenarios "que pasaría si": clasifica un pH hipotetico con las mismas reglas
- * que una medición real y lo compara con el valor actual. No guarda nada en el historial.
+ * "What if" scenario simulator: classifies a hypothetical pH with the same rules
+ * as a real measurement and compares it with the current value. It saves nothing in the history.
  */
 @Component
 public class ScenarioSimulator {

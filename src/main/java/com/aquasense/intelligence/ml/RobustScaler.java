@@ -4,8 +4,8 @@ import com.aquasense.intelligence.analysis.Statistics;
 import java.util.Arrays;
 
 /**
- * Escalado robusto (mediana y rango intercuartílico): cada variable queda en unidades comparables
- * y los valores extremos no distorsionan la escala. También permite explicar cuánto se aleja un valor de lo típico.
+ * Robust scaling (median and interquartile range): every variable ends up in comparable units
+ * and extreme values do not distort the scale. It also allows explaining how far a value is from the typical one.
  */
 public final class RobustScaler {
 

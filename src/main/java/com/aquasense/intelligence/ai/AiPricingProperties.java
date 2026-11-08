@@ -4,9 +4,9 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Precios por millón de tokens (USD) para estimar costos. {@code billing} indica cómo se factura la cuenta:
- * FREE (plan gratuito, cargo real 0) o PAID. {@code verified} distingue un precio leído en la página oficial
- * del proveedor de una referencia de terceros; la interfaz lo muestra.
+ * Prices per million tokens (USD) to estimate costs. {@code billing} tells how the account is billed:
+ * FREE (free plan, real charge 0) or PAID. {@code verified} distinguishes a price read on the official page
+ * of the provider from a third-party reference; the UI shows it.
  */
 @ConfigurationProperties(prefix = "aquasense.ai-pricing")
 public record AiPricingProperties(String billing, String note, List<ModelPrice> models) {

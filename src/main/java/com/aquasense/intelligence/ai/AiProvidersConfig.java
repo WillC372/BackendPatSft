@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Arma la cadena de proveedores a partir de la configuración: primero los compatibles con OpenAI
- * en el orden declarado (Gemini, Groq...) y al final Claude si tiene clave.
+ * Builds the provider chain from the configuration: first the OpenAI-compatible ones
+ * in the declared order (Gemini, Groq...) and Claude last if it has a key.
  */
 @Configuration
 public class AiProvidersConfig {

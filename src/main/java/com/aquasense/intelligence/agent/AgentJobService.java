@@ -34,9 +34,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 /**
- * Ejecuta el agente en segundo plano para que la interfaz muestre su avance real (consulta el estado del trabajo).
- * Usa un grupo de hilos acotado (Bulkhead): las investigaciones largas no pueden agotar los hilos que atienden la API.
- * Si un proveedor falla, reinicia la investigación con el siguiente; si todos fallan, genera el informe por reglas.
+ * Runs the agent in the background so the UI shows its real progress (it polls the job state).
+ * It uses a bounded thread pool (Bulkhead): long investigations cannot exhaust the threads that serve the API.
+ * If a provider fails, it restarts the investigation with the next one; if all fail, it builds the rule-based report.
  */
 @Service
 public class AgentJobService {

@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Esquema JSON estricto de la explicación de escenarios. {@code citedSourceIds} solo admite los ids entregados. */
+/** Strict JSON schema of the scenario explanation. {@code citedSourceIds} only accepts the provided ids. */
 final class ScenarioSchema {
 
     static final String NAME = "scenario_explanation";

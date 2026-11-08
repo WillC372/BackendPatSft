@@ -18,9 +18,9 @@ import java.util.function.Consumer;
 import org.springframework.stereotype.Component;
 
 /**
- * Agente de informes. El modelo recibe un objetivo y un catálogo de herramientas; en cada turno decide qué consultar.
- * El ciclo tiene límites (turnos, llamadas, correcciones) y termina cuando el modelo entrega un informe válido con
- * submit_report. Las herramientas se ejecutan en el servidor con el usuario del contexto, no con datos del modelo.
+ * Report agent. The model receives a goal and a catalog of tools; in every turn it decides what to query.
+ * The loop has limits (turns, calls, corrections) and ends when the model delivers a valid report with
+ * submit_report. The tools run on the server with the context user, not with data from the model.
  */
 @Component
 public class ReportAgent {

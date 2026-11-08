@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Strategy: cada regla de detección es un algoritmo intercambiable.
- * El detector las aplica todas sin conocer su implementacion.
+ * Strategy: every detection rule is an interchangeable algorithm.
+ * The detector applies all of them without knowing their implementation.
  */
 public interface AnomalyRule {
 

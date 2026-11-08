@@ -19,18 +19,18 @@ import java.util.function.Function;
 import org.springframework.stereotype.Service;
 
 /**
- * Capa 7: predicción con una red LSTM por usuario.
+ * Layer 7: forecast with one LSTM network per user.
  *
  * <ol>
- *   <li>Convierte las mediciones de 90 días en una serie horaria (huecos de hasta 6 h interpolados).</li>
- *   <li>Arma ventanas de 24 h para predecir las 12 h siguientes y las divide en orden cronológico: 70 % entrenamiento,
- *       15 % validación (detención temprana) y 15 % prueba, con un margen entre partes para no filtrar datos.</li>
- *   <li>Compara la red en el conjunto de prueba con tres referencias simples: persistencia, tendencia lineal y
- *       estacional diaria. La red solo se usa si reduce el error al menos un 5 % frente a la mejor; si no, se usa la
- *       referencia y se dice.</li>
- *   <li>El intervalo de cada hora es el percentil 90 del error absoluto en la prueba, no una suposición.</li>
+ *   <li>Turns the measurements of 90 days into an hourly series (gaps of up to 6 h are interpolated).</li>
+ *   <li>Builds 24 h windows to predict the next 12 h and splits them in chronological order: 70 % training,
+ *       15 % validation (early stopping) and 15 % test, with a gap between parts so no data leaks.</li>
+ *   <li>Compares the network on the test set with three simple baselines: persistence, linear trend and
+ *       daily seasonal. The network is only used if it reduces the error by at least 5 % against the best one; otherwise the
+ *       baseline is used and the response says so.</li>
+ *   <li>The interval of each hour is the 90th percentile of the absolute error on the test set, not an assumption.</li>
  * </ol>
- * El modelo se guarda en memoria y se descarta cuando llega una medición (Observer).
+ * The model is kept in memory and discarded when a new measurement arrives (Observer).
  */
 @Service
 public class DeepForecastService implements MeasurementListener {

@@ -8,13 +8,13 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 /**
- * Diagnóstico determinista con la misma estructura que el de la IA. Se usa cuando ningún
- * proveedor responde o su respuesta no supera la validación.
+ * Deterministic diagnosis with the same structure as the AI one. It is used when no
+ * provider answers or its answer does not pass validation.
  */
 @Component
 public class RuleBasedDiagnoser {
 
-    /** El diagnóstico por reglas cita los fragmentos mejor clasificados por el recuperador. */
+    /** The rule-based diagnosis cites the fragments ranked highest by the retriever. */
     static final int RULE_CITATIONS = 3;
 
     public Diagnosis diagnose(DiagnosisFacts facts) {

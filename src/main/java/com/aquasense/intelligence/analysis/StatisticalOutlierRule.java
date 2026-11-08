@@ -9,8 +9,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Puntaje z robusto (Iglewicz y Hoaglin): z = 0.6745 * (x - mediana) / MAD.
- * Con |z| > 3.5 el valor es atípico respecto al historial reciente del usuario.
+ * Robust z-score (Iglewicz and Hoaglin): z = 0.6745 * (x - median) / MAD.
+ * With |z| > 3.5 the value is an outlier compared with the user's recent history.
  */
 @Component
 @Order(3)
