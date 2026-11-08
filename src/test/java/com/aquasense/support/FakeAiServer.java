@@ -11,8 +11,8 @@ import java.util.Deque;
 import java.util.List;
 
 /**
- * Servidor HTTP local que imita el endpoint /chat/completions de una API compatible con OpenAI.
- * Solo para pruebas: devuelve respuestas programadas y guarda las solicitudes recibidas.
+ * Local HTTP server that imitates the /chat/completions endpoint of an OpenAI-compatible API.
+ * Tests only: it returns scripted responses and stores the received requests.
  */
 public class FakeAiServer implements AutoCloseable {
 

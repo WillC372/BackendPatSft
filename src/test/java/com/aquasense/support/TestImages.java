@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
- * Imágenes sintéticas para pruebas (un recuadro de color sobre fondo negro). No son fotos reales.
+ * Synthetic images for tests (a colored box on a black background). They are not real photos.
  */
 public final class TestImages {
 

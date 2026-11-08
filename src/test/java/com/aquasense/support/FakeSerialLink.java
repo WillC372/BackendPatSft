@@ -9,8 +9,8 @@ import java.util.Deque;
 import java.util.List;
 
 /**
- * Enlace serie falso para pruebas: devuelve respuestas programadas y registra los comandos enviados.
- * Es una herramienta de prueba, no simula un medidor ante el usuario.
+ * Fake serial link for tests: returns scripted responses and records the commands sent.
+ * It is a test tool; it does not simulate a meter for the user.
  */
 public class FakeSerialLink implements SerialLink {
 
