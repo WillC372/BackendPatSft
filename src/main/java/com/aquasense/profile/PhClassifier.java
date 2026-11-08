@@ -4,9 +4,9 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 /**
- * Clasifica un valor de pH frente a los rangos del perfil activo.
- * Ideal: dentro de [idealMin, idealMax]. Precaución: fuera del ideal pero dentro de la banda de precaución.
- * Crítico: fuera de la banda de precaución.
+ * Classifies a pH value against the ranges of the active profile.
+ * Ideal: inside [idealMin, idealMax]. Caution: outside the ideal range but inside the caution band.
+ * Critical: outside the caution band.
  */
 @Component
 public class PhClassifier {

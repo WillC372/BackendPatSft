@@ -13,9 +13,9 @@ import java.time.Instant;
 import java.util.Locale;
 
 /**
- * Perfil de agua con rangos de referencia.
- * Prototype: {@link #copyFor(Long, String)} clona un perfil existente (por ejemplo "Piscina")
- * para que el usuario lo personalice sin partir de cero ni modificar el original.
+ * Water profile with reference ranges.
+ * Prototype: {@link #copyFor(Long, String)} clones an existing profile (for example "Piscina")
+ * so the user can customize it without starting from scratch or changing the original.
  */
 @Entity
 @Table(name = "water_profiles")

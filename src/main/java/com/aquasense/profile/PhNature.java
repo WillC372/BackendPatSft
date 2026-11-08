@@ -1,8 +1,8 @@
 package com.aquasense.profile;
 
 /**
- * Naturaleza química del valor. La banda neutra 6.8-7.2 es una convencion de la aplicación
- * para lecturas de campo; el neutro exacto es 7.0 a 25 grados C.
+ * Chemical nature of the value. The neutral band 6.8-7.2 is a convention of the application
+ * for field readings; the exact neutral point is 7.0 at 25 degrees C.
  */
 public enum PhNature {
     ACIDIC("Ácida"),
