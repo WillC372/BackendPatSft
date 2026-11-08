@@ -248,12 +248,11 @@ mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test
 
 ## Despliegue
 
-El backend está preparado (Dockerfile, configuración por variables de entorno, `/actuator/health`), pero **todavía no está desplegado**. El Dockerfile no se ha construido todavía (no había Docker disponible en el entorno de desarrollo). Opciones compatibles con Spring Boot y PostgreSQL gestionado: Render, Railway o Fly.io. Pasos generales:
+Preparado para **Render** (backend con Docker, plan gratuito), **Neon** (PostgreSQL) y **Vercel** (frontend). La guía paso a paso está en [`docs/Deployment.md`](docs/Deployment.md).
 
-1. Crear una base PostgreSQL gestionada y anotar su URL.
-2. Crear un servicio web desde este directorio con el `Dockerfile`.
-3. Configurar `DB_URL`, `DB_USER`, `DB_PASSWORD`, `JWT_SECRET`, `CORS_ORIGINS` (URL del frontend) y, si aplica, `ANTHROPIC_API_KEY` y SMTP.
-4. Verificar `https://<tu-servicio>/actuator/health` y `/swagger-ui.html`.
+- `render.yaml` crea el servicio con su verificación de salud (`/actuator/health`), genera `JWT_SECRET` y fija las direcciones del frontend. Las claves (base de datos, IA y correo) se escriben en el panel de Render, nunca en el repositorio.
+- La base se configura con una sola variable, `DATABASE_URL`, con la cadena que entrega Neon (`postgresql://usuario:clave@host/db?sslmode=require`).
+- El `Dockerfile` está ajustado a instancias de 512 MB. La imagen se construyó y se probó en un contenedor limitado a 512 MB: 335 MB de memoria después de generar PDF, el análisis con aprendizaje automático y la red LSTM.
 
 Un backend en la nube no puede leer un medidor conectado a tu computador. Para lecturas físicas, el backend debe correr en el equipo donde está conectado el medidor.
 
