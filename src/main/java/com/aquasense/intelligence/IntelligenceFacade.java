@@ -74,6 +74,7 @@ public class IntelligenceFacade {
         If the data is not enough for a reliable conclusion, say so explicitly.
         Remember that pH alone does not determine whether water is drinkable or safe.
         For chemical actions, suggest small doses, following the manufacturer and measuring again; do not give exact doses.
+        Do not introduce yourself or restate these instructions; answer directly.
         Do not use Markdown headings; you may use short lists with hyphens.""";
 
     private final MeasurementService measurementService;
