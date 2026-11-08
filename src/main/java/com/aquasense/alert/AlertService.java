@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Observador de mediciones: cada medición nueva pasa por el detector de anomalías y,
- * si hay hallazgos, se crea una alerta explicada para el usuario.
+ * Measurement observer: every new measurement goes through the anomaly detector and,
+ * if there are findings, an explained alert is created for the user.
  */
 @Service
 public class AlertService implements MeasurementListener {
