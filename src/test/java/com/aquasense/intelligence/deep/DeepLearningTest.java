@@ -96,7 +96,7 @@ class DeepLearningTest {
         assertThat(r.explanation()).contains("menor");
     }
 
-    /** pH con ciclo diario, deriva persistente AR(1) y ruido; una medición por hora con huecos ocasionales. */
+    /** pH with a daily cycle, persistent AR(1) drift and noise; one measurement per hour with occasional gaps. */
     static List<Measurement> synthetic(int days, long seed) {
         Random random = new Random(seed);
         Instant start = Instant.now().truncatedTo(ChronoUnit.HOURS).minus(Duration.ofDays(days));

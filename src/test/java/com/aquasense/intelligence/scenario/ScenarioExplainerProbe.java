@@ -2,7 +2,7 @@ package com.aquasense.intelligence.scenario;
 
 import com.aquasense.intelligence.analysis.TrendResult;
 
-/** Acceso de prueba a los cálculos del sistema en {@link ScenarioExplainer}. */
+/** Test access to the system computations in {@link ScenarioExplainer}. */
 public final class ScenarioExplainerProbe {
 
     private ScenarioExplainerProbe() {
