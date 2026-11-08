@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
- * Manejo centralizado de errores: traduce excepciones a respuestas JSON en español
- * sin exponer trazas internas.
+ * Centralized error handling: translates exceptions into JSON responses in Spanish
+ * without exposing internal stack traces.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
