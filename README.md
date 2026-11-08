@@ -16,7 +16,7 @@ API REST de **AquaSense AI**, un sistema de monitoreo de pH del agua. El backend
 
 ## Arquitectura
 
-Monolito modular en capas (controlador → servicio → repositorio), organizado por módulo de negocio. Detalle y diagramas en [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md). Catálogo de patrones de diseño con su función real y sus pruebas en [`docs/PATRONES.md`](docs/PATRONES.md).
+Monolito modular en capas (controlador → servicio → repositorio), organizado por módulo de negocio. Detalle y diagramas en [`docs/Architecture.md`](docs/Architecture.md). Catálogo de patrones de diseño con su función real y sus pruebas en [`docs/DesignPatterns.md`](docs/DesignPatterns.md).
 
 ```
 src/main/java/com/aquasense/
@@ -62,7 +62,7 @@ docs/                        Documentación técnica
 
 - JDK 21 y Maven 3.9 o superior.
 - PostgreSQL 16 (o Docker para levantarlo).
-- Opcional: clave de la API de Anthropic, servidor SMTP y un medidor compatible (ver [`docs/HARDWARE.md`](docs/HARDWARE.md)).
+- Opcional: clave de la API de Anthropic, servidor SMTP y un medidor compatible (ver [`docs/Hardware.md`](docs/Hardware.md)).
 
 ## Instalación y ejecución local
 
@@ -124,7 +124,7 @@ Sin ninguna clave de IA, el diagnóstico y la conclusión se calculan con reglas
 
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
-- Resumen de endpoints: [`docs/API.md`](docs/API.md)
+- Resumen de endpoints: [`docs/Api.md`](docs/Api.md)
 
 Todas las rutas están versionadas bajo `/api/v1`. Grupos: `auth`, `users/me`, `profiles`, `measurements`, `devices`, `alerts`, `intelligence`, `reports`, `dashboard`, `payments` y `admin`.
 
@@ -152,7 +152,7 @@ Primero calcula con estadística y reglas de dominio; la IA generativa solo reda
 | **Diagnóstico IA** | El sistema calcula los hechos (mediciones, estadística, anomalías, tendencia, predicción, reglas del perfil). La IA razona sobre ellos y responde un **JSON con esquema estricto**: riesgo, hallazgos con evidencia, causas probables con probabilidad, plan de acción priorizado, datos faltantes, confianza y próxima medición. El `DiagnosisValidator` revisa la respuesta y aplica salvaguardas: limita la confianza según la cantidad y el tipo de datos, y no permite un riesgo menor al de la última medición. Si la respuesta no es válida, se usa `RuleBasedDiagnoser`, que produce la misma estructura. Cada diagnóstico se guarda en `ai_diagnoses` |
 | Conclusión y chat | Mismo motor; el chat responde con los datos del usuario y cita las normas recuperadas como `[id]`. **Memoria:** cada conversación se guarda (`chat_conversations`, `chat_messages`) y la IA recibe los últimos 12 mensajes, hasta 9000 caracteres, como turnos reales; así entiende repreguntas como "¿y ese valor es grave?". Los datos del usuario se recalculan en cada turno y prevalecen sobre lo dicho antes. Hasta 50 conversaciones por usuario; se pueden borrar una a una o todas |
 | **Consumo y costos** | Cada llamada registra proveedor, modelo, tokens, latencia, si vino de caché y su costo estimado con el precio vigente; los intentos fallidos de cada proveedor también se registran (Observer `AiCallListener`) y no cuentan para la cuota. Se guarda en una transacción independiente para no perder el registro si la operación falla. `/intelligence/ai-usage` resume por modelo, por función y por día; `/admin/ai-usage` da el total global y los usuarios con más consumo. Con `AI_BILLING=FREE` el cargo real es 0 y el costo estimado muestra cuánto costaría con facturación. **Los precios configurados vienen de agregadores de terceros y no se verificaron en las páginas oficiales** (la red del entorno no las alcanza); se ajustan con variables `PRICE_*` |
-| **Respaldo normativo (RAG)** | 20 fragmentos **literales** de la EPA, la OMS, la CDC (MAHC 2024) y la FAO, con un resumen propio en español. Un índice BM25 local los recupera filtrando por tipo de perfil, y se citan en recomendaciones, diagnóstico, chat y agente (herramienta `search_guidelines`). El servidor descarta cualquier id que no haya entregado. Para acuarios no hay norma verificada y se muestra una nota en lugar de una cita. Detalle en [`docs/RAG.md`](docs/RAG.md) |
+| **Respaldo normativo (RAG)** | 20 fragmentos **literales** de la EPA, la OMS, la CDC (MAHC 2024) y la FAO, con un resumen propio en español. Un índice BM25 local los recupera filtrando por tipo de perfil, y se citan en recomendaciones, diagnóstico, chat y agente (herramienta `search_guidelines`). El servidor descarta cualquier id que no haya entregado. Para acuarios no hay norma verificada y se muestra una nota en lugar de una cita. Detalle en [`docs/Rag.md`](docs/Rag.md) |
 
 | **Lectura por foto** | El usuario fotografía una tira reactiva o la pantalla de un medidor sin conexión. La imagen se reduce a 1024 px y se recodifica (eso borra los metadatos, incluido el GPS); no se guarda. La IA con visión responde un JSON estricto: tipo de imagen, pH, margen, valores de la carta más parecidos, problemas de la foto y temperatura si se ve. El `PhotoReadingValidator` impone la precisión real del método: tira con carta ±0,5 y confianza máxima 0,7; sin carta ±1,0 y 0,35; pantalla ±0,05 y 0,9; cada problema de la foto resta 0,1. En las tiras se pide una **segunda opinión** a otro proveedor: si las dos lecturas difieren en más de 0,5, se amplía el margen y la confianza baja a 0,35. El usuario confirma o corrige el valor antes de guardarlo con origen `PHOTO` |
 
@@ -204,7 +204,7 @@ Dos informes se descargan en PDF desde la interfaz: el del agente de IA (botón 
 
 ## Pagos
 
-Premium cuesta COP 49.900 por 30 días, con pago por periodo en PayU Latam y sin cobros automáticos. Por defecto se usa el sandbox de PayU con sus credenciales públicas de prueba: no se mueve dinero real y no hace falta registrar un comercio. El servidor activa Premium solo después de consultar la orden en PayU y comprobar estado, cuenta, valor y moneda. Lo verifiqué en vivo con un pago aprobado y otro rechazado. Los detalles, los datos de prueba y los pasos para producción están en [`docs/PAGOS.md`](docs/PAGOS.md).
+Premium cuesta COP 49.900 por 30 días, con pago por periodo en PayU Latam y sin cobros automáticos. Por defecto se usa el sandbox de PayU con sus credenciales públicas de prueba: no se mueve dinero real y no hace falta registrar un comercio. El servidor activa Premium solo después de consultar la orden en PayU y comprobar estado, cuenta, valor y moneda. Lo verifiqué en vivo con un pago aprobado y otro rechazado. Los detalles, los datos de prueba y los pasos para producción están en [`docs/Payments.md`](docs/Payments.md).
 
 ## Correo
 
@@ -214,13 +214,13 @@ La recuperación de contraseña envía un correo con un botón y un enlace de un
 
 ## Pendientes
 
-Las pruebas físicas y todo lo relacionado con GitHub y el despliegue están aplazados. Los detalles están en [`docs/PENDIENTES.md`](docs/PENDIENTES.md). La última revisión general del sistema está en [`docs/REVISION.md`](docs/REVISION.md).
+Las pruebas físicas y todo lo relacionado con GitHub y el despliegue están aplazados. Los detalles están en [`docs/PendingWork.md`](docs/PendingWork.md). La última revisión general del sistema está en [`docs/SystemReview.md`](docs/SystemReview.md).
 
 ## Integración con dispositivos
 
 La capa `device` define la interfaz `PhMeter` y tres adaptadores: `SimulatedPhMeter`, `AtlasEzoPhAdapter` (Atlas Scientific EZO-pH por UART) y `AquaSenseFirmwareAdapter` (el firmware ESP32 incluido). Los medidores Bluetooth clásicos (SPP) aparecen en el sistema operativo como puerto serie y se usan igual que los USB.
 
-**Estado:** los adaptadores están probados con un enlace serie falso; **no se han probado con un medidor físico**. El simulador marca todas sus lecturas como `SIMULATED`. Ver [`docs/HARDWARE.md`](docs/HARDWARE.md).
+**Estado:** los adaptadores están probados con un enlace serie falso; **no se han probado con un medidor físico**. El simulador marca todas sus lecturas como `SIMULATED`. Ver [`docs/Hardware.md`](docs/Hardware.md).
 
 ## Pruebas
 

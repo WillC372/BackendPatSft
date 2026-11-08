@@ -1,7 +1,7 @@
 """Checks that every quote in knowledge/guidelines.json appears verbatim in the downloaded official documents.
 
 Usage: python3 -I scripts/verify_knowledge_quotes.py src/main/resources/knowledge/guidelines.json FOLDER
-The folder must contain the text of each source (see docs/RAG.md): epa.txt, who-ph.txt, mahc-code.txt,
+The folder must contain the text of each source (see docs/Rag.md): epa.txt, who-ph.txt, mahc-code.txt,
 fao-01.txt and fao-06.txt. Only whitespace, line-break hyphens and typographic quotes are normalized.
 Quotes with "[...]" are checked part by part.
 """

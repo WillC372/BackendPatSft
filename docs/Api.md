@@ -58,7 +58,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | GET | `/intelligence/agent-reports/jobs/{jobId}` | Estado del trabajo: fase, pasos realizados y, al terminar, el informe |
 | GET | `/intelligence/agent-reports` · `/intelligence/agent-reports/{id}` · `/{id}/text` · `/{id}/pdf` | Historial, informe guardado y descarga en texto o PDF |
 | GET | `/reports?days=&includeAi=` · `/reports/text` · `/reports/pdf` | Informe por reglas en JSON, texto o PDF |
-| GET | `/knowledge/sources` · `/knowledge/search?q=&profileType=&limit=` · `/knowledge/chunks/{id}` | Biblioteca normativa (ver `docs/RAG.md`) |
+| GET | `/knowledge/sources` · `/knowledge/search?q=&profileType=&limit=` · `/knowledge/chunks/{id}` | Biblioteca normativa (ver `docs/Rag.md`) |
 | POST | `/auth/verify-admin` | `{ token }`. Confirma el rol de administrador desde el enlace enviado al correo de `ADMIN_EMAIL` (público) |
 | GET · POST | `/admin/mail` · `/admin/mail/test` | Estado del canal de correo y correo de prueba al propio administrador (rol `ADMIN`) |
 | GET | `/payments/plan` | Plan actual, vencimiento, precio y datos de prueba del sandbox |
