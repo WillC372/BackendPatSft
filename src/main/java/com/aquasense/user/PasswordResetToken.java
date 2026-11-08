@@ -57,5 +57,6 @@ public class PasswordResetToken {
     }
 
     public Long getUserId() { return userId; }
+    public Instant getExpiresAt() { return expiresAt; }
     public Purpose getPurpose() { return purpose; }
 }

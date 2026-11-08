@@ -96,9 +96,9 @@ public class MailService {
         if (channel == null) {
             if (config.logResetLinks()) {
                 LOG.warn("DEVELOPMENT ONLY - no email channel. Admin verification link for {}: {}", email, link);
-            } else {
-                LOG.warn("Admin verification requested but no email channel is configured; nothing was sent.");
+                return true;
             }
+            LOG.warn("Admin verification requested but no email channel is configured; nothing was sent.");
             return false;
         }
         String text = """

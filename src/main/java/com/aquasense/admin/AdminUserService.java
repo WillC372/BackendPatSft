@@ -94,6 +94,7 @@ public class AdminUserService {
         Map.entry("PREMIUM_EXPIRED", "Venció su Premium"),
         Map.entry("ADMIN_VERIFICATION_SENT", "Se envió el enlace para confirmar el rol de administrador"),
         Map.entry("ADMIN_ROLE_CONFIRMED", "Confirmó el rol de administrador por correo"),
+        Map.entry("ADMIN_VERIFICATION_FAILED", "No se pudo enviar el enlace para confirmar el rol de administrador"),
         Map.entry("ADMIN_PLAN_CHANGED", "Cambió el plan de un usuario"),
         Map.entry("ADMIN_ROLE_CHANGED", "Cambió el rol de un usuario"),
         Map.entry("ADMIN_USER_DISABLED", "Desactivó una cuenta"),

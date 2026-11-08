@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.Locale;
@@ -28,6 +29,10 @@ public class AuthService {
 
     private static final Duration RESET_TOKEN_LIFETIME = Duration.ofMinutes(30);
     private static final Duration ADMIN_TOKEN_LIFETIME = Duration.ofHours(24);
+    /** A new admin link is not sent again before this time, so repeated logins do not flood the inbox. */
+    private static final Duration ADMIN_RESEND_AFTER = Duration.ofMinutes(10);
+    static final String ADMIN_MAIL_FAILED = "No pudimos enviar el correo para activar tus permisos de administrador. "
+        + "Vuelve a iniciar sesión en unos minutos para reintentarlo; si sigue fallando, revisa la configuración de Mailjet del servidor.";
     static final String ADMIN_NOTICE = "Para activar los permisos de administrador, abre el enlace que enviamos a tu correo."
         + " Mientras tanto la cuenta funciona como usuario normal.";
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -75,15 +80,24 @@ public class AuthService {
             return null;
         }
         Instant now = Instant.now();
-        boolean pending = resetTokenRepository.findByUserIdAndPurposeAndUsedAtIsNull(user.getId(),
-            PasswordResetToken.Purpose.ADMIN_VERIFY).stream().anyMatch(t -> t.isUsable(now));
-        if (!pending) {
-            String rawToken = newToken();
-            resetTokenRepository.save(new PasswordResetToken(user.getId(), sha256(rawToken), now.plus(ADMIN_TOKEN_LIFETIME),
-                PasswordResetToken.Purpose.ADMIN_VERIFY));
-            mailService.sendAdminVerification(user.getEmail(), rawToken);
-            auditService.record(user.getId(), "ADMIN_VERIFICATION_SENT", "Enlace de confirmación de administrador enviado");
+        List<PasswordResetToken> open = resetTokenRepository.findByUserIdAndPurposeAndUsedAtIsNull(user.getId(),
+            PasswordResetToken.Purpose.ADMIN_VERIFY).stream().filter(t -> t.isUsable(now)).toList();
+        Instant recentLimit = now.plus(ADMIN_TOKEN_LIFETIME).minus(ADMIN_RESEND_AFTER);
+        if (open.stream().anyMatch(t -> t.getExpiresAt().isAfter(recentLimit))) {
+            return ADMIN_NOTICE;
         }
+        // Older links stop working: the new email replaces them.
+        open.forEach(t -> t.markUsed(now));
+        String rawToken = newToken();
+        PasswordResetToken token = resetTokenRepository.save(new PasswordResetToken(user.getId(), sha256(rawToken),
+            now.plus(ADMIN_TOKEN_LIFETIME), PasswordResetToken.Purpose.ADMIN_VERIFY));
+        if (!mailService.sendAdminVerification(user.getEmail(), rawToken)) {
+            // The link never reached the mailbox: it is discarded so the next login tries again, and the user is told.
+            token.markUsed(now);
+            auditService.record(user.getId(), "ADMIN_VERIFICATION_FAILED", "No se pudo enviar el enlace de confirmación de administrador");
+            return ADMIN_MAIL_FAILED;
+        }
+        auditService.record(user.getId(), "ADMIN_VERIFICATION_SENT", "Enlace de confirmación de administrador enviado");
         return ADMIN_NOTICE;
     }
 
