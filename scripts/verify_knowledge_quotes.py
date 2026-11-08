@@ -1,9 +1,9 @@
-"""Comprueba que cada cita de knowledge/guidelines.json aparezca literal en los documentos oficiales descargados.
+"""Checks that every quote in knowledge/guidelines.json appears verbatim in the downloaded official documents.
 
-Uso: python3 -I scripts/verify_knowledge_quotes.py src/main/resources/knowledge/guidelines.json DIRECTORIO
-El directorio debe contener el texto de cada fuente (ver docs/RAG.md): epa.txt, who-ph.txt, mahc-code.txt,
-fao-01.txt y fao-06.txt. Solo se normalizan espacios, guiones de corte de línea y comillas tipográficas.
-Las citas con "[...]" se verifican por partes.
+Usage: python3 -I scripts/verify_knowledge_quotes.py src/main/resources/knowledge/guidelines.json FOLDER
+The folder must contain the text of each source (see docs/RAG.md): epa.txt, who-ph.txt, mahc-code.txt,
+fao-01.txt and fao-06.txt. Only whitespace, line-break hyphens and typographic quotes are normalized.
+Quotes with "[...]" are checked part by part.
 """
 import json
 import re
@@ -33,8 +33,8 @@ def main(kb_path, folder):
         for part in (p.strip() for p in chunk["quote"].split("[...]")):
             if normalize(part) not in texts[chunk["sourceId"]]:
                 missing += 1
-                print("NO ENCONTRADA:", chunk["id"], "::", part[:90])
-    print(f"{len(kb['chunks'])} fragmentos, {missing} partes sin encontrar")
+                print("NOT FOUND:", chunk["id"], "::", part[:90])
+    print(f"{len(kb['chunks'])} fragments, {missing} parts not found")
     return 1 if missing else 0
 
 
