@@ -46,7 +46,7 @@ class MlModelServiceTest {
         return m;
     }
 
-    /** 12 días, cuatro mediciones diarias con un ciclo suave: más alto por la tarde, más bajo de madrugada. */
+    /** 12 days, four measurements a day with a gentle cycle: higher in the afternoon, lower before dawn. */
     private List<Measurement> history() {
         List<Measurement> list = new ArrayList<>();
         Instant start = Instant.now().minus(Duration.ofDays(12)).truncatedTo(java.time.temporal.ChronoUnit.DAYS);
