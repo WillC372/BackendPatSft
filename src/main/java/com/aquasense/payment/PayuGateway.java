@@ -23,12 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Adapter de PayU Latam (WebCheckout + API de consultas), según developers-payu-latam.github.io.
+ * Adapter for PayU Latam (WebCheckout + query API), following developers-payu-latam.github.io.
  * <ul>
- *   <li>Formulario: firma SHA-256 de {@code ApiKey~merchantId~referenceCode~amount~currency}.</li>
- *   <li>Verificación: {@code ORDER_DETAIL_BY_REFERENCE_CODE} en {@code /reports-api/4.0/service.cgi}. El servidor nunca
- *       activa Premium con lo que diga el navegador: siempre consulta la orden en PayU.</li>
- *   <li>Confirmación (webhook): firma de {@code ApiKey~merchant_id~reference_sale~new_value~currency~state_pol}.</li>
+ *   <li>Form: SHA-256 signature of {@code ApiKey~merchantId~referenceCode~amount~currency}.</li>
+ *   <li>Verification: {@code ORDER_DETAIL_BY_REFERENCE_CODE} at {@code /reports-api/4.0/service.cgi}. The server never
+ *       activates Premium based on what the browser says: it always queries the order in PayU.</li>
+ *   <li>Confirmation (webhook): signature of {@code ApiKey~merchant_id~reference_sale~new_value~currency~state_pol}.</li>
  * </ul>
  */
 @Component
@@ -61,7 +61,7 @@ public class PayuGateway {
         return config.checkoutUrl();
     }
 
-    /** Campos del formulario WebCheckout, en el orden de la documentación. */
+    /** WebCheckout form fields, in the order of the documentation. */
     public Map<String, String> formFields(Payment payment, String description, String buyerEmail, String responseUrl,
                                           String confirmationUrl) {
         String amount = amount(payment.getAmount());
@@ -89,7 +89,7 @@ public class PayuGateway {
         return fields;
     }
 
-    /** Consulta la orden por referencia. Vacío si PayU aún no tiene una orden con esa referencia. */
+    /** Queries the order by reference. Empty if PayU has no order with that reference yet. */
     public Optional<OrderResult> findOrder(String referenceCode) {
         ObjectNode body = mapper.createObjectNode();
         body.put("test", config.test());
@@ -153,8 +153,8 @@ public class PayuGateway {
     }
 
     /**
-     * Valida la firma de la página de confirmación. Si el segundo decimal del valor es cero se usa un decimal
-     * (150.00 → 150.0); si no, dos (150.26). Se acepta MD5 o SHA-256, según el algoritmo con que se firmó el formulario.
+     * Validates the signature of the confirmation page. If the second decimal of the amount is zero, one decimal is used
+     * (150.00 → 150.0); otherwise two (150.26). MD5 or SHA-256 is accepted, depending on the algorithm used to sign the form.
      */
     public boolean validConfirmation(Map<String, String> params) {
         String sign = params.getOrDefault("sign", "");
@@ -175,7 +175,7 @@ public class PayuGateway {
         }
     }
 
-    /** Valor sin ceros sobrantes y con máximo dos decimales (49900, 10000.5). */
+    /** Amount without trailing zeros and with at most two decimals (49900, 10000.5). */
     static String amount(BigDecimal value) {
         return value.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
     }

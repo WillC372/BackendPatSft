@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/** Un intento de pago de Premium. No guarda datos de tarjeta: solo la referencia y el resultado que informa PayU. */
+/** One Premium payment attempt. It stores no card data: only the reference and the result reported by PayU. */
 @Entity
 @Table(name = "payments")
 public class Payment {
@@ -78,7 +78,7 @@ public class Payment {
         this.updatedAt = createdAt;
     }
 
-    /** Aplica el resultado consultado en la pasarela. Un pago aprobado ya no cambia de estado. */
+    /** Applies the result queried from the gateway. An approved payment never changes state again. */
     public void update(PaymentStatus newStatus, String orderId, String txId, String state, String method) {
         if (status == PaymentStatus.APPROVED) {
             return;

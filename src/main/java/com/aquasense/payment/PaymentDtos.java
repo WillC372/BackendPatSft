@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-/** Contratos de la API de pagos. */
+/** Contracts of the payments API. */
 public final class PaymentDtos {
 
     private PaymentDtos() {
@@ -18,7 +18,7 @@ public final class PaymentDtos {
                              List<TestCase> testCases, String testNote) {
     }
 
-    /** Datos de prueba publicados por PayU para obtener cada resultado en el sandbox. */
+    /** Test data published by PayU to get each result in the sandbox. */
     public record TestCase(String result, String cardNumber, String cardholder, String cvv, String expiry) {
     }
 

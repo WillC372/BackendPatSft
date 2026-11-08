@@ -24,13 +24,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Pago de Premium por periodo con PayU (sin cobros automáticos ni medios de pago guardados).
+ * Premium payment per period with PayU (no automatic charges and no stored payment methods).
  *
  * <ol>
- *   <li>{@code checkout}: crea un pago PENDIENTE con referencia única y devuelve el formulario firmado.</li>
- *   <li>El usuario paga en la página de PayU; AquaSense nunca ve la tarjeta.</li>
- *   <li>{@code verify} (al volver) y {@code confirm} (webhook): el servidor consulta la orden en PayU y comprueba cuenta,
- *       valor y moneda. Solo entonces activa Premium, una sola vez por pago (idempotente).</li>
+ *   <li>{@code checkout}: creates a PENDING payment with a unique reference and returns the signed form.</li>
+ *   <li>The user pays on the PayU page; AquaSense never sees the card.</li>
+ *   <li>{@code verify} (on return) and {@code confirm} (webhook): the server queries the order in PayU and checks the account,
+ *       amount and currency. Only then it activates Premium, once per payment (idempotent).</li>
  * </ol>
  */
 @Service
@@ -96,7 +96,7 @@ public class PaymentService {
             payment.getCurrency(), gateway.isTest());
     }
 
-    /** El usuario volvió de PayU: se consulta la orden en PayU, nunca se confía en los parámetros de la URL. */
+    /** The user came back from PayU: the order is queried in PayU; the URL parameters are never trusted. */
     @Transactional
     public PaymentDtos.PaymentView verify(Long userId, String referenceCode) {
         Payment payment = repository.findByReferenceCode(referenceCode).filter(p -> p.getUserId().equals(userId))
@@ -104,7 +104,7 @@ public class PaymentService {
         return PaymentDtos.PaymentView.of(payment, reconcile(payment));
     }
 
-    /** Página de confirmación de PayU (webhook). Se valida la firma y luego se consulta la orden igual que en verify. */
+    /** PayU confirmation page (webhook). The signature is validated and then the order is queried as in verify. */
     @Transactional
     public boolean confirm(Map<String, String> params) {
         if (!gateway.validConfirmation(params)) {
@@ -174,7 +174,7 @@ public class PaymentService {
             .map(p -> PaymentDtos.PaymentView.of(p, null)).toList();
     }
 
-    /** Cada hora: Premium vencido vuelve a Gratuito y los pagos abandonados por más de 24 h se marcan vencidos. */
+    /** Every hour: expired Premium goes back to Free and payments abandoned for more than 24 h are marked expired. */
     @Scheduled(fixedDelay = 3_600_000, initialDelay = 60_000)
     @Transactional
     public void housekeeping() {

@@ -48,7 +48,7 @@ public class PaymentController {
         return service.history(CurrentUser.id());
     }
 
-    /** Página de confirmación de PayU (servidor a servidor, x-www-form-urlencoded). Pública: se valida la firma. */
+    /** PayU confirmation page (server to server, x-www-form-urlencoded). Public: the signature is validated. */
     @PostMapping(value = "/payu/confirmation", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Void> confirmation(@RequestParam Map<String, String> params) {
         return service.confirm(params) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();

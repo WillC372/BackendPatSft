@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuración de pagos. Por defecto usa el sandbox de PayU con las credenciales públicas de prueba que PayU publica
- * en su documentación (comercio 508029, cuenta 512321 de Colombia): no mueve dinero real ni requiere registrar un comercio.
+ * Payments configuration. By default it uses the PayU sandbox with the public test credentials PayU publishes
+ * in its documentation (merchant 508029, account 512321 for Colombia): it moves no real money and needs no merchant registration.
  */
 @ConfigurationProperties(prefix = "aquasense.payments")
 public record PaymentProperties(boolean enabled, BigDecimal price, String currency, int periodDays, int reminderDays,
