@@ -31,8 +31,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Informes en PDF: el del agente de IA y el informe por reglas. Usa los mismos datos que la versión en pantalla
- * y dibuja las gráficas que eligió el agente (evolución, anomalías, predicción o distribución).
+ * PDF reports: the AI agent report and the rule-based report. It uses the same data as the on-screen version
+ * and draws the charts the agent chose (evolution, anomalies, forecast or distribution).
  */
 @Service
 public class ReportPdfService {
@@ -215,7 +215,7 @@ public class ReportPdfService {
     private record ChartData(WaterProfile profile, List<Measurement> measurements, List<Anomaly> anomalies, Forecast forecast) {
     }
 
-    /** "Google Gemini no pudo terminar: Google Gemini: límite..." queda sin el nombre repetido. */
+    /** "Google Gemini no pudo terminar: Google Gemini: límite..." ends up without the repeated name. */
     public static String traceLine(String label, String summary) {
         if (summary == null || summary.isBlank()) {
             return label;

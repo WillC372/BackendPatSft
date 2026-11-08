@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Dibuja las gráficas del informe con Java2D (sin servicios externos) a doble resolución, para que se vean nítidas
- * al imprimirse: evolución del pH con el rango ideal, anomalías, predicción con su intervalo y distribución por estado.
+ * Draws the report charts with Java2D (no external services) at double resolution, so they look sharp
+ * when printed: pH evolution with the ideal range, anomalies, forecast with its interval and distribution by status.
  */
 public final class ChartPainter {
 
@@ -38,7 +38,7 @@ public final class ChartPainter {
     private ChartPainter() {
     }
 
-    /** Fuente incluida en el proyecto: las gráficas no dependen de las fuentes instaladas en el servidor. */
+    /** Font bundled with the project: the charts do not depend on the fonts installed on the server. */
     private static Font load(String resource) {
         try (java.io.InputStream in = ChartPainter.class.getClassLoader().getResourceAsStream(resource)) {
             return Font.createFont(Font.TRUETYPE_FONT, in);
@@ -178,7 +178,7 @@ public final class ChartPainter {
         return g;
     }
 
-    /** El detalle de la fecha en el eje depende del periodo: días, días y horas, horas o segundos. */
+    /** The date detail on the axis depends on the period: days, days and hours, hours or seconds. */
     static DateTimeFormatter axisFormat(long spanMs) {
         long minute = 60_000L;
         if (spanMs >= 3 * 24 * 60 * minute) {

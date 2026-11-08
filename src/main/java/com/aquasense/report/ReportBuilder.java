@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Builder: arma un informe paso a paso con secciones opcionales y valida que los datos
- * obligatorios esten presentes antes de construirlo.
+ * Builder: assembles a report step by step with optional sections and checks that the required
+ * data is present before building it.
  */
 public class ReportBuilder {
 

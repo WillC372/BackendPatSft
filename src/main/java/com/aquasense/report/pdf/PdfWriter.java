@@ -19,9 +19,9 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
- * Builder de documentos PDF con la identidad de AquaSense: maneja la posición vertical, el salto de página automático,
- * el ajuste de líneas y los bloques (títulos, párrafos, cifras, citas, imágenes). Usa DejaVu Sans incrustada, así las
- * tildes, la ñ y símbolos como ° y ± se ven en cualquier lector.
+ * Builder of PDF documents with the AquaSense identity: handles the vertical position, automatic page breaks,
+ * line wrapping and the blocks (headings, paragraphs, figures, citations, images). It embeds DejaVu Sans, so
+ * accents, ñ and symbols such as ° and ± render in any reader.
  */
 public final class PdfWriter implements AutoCloseable {
 
@@ -87,7 +87,7 @@ public final class PdfWriter implements AutoCloseable {
         }
     }
 
-    /** Banda de encabezado de la primera página: marca, título y subtítulo. */
+    /** Header band of the first page: brand, title and subtitle. */
     public PdfWriter banner(String eyebrow, String title, String subtitle) throws IOException {
         float top = PDRectangle.A4.getHeight();
         float height = 118;
@@ -140,7 +140,7 @@ public final class PdfWriter implements AutoCloseable {
         return paragraph(text, 10.5f, INK);
     }
 
-    /** Lista con marcador; {@code markers} permite numerar (prioridad) o usar viñetas. */
+    /** List with markers; {@code markers} allows numbering (priority) or bullets. */
     public PdfWriter list(List<String> items, List<String> markers, List<Color> colors) throws IOException {
         for (int i = 0; i < items.size(); i++) {
             String marker = markers == null ? "•" : markers.get(i);
@@ -175,7 +175,7 @@ public final class PdfWriter implements AutoCloseable {
         float boxWidth = (width() - gap * (perRow - 1)) / perRow;
         for (int start = 0; start < items.size(); start += perRow) {
             int end = Math.min(items.size(), start + perRow);
-            // Una etiqueta larga pasa a dos líneas en lugar de cortarse; toda la fila crece igual.
+            // A long label wraps to two lines instead of being cut; the whole row grows the same.
             List<List<String>> labels = new ArrayList<>();
             int labelLines = 1;
             for (int i = start; i < end; i++) {
@@ -205,7 +205,7 @@ public final class PdfWriter implements AutoCloseable {
         return this;
     }
 
-    /** Recuadro con borde de color a la izquierda: avisos, verificación, limitaciones. */
+    /** Box with a colored left border: notices, verification, limitations. */
     public PdfWriter callout(String title, List<String> lines, Color color) throws IOException {
         List<String> wrapped = new ArrayList<>();
         for (String line : lines) {
@@ -229,7 +229,7 @@ public final class PdfWriter implements AutoCloseable {
         return this;
     }
 
-    /** Cita normativa: organización y sección, texto literal en su idioma y resumen en español. */
+    /** Guideline citation: organization and section, literal text in its language and summary in Spanish. */
     public PdfWriter citation(int number, String source, String quote, String summary, String url) throws IOException {
         List<String> quoteLines = wrap("“" + quote + "”", regular, 9, width() - 30);
         List<String> summaryLines = wrap("Resumen en español (no es traducción oficial): " + summary, regular, 9, width() - 30);
@@ -312,7 +312,7 @@ public final class PdfWriter implements AutoCloseable {
         stream.endText();
     }
 
-    /** Reemplaza los caracteres que la fuente no tiene (por ejemplo emojis) para que el PDF nunca falle. */
+    /** Replaces the characters the font does not have (for example emojis) so the PDF never fails. */
     String clean(String text, PDType0Font font) {
         Map<Integer, Boolean> known = glyphs.computeIfAbsent(font, f -> new HashMap<>());
         StringBuilder out = new StringBuilder();
