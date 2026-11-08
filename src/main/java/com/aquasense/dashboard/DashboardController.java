@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Consulta de lectura para el dashboard: reune en una sola respuesta lo que la pantalla de inicio necesita.
+ * Read query for the dashboard: gathers in a single response everything the home screen needs.
  */
 @RestController
 @RequestMapping("/api/v1/dashboard")
