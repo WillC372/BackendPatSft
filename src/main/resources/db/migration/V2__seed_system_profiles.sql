@@ -1,0 +1,16 @@
+INSERT INTO water_profiles (owner_id, name, type, ideal_min, ideal_max, caution_min, caution_max, description, source, system_profile, created_at) VALUES
+(NULL, 'Uso general', 'GENERAL', 6.5, 8.5, 6.0, 9.0,
+ 'Rango amplio de referencia para agua de uso cotidiano cuando no se conoce el uso final.',
+ 'Referencia general basada en el intervalo 6.5-8.5 citado por la OMS y la EPA (estandar secundario). Verificar la norma local.', TRUE, CURRENT_TIMESTAMP),
+(NULL, 'Agua potable', 'DRINKING', 6.5, 8.5, 6.0, 9.0,
+ 'Agua destinada al consumo humano. El pH por si solo no demuestra que el agua sea potable.',
+ 'OMS, Guías para la calidad del agua de consumo humano; EPA, National Secondary Drinking Water Regulations (6.5-8.5).', TRUE, CURRENT_TIMESTAMP),
+(NULL, 'Piscina', 'POOL', 7.2, 7.8, 7.0, 8.0,
+ 'Piscinas con desinfección por cloro. Fuera de este rango baja la eficacia del cloro y aumenta la irritación.',
+ 'CDC, Model Aquatic Health Code (MAHC): pH entre 7.2 y 7.8.', TRUE, CURRENT_TIMESTAMP),
+(NULL, 'Acuario de agua dulce', 'AQUARIUM', 6.5, 7.5, 6.0, 8.0,
+ 'Acuario comunitario de agua dulce. Cada especie tiene su propio rango; ajustalo en un perfil personalizado.',
+ 'Rango comunitario habitual en literatura acuarista. Requiere ajuste por especie.', TRUE, CURRENT_TIMESTAMP),
+(NULL, 'Agricultura y riego', 'IRRIGATION', 6.0, 7.5, 5.5, 8.4,
+ 'Agua de riego. Valores fuera del rango afectan la disponibilidad de nutrientes y pueden obstruir goteros.',
+ 'FAO, Water quality for agriculture (Ayers y Westcot): rango normal 6.5-8.4; ideal agronómico 6.0-7.5.', TRUE, CURRENT_TIMESTAMP);
