@@ -3,7 +3,7 @@ package com.aquasense.device.connection;
 import com.aquasense.device.hardware.PhMeter;
 
 /**
- * Tras un fallo de comunicacion se permite reconectar (nuevo intento) o desconectar para liberar el puerto.
+ * After a communication failure, reconnecting (a new attempt) or disconnecting to release the port is allowed.
  */
 public class ErrorState extends ConnectionState {
 

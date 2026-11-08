@@ -3,8 +3,8 @@ package com.aquasense.device.hardware;
 import java.time.Duration;
 
 /**
- * Transporte de texto por puerto serie. Separa el protocolo (adaptadores) del canal físico,
- * lo que permite probar los adaptadores con un enlace falso sin hardware.
+ * Text transport over a serial port. It separates the protocol (adapters) from the physical channel,
+ * which allows testing the adapters with a fake link and no hardware.
  */
 public interface SerialLink {
 

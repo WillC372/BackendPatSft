@@ -6,8 +6,8 @@ import com.aquasense.device.hardware.PhMeter;
 import com.aquasense.device.hardware.PhReading;
 
 /**
- * State: cada estado del medidor decide que operaciones son validas.
- * Las operaciones no permitidas responden con un mensaje claro en lugar de condicionales dispersos.
+ * State: every meter state decides which operations are valid.
+ * Operations that are not allowed respond with a clear message instead of scattered conditionals.
  */
 public abstract class ConnectionState {
 

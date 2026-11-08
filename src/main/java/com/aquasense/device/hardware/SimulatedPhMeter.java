@@ -4,8 +4,8 @@ import java.time.Instant;
 import java.util.Random;
 
 /**
- * Medidor simulado para pruebas y demostraciones. Toda lectura que produce queda marcada
- * como SIMULATED en la base de datos y en la interfaz; nunca se presenta como medición real.
+ * Simulated meter for tests and demos. Every reading it produces is marked
+ * as SIMULATED in the database and in the UI; it is never presented as a real measurement.
  */
 public class SimulatedPhMeter implements PhMeter {
 

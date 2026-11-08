@@ -5,9 +5,9 @@ import java.time.Instant;
 import java.util.Locale;
 
 /**
- * Adapter para el circuito Atlas Scientific EZO-pH en modo UART (9600 baudios, comandos terminados en CR).
- * Comandos usados: "C,0" (desactiva lectura continua), "R" (lectura única), "Cal,mid|low|high,valor".
- * Debe verificarse con el hardware real: ver docs/HARDWARE.md.
+ * Adapter for the Atlas Scientific EZO-pH circuit in UART mode (9600 baud, commands terminated with CR).
+ * Commands used: "C,0" (disables continuous reading), "R" (single reading), "Cal,mid|low|high,value".
+ * It must be verified with real hardware: see docs/HARDWARE.md.
  */
 public class AtlasEzoPhAdapter implements PhMeter {
 

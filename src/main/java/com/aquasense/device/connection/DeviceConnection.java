@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * Contexto del patron State. Representa el único puerto físico que controla este backend.
- * Un hilo programado produce lecturas en vivo y las entrega a los observadores registrados.
+ * Context of the State pattern. It represents the only physical port this backend controls.
+ * A scheduled thread produces live readings and delivers them to the registered observers.
  */
 @Component
 public class DeviceConnection {

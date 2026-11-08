@@ -6,8 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 /**
- * Enlace serie real con jSerialComm. Sirve para USB-serie y para Bluetooth clásico (perfil SPP),
- * que el sistema operativo expone como puerto serie (COMx en Windows, /dev/rfcommX en Linux).
+ * Real serial link with jSerialComm. It works for USB serial and for classic Bluetooth (SPP profile),
+ * which the operating system exposes as a serial port (COMx on Windows, /dev/rfcommX on Linux).
  */
 public class JSerialCommLink implements SerialLink {
 

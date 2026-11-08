@@ -40,8 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Facade del subsistema de hardware: los controladores usan una sola clase para buscar,
- * conectar, medir, calibrar y transmitir, sin conocer adaptadores, estados ni comandos.
+ * Facade of the hardware subsystem: controllers use a single class to scan,
+ * connect, measure, calibrate and stream, without knowing adapters, states or commands.
  */
 @Service
 public class DeviceService {
@@ -103,7 +103,7 @@ public class DeviceService {
         String port = request.protocol() == MeterProtocol.SIMULATOR ? SimulatedPhMeter.PORT : request.port();
         if (request.protocol() != MeterProtocol.SIMULATOR && meterFactory.detectPorts().stream()
                 .noneMatch(p -> p.systemName().equals(port))) {
-            // Solo se abren puertos serie que el sistema detectó; nunca una ruta escrita por el usuario (por ejemplo /dev/sda).
+            // Only serial ports detected by the system are opened; never a path typed by the user (for example /dev/sda).
             throw BusinessException.badRequest("El puerto no existe o no está disponible. Busca los dispositivos de nuevo.");
         }
         PhMeter meter = meterFactory.create(request.protocol(), port);

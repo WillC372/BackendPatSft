@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 /**
- * Observer que convierte las lecturas en vivo en eventos Server-Sent Events para el frontend.
- * Solo el usuario que conecto el medidor recibe sus lecturas; todos reciben los cambios de estado.
+ * Observer that turns live readings into Server-Sent Events for the frontend.
+ * Only the user who connected the meter receives its readings; everyone receives the state changes.
  */
 @Component
 public class LiveFeed implements DeviceListener {
@@ -41,7 +41,7 @@ public class LiveFeed implements DeviceListener {
     public SseEmitter subscribe(Long userId) {
         SseEmitter emitter = new SseEmitter(EMITTER_TIMEOUT_MS);
         List<SseEmitter> mine = emitters.computeIfAbsent(userId, id -> new CopyOnWriteArrayList<>());
-        // Cada pestaña abre una conexión; se limita por usuario para que nadie agote los hilos del servidor.
+        // Every tab opens a connection; it is limited per user so nobody can exhaust the server threads.
         while (mine.size() >= MAX_STREAMS_PER_USER) {
             SseEmitter oldest = mine.remove(0);
             oldest.complete();

@@ -1,8 +1,8 @@
 package com.aquasense.device.hardware;
 
 /**
- * Interfaz objetivo del patron Adapter. El resto del sistema solo conoce esta interfaz;
- * cada protocolo de medidor (Atlas EZO, firmware ESP32, simulador) la implementa a su manera.
+ * Target interface of the Adapter pattern. The rest of the system only knows this interface;
+ * every meter protocol (Atlas EZO, ESP32 firmware, simulator) implements it in its own way.
  */
 public interface PhMeter {
 

@@ -3,8 +3,8 @@ package com.aquasense.device.command;
 import com.aquasense.device.connection.DeviceConnection;
 
 /**
- * Command: cada acción sobre el medidor es un objeto con nombre y ejecucion propia.
- * El invocador las ejecuta de forma uniforme y las registra en el historial de operaciones.
+ * Command: every action on the meter is an object with its own name and execution.
+ * The invoker runs them uniformly and records them in the operation history.
  */
 public interface DeviceCommand<T> {
 

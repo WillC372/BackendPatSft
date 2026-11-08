@@ -6,8 +6,8 @@ import com.fazecast.jSerialComm.SerialPort;
 import org.springframework.stereotype.Component;
 
 /**
- * Factory Method: crea el adaptador correcto según el protocolo elegido por el usuario.
- * Los servicios piden un {@link PhMeter} sin conocer las clases concretas ni el transporte.
+ * Factory Method: creates the right adapter for the protocol chosen by the user.
+ * Services ask for a {@link PhMeter} without knowing the concrete classes or the transport.
  */
 @Component
 public class PhMeterFactory {
