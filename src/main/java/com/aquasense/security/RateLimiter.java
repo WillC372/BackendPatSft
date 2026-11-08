@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /**
- * Limitador de intentos por ventana deslizante (Rate Limiting).
- * Protege el inicio de sesión y la recuperacion de contraseña contra fuerza bruta.
+ * Sliding-window attempt limiter (Rate Limiting).
+ * It protects login and password recovery against brute force.
  */
 @Component
 public class RateLimiter {

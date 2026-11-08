@@ -14,9 +14,9 @@ import javax.crypto.SecretKey;
 import org.springframework.stereotype.Service;
 
 /**
- * Emite y valida tokens JWT firmados con HS256.
- * El claim "ver" guarda la version de token del usuario: al cerrar sesión la version
- * aumenta y todos los tokens anteriores dejan de ser validos.
+ * Issues and validates JWT tokens signed with HS256.
+ * The "ver" claim stores the user's token version: on logout the version
+ * increases and all previous tokens stop being valid.
  */
 @Service
 public class JwtService {
