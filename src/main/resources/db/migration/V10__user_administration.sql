@@ -1,4 +1,4 @@
--- Administración de usuarios: cuentas desactivadas por un administrador y fecha del último inicio de sesión.
+-- User administration: accounts disabled by an administrator and date of the last login.
 ALTER TABLE users ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT TRUE;
 ALTER TABLE users ADD COLUMN disabled_reason VARCHAR(300);
 ALTER TABLE users ADD COLUMN disabled_at TIMESTAMP WITH TIME ZONE;
