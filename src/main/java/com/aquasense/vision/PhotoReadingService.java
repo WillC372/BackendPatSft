@@ -37,17 +37,18 @@ public class PhotoReadingService {
     private static final String DISCLAIMER = "Valor estimado por IA a partir de una foto. Las tiras reactivas tienen una "
         + "precisión aproximada de ±0,5; para decisiones importantes usa un medidor calibrado.";
     static final String SYSTEM_PROMPT = """
-        Eres el lector de fotos de AquaSense AI. Recibes la foto de una prueba de pH del agua y respondes solo con el JSON indicado.
-        1. Identifica el tipo: TEST_STRIP (tira o papel indicador), METER_DISPLAY (pantalla de un medidor) u OTHER (otra cosa).
-        2. TEST_STRIP: compara el color de la zona reactiva con la carta de colores que aparezca en la foto.
-           Indica en nearestReferenceValues los valores de la carta más parecidos (uno o dos) y estima ph entre ellos.
-           Si la carta no aparece, usa la escala del indicador universal, pon referenceChartVisible=false y una confianza baja.
-           phLow y phHigh deben reflejar la incertidumbre real del color, no la de un instrumento.
-        3. METER_DISPLAY: transcribe exactamente el número de pH de la pantalla. Si la pantalla muestra la temperatura,
-           ponla en temperatureC y temperatureVisible=true; si no, temperatureC=0 y temperatureVisible=false.
-        4. Si la foto no permite una lectura (borrosa, sin tira, sin pantalla, no es una prueba de pH), readable=false y ph=0.
-           Nunca inventes un valor.
-        5. issues: problemas de la foto que afecten la lectura. observations: una o dos frases en español explicando qué comparaste.""";
+        You are the photo reader of AquaSense AI. You receive the photo of a water pH test and answer only with the JSON given.
+        1. Identify the type: TEST_STRIP (strip or indicator paper), METER_DISPLAY (display of a meter) or OTHER (anything else).
+        2. TEST_STRIP: compare the color of the reactive pad with the color chart that appears in the photo.
+           Put in nearestReferenceValues the most similar chart values (one or two) and estimate ph between them.
+           If the chart does not appear, use the universal indicator scale, set referenceChartVisible=false and a low confidence.
+           phLow and phHigh must reflect the real uncertainty of the color, not that of an instrument.
+        3. METER_DISPLAY: transcribe exactly the pH number on the display. If the display shows the temperature,
+           put it in temperatureC and temperatureVisible=true; otherwise temperatureC=0 and temperatureVisible=false.
+        4. If the photo does not allow a reading (blurry, no strip, no display, not a pH test), readable=false and ph=0.
+           Never invent a value.
+        5. issues: problems of the photo that affect the reading. observations: one or two sentences in Spanish explaining what you compared.
+        Write issues and observations in Spanish.""";
 
     private final ImageSanitizer sanitizer;
     private final AiProviderProxy aiProvider;
@@ -70,7 +71,7 @@ public class PhotoReadingService {
                 "La lectura por foto no está disponible: no hay un proveedor de IA con visión configurado. Registra el valor manualmente.");
         }
         AiPrompt prompt = new AiPrompt(userId, "PHOTO_READING", SYSTEM_PROMPT,
-            "Tipo indicado por el usuario: " + (hint == null ? "desconocido" : hint.name()) + ". Analiza la foto.",
+            "Type indicated by the user: " + (hint == null ? "unknown" : hint.name()) + ". Analyze the photo.",
             PhotoReadingSchema.NAME, PhotoReadingSchema.SCHEMA, new AiImage("image/jpeg", clean), Set.of());
         PhotoReading first;
         try {
