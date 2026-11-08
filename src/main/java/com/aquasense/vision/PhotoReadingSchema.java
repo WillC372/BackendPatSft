@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Esquema JSON estricto para la lectura de fotos. Verificado con Gemini 3.5 Flash y Groq Qwen 3.8 (visión).
+ * Strict JSON schema for photo reading. Verified with Gemini 3.5 Flash and Groq Qwen 3.8 (vision).
  */
 public final class PhotoReadingSchema {
 

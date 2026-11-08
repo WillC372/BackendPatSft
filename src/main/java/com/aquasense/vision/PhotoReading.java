@@ -3,7 +3,7 @@ package com.aquasense.vision;
 import java.util.List;
 
 /**
- * Lectura de una foto ya validada por {@link PhotoReadingValidator}.
+ * Reading of a photo already validated by {@link PhotoReadingValidator}.
  */
 public record PhotoReading(boolean readable, PhotoKind kind, Double ph, Double phLow, Double phHigh, double confidence,
                            boolean referenceChartVisible, Double temperatureC, List<PhotoIssue> issues,

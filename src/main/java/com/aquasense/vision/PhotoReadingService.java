@@ -25,9 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 /**
- * Lectura de pH desde una foto (tira reactiva o pantalla de un medidor):
- * 1) sanea la imagen, 2) la IA con visión responde JSON estructurado, 3) se ajusta a la precisión real del método,
- * 4) en tiras se pide una segunda opinión a otro proveedor y se comparan, 5) el usuario confirma o corrige antes de guardar.
+ * pH reading from a photo (test strip or meter display):
+ * 1) sanitizes the image, 2) the vision AI answers structured JSON, 3) it is adjusted to the real precision of the method,
+ * 4) for strips a second opinion is requested from another provider and both are compared, 5) the user confirms or corrects before saving.
  */
 @Service
 public class PhotoReadingService {

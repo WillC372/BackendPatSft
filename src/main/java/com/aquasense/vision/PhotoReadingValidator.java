@@ -10,9 +10,9 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 /**
- * Valida la lectura devuelta por la IA y la ajusta a la precisión real de cada instrumento.
- * Los modelos tienden a declarar confianza alta y margen cero; aquí se imponen márgenes y límites:
- * tira con carta de colores ±0,5 y confianza máxima 0,7; sin carta ±1,0 y 0,35; pantalla ±0,05 y 0,9.
+ * Validates the reading returned by the AI and adjusts it to the real precision of each instrument.
+ * Models tend to claim high confidence and zero margin; here margins and limits are enforced:
+ * strip with color chart ±0.5 and maximum confidence 0.7; without chart ±1.0 and 0.35; display ±0.05 and 0.9.
  */
 @Component
 public class PhotoReadingValidator {

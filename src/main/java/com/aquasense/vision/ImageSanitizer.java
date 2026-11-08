@@ -19,9 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /**
- * Normaliza la foto antes de enviarla a la IA: acepta JPEG o PNG, la reduce a 1024 px como máximo
- * (menos tokens y menos costo) y la vuelve a codificar como JPEG. Al recodificar se eliminan los metadatos
- * EXIF, incluida la ubicación GPS. La imagen se procesa en memoria y no se guarda.
+ * Normalizes the photo before sending it to the AI: accepts JPEG or PNG, shrinks it to at most 1024 px
+ * (fewer tokens and lower cost) and re-encodes it as JPEG. Re-encoding removes the EXIF
+ * metadata, including the GPS location. The image is processed in memory and is not stored.
  */
 @Component
 public class ImageSanitizer {
@@ -29,15 +29,15 @@ public class ImageSanitizer {
     static final int MAX_SIDE = 1024;
     static final long MAX_BYTES = 10L * 1024 * 1024;
     private static final int MIN_SIDE = 64;
-    /** Límite antes de decodificar: un PNG de pocos KB puede declarar 30.000 × 30.000 píxeles (bomba de descompresión). */
+    /** Limit checked before decoding: a PNG of a few KB can declare 30,000 × 30,000 pixels (decompression bomb). */
     static final long MAX_PIXELS = 50_000_000L;
     static final int MAX_DECLARED_SIDE = 12_000;
-    /** Las fotos grandes se decodifican submuestreadas para no ocupar memoria innecesaria. */
+    /** Large photos are decoded subsampled so they do not take unnecessary memory. */
     private static final int DECODE_TARGET_SIDE = 2 * MAX_SIDE;
 
     /**
-     * Lee primero las dimensiones de la cabecera (sin decodificar los píxeles) y rechaza imágenes desproporcionadas.
-     * Luego decodifica con submuestreo, de modo que la memoria usada no depende del tamaño declarado.
+     * Reads the dimensions from the header first (without decoding the pixels) and rejects disproportionate images.
+     * Then it decodes with subsampling, so the memory used does not depend on the declared size.
      */
     static BufferedImage decode(byte[] input) {
         try (ImageInputStream stream = ImageIO.createImageInputStream(new ByteArrayInputStream(input))) {
