@@ -40,7 +40,7 @@ class ImageSanitizerTest {
         assertThat((System.nanoTime() - start) / 1_000_000).isLessThan(2000);
     }
 
-    /** PNG mínimo (firma, IHDR e IEND) que solo declara sus dimensiones: unos pocos bytes. */
+    /** Minimal PNG (signature, IHDR and IEND) that only declares its dimensions: a few bytes. */
     private static byte[] pngHeader(int width, int height) throws Exception {
         java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
         out.write(new byte[] {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'});
