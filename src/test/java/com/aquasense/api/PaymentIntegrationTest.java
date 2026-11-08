@@ -34,8 +34,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * Pago de Premium de punta a punta contra un servidor local que imita la API de consultas de PayU.
- * Premium solo se activa cuando la orden consultada está APROBADA y coincide en cuenta, valor y moneda.
+ * End-to-end Premium payment against a local server that imitates the PayU query API.
+ * Premium is only activated when the queried order is APPROVED and matches the account, amount and currency.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -105,23 +105,23 @@ class PaymentIntegrationTest {
         assertThat(plan.path("testMode").asBoolean()).isTrue();
         assertThat(plan.path("testCases").size()).isEqualTo(2);
 
-        // 1. Pago rechazado: el plan no cambia.
+        // 1. Declined payment: the plan does not change.
         String declined = checkout(token);
         verify(token, declined, "PENDING", "todavía no registra");
         ORDERS.put(declined, order(declined, "DECLINED", "49900.00", "COP", "512321"));
         verify(token, declined, "DECLINED", "rechazó");
 
-        // 2. Pago con valor alterado: no se activa Premium.
+        // 2. Payment with a tampered amount: Premium is not activated.
         String tampered = checkout(token);
         ORDERS.put(tampered, order(tampered, "APPROVED", "100.00", "COP", "512321"));
         verify(token, tampered, "ERROR", "no coincide");
-        // Orden de otra cuenta del comercio compartido: tampoco.
+        // Order from another account of the shared merchant: not either.
         String foreign = checkout(token);
         ORDERS.put(foreign, order(foreign, "APPROVED", "49900.00", "COP", "512322"));
         verify(token, foreign, "ERROR", "no coincide");
         assertThat(userPlan(token)).isEqualTo("FREE");
 
-        // 3. Pago aprobado: Premium por 30 días, una sola vez aunque se verifique de nuevo.
+        // 3. Approved payment: Premium for 30 days, only once even if it is verified again.
         String approved = checkout(token);
         ORDERS.put(approved, order(approved, "APPROVED", "49900.00", "COP", "512321"));
         JsonNode ok = verify(token, approved, "APPROVED", "Premium activo");
@@ -133,20 +133,20 @@ class PaymentIntegrationTest {
         assertThat(after.path("plan").asText()).isEqualTo("PREMIUM");
         assertThat(millis(after.path("premiumUntil").asText())).isEqualTo(millis(ok.path("premiumUntil").asText()));
 
-        // 4. Renovar antes de vencer suma 30 días desde el vencimiento actual.
+        // 4. Renewing before expiry adds 30 days from the current expiry.
         String renewal = checkout(token);
         ORDERS.put(renewal, order(renewal, "APPROVED", "49900.00", "COP", "512321"));
         JsonNode renewed = verify(token, renewal, "APPROVED", "Premium activo");
         assertThat(Duration.between(until, Instant.parse(renewed.path("premiumUntil").asText())).toMinutes()).isBetween(43_199L, 43_200L);
 
-        // 5. Otro usuario no puede ver ni verificar mis pagos.
+        // 5. Another user cannot see or verify my payments.
         String other = register();
         mvc.perform(post("/api/v1/payments/verify").header("Authorization", "Bearer " + other)
             .contentType(MediaType.APPLICATION_JSON).content("{\"referenceCode\":\"" + approved + "\"}")).andExpect(status().isNotFound());
         JsonNode history = json(mvc.perform(get("/api/v1/payments").header("Authorization", "Bearer " + token)).andReturn());
         assertThat(history.size()).isEqualTo(5);
 
-        // 6. Vencimiento: al pasar la fecha vuelve a Gratuito.
+        // 6. Expiry: after the date passes it goes back to Free.
         String email = json(mvc.perform(get("/api/v1/users/me").header("Authorization", "Bearer " + token)).andReturn())
             .path("email").asText();
         tx.executeWithoutResult(s -> {

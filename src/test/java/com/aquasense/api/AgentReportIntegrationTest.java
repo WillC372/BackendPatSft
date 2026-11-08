@@ -21,8 +21,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * El agente completo contra un servidor falso que responde llamadas a herramientas en formato OpenAI:
- * consulta estadísticas y anomalías, entrega el informe y el sistema lo verifica, guarda y exporta.
+ * The full agent against a fake server that answers tool calls in OpenAI format:
+ * it queries statistics and anomalies, delivers the report and the system verifies, stores and exports it.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -147,7 +147,7 @@ class AgentReportIntegrationTest {
         assertThat(history.size()).isEqualTo(2);
     }
 
-    /** Extrae el texto del PDF: comprueba que el contenido y las tildes quedaron incrustados, no solo que hay bytes. */
+    /** Extracts the PDF text: checks that the content and the accents were embedded, not just that there are bytes. */
     private static String pdfText(byte[] bytes) throws IOException {
         assertThat(new String(bytes, 0, 5, java.nio.charset.StandardCharsets.US_ASCII)).isEqualTo("%PDF-");
         try (var document = org.apache.pdfbox.Loader.loadPDF(bytes)) {

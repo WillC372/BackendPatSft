@@ -24,8 +24,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * Pantalla de administración: búsqueda, plan con y sin vencimiento, rol, desactivación y las reglas que protegen al
- * propio administrador, al administrador principal (ADMIN_EMAIL) y a las cuentas desactivadas.
+ * Administration screen: search, plan with and without expiry, role, deactivation and the rules that protect the
+ * administrator's own account, the main administrator (ADMIN_EMAIL) and disabled accounts.
  */
 @SpringBootTest(properties = "aquasense.security.admin-email=main-admin@aquasense.test")
 @AutoConfigureMockMvc
@@ -82,7 +82,7 @@ class AdminIntegrationTest {
         JsonNode admins = body(call(get("/api/v1/admin/users").param("q", tag).param("role", "ADMIN")));
         assertThat(admins.path("total").asLong()).isEqualTo(1);
         assertThat(admins.path("items").get(0).path("self").asBoolean()).isTrue();
-        // Los comodines de SQL se buscan como texto, no amplían la búsqueda.
+        // SQL wildcards are searched as text; they do not widen the search.
         assertThat(body(call(get("/api/v1/admin/users").param("q", "%_" + tag))).path("total").asLong()).isZero();
         call(get("/api/v1/admin/users").param("role", "JEFE")).andExpect(status().isBadRequest());
 
@@ -135,7 +135,7 @@ class AdminIntegrationTest {
         mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"" + email + "\",\"password\":\"Clave1234\"}"))
             .andExpect(status().isForbidden());
-        // Con una contraseña incorrecta la respuesta no revela que la cuenta existe y está desactivada.
+        // With a wrong password the response does not reveal that the account exists and is disabled.
         mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"" + email + "\",\"password\":\"Otra12345\"}"))
             .andExpect(status().isUnauthorized());
@@ -160,12 +160,12 @@ class AdminIntegrationTest {
         JsonNode promoted = body(call(put("/api/v1/admin/users/" + id + "/role").contentType(MediaType.APPLICATION_JSON)
             .content("{\"role\":\"ADMIN\"}")));
         assertThat(promoted.path("user").path("role").asText()).isEqualTo("ADMIN");
-        // El cambio de rol cierra sus sesiones: el token anterior deja de valer.
+        // The role change closes their sessions: the previous token stops being valid.
         mvc.perform(get("/api/v1/users/me").header("Authorization", "Bearer " + old)).andExpect(status().isUnauthorized());
         call(put("/api/v1/admin/users/" + id + "/role").contentType(MediaType.APPLICATION_JSON).content("{\"role\":\"USER\"}"))
             .andExpect(status().isOk());
 
-        // Sobre sí mismo: ni cambiar el rol ni desactivarse.
+        // On their own account: neither change the role nor disable it.
         JsonNode self = body(call(get("/api/v1/admin/users/" + adminId)));
         assertThat(self.path("guards").path("roleBlockedReason").asText()).contains("propio rol");
         call(put("/api/v1/admin/users/" + adminId + "/role").contentType(MediaType.APPLICATION_JSON).content("{\"role\":\"USER\"}"))
@@ -173,7 +173,7 @@ class AdminIntegrationTest {
         call(put("/api/v1/admin/users/" + adminId + "/status").contentType(MediaType.APPLICATION_JSON)
             .content("{\"enabled\":false}")).andExpect(status().isConflict());
 
-        // El administrador principal (ADMIN_EMAIL) no se degrada ni se desactiva desde la pantalla.
+        // The main administrator (ADMIN_EMAIL) is not demoted or disabled from the screen.
         String main = "main-admin@aquasense.test";
         if (users.findByEmailIgnoreCase(main).isEmpty()) {
             register(main, "Principal");

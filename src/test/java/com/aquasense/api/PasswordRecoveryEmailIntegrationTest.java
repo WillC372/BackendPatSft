@@ -29,8 +29,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 /**
- * Recuperación de contraseña completa con un servidor local que imita la API de Mailjet: el correo llega con el enlace,
- * el enlace cambia la contraseña una sola vez y los correos no registrados no generan envío.
+ * Full password recovery with a local server that imitates the Mailjet API: the email arrives with the link,
+ * the link changes the password only once and unregistered emails trigger no delivery.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -96,7 +96,7 @@ class PasswordRecoveryEmailIntegrationTest {
         String token = m.group(1);
         assertThat(sent.path("HTMLPart").asText()).contains(token);
 
-        // Un segundo enlace pedido antes del cambio queda inválido cuando se usa el primero.
+        // A second link requested before the change becomes invalid when the first one is used.
         mvc.perform(post("/api/v1/auth/forgot-password").contentType(MediaType.APPLICATION_JSON)
             .content("{\"email\":\"" + email + "\"}")).andExpect(status().isOk());
         Matcher second = Pattern.compile("reset-password\\?token=([A-Za-z0-9_-]+)")
@@ -133,7 +133,7 @@ class PasswordRecoveryEmailIntegrationTest {
         Matcher m = Pattern.compile("verify-admin\\?token=([A-Za-z0-9_-]+)").matcher(mail.path("TextPart").asText());
         assertThat(m.find()).isTrue();
 
-        // Un segundo inicio de sesión mientras el enlace sigue vigente no envía otro correo.
+        // A second login while the link is still valid does not send another email.
         send("/api/v1/auth/login", "{\"email\":\"" + adminEmail + "\",\"password\":\"Clave1234\"}");
         assertThat(SENT).hasSize(before + 1);
 

@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 /**
- * Memoria del asistente, explicación de escenarios con IA y seguimiento de costos contra un proveedor falso local.
+ * Assistant memory, AI scenario explanation and cost tracking against a local fake provider.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -77,7 +77,7 @@ class AssistantMemoryScenarioCostIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON).content("{\"ph\":" + ph + "}")).andExpect(status().isCreated());
         }
 
-        // Memoria: dos turnos en la misma conversación.
+        // Memory: two turns in the same conversation.
         SERVER.replyContent(MODEL, "Tu pH bajó a 7.0 y sigue en rango [epa-ph-smcl]. Otra norma [norma-inventada] no aplica.");
         JsonNode first = json(chat(token, "¿Cómo está mi agua?", null).andExpect(status().isOk()));
         long conversation = first.path("conversationId").asLong();
@@ -108,7 +108,7 @@ class AssistantMemoryScenarioCostIntegrationTest {
             .andExpect(status().isNotFound());
         chat(other, "Hola", conversation).andExpect(status().isNotFound());
 
-        // Escenario: la IA cita una norma inexistente, inventa una cifra y no marca nada como crítico.
+        // Scenario: the AI cites a nonexistent guideline, invents a figure and marks nothing as critical.
         SERVER.replyContent(MODEL, """
             {"headline":"Con pH 5.5 el agua sería ácida y corrosiva.",
              "explanation":"Según la EPA el rango es 6.5 - 8.5; con 5.5 el agua corroería tuberías. Podría bajar hasta 4.2.",
@@ -126,7 +126,7 @@ class AssistantMemoryScenarioCostIntegrationTest {
         assertThat(scenario.path("verification").path("verified").asInt()).isEqualTo(4);
         assertThat(SERVER.requests().get(2)).contains("factorConcentracionHidrogeno").contains("scenario_explanation");
 
-        // Un fallo total del proveedor se registra aunque la operación se revierta.
+        // A total provider failure is recorded even if the operation is rolled back.
         SERVER.reply(503, "{\"error\":{}}");
         chat(token, "¿Otra pregunta?", conversation).andExpect(status().isServiceUnavailable());
 

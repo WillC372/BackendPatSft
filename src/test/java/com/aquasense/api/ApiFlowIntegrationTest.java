@@ -134,7 +134,7 @@ class ApiFlowIntegrationTest {
         mvc.perform(post("/api/v1/devices/measure").header("Authorization", bearer(token))).andExpect(status().isConflict());
         mvc.perform(get("/api/v1/devices/scan").header("Authorization", bearer(token)))
             .andExpect(jsonPath("$[0].simulated").value(true));
-        // Una ruta arbitraria del servidor nunca se abre como puerto serie.
+        // An arbitrary server path is never opened as a serial port.
         for (String path : new String[] {"/dev/sda", "/etc/passwd", "../../dev/mem"}) {
             mvc.perform(post("/api/v1/devices/connect").header("Authorization", bearer(token))
                     .contentType(MediaType.APPLICATION_JSON).content("{\"protocol\":\"ATLAS_EZO\",\"port\":\"" + path + "\"}"))
@@ -272,7 +272,7 @@ class ApiFlowIntegrationTest {
     void adminEndpointsRequireAdminRole() throws Exception {
         String user = register(uniqueEmail());
         mvc.perform(get("/api/v1/admin/users").header("Authorization", bearer(user))).andExpect(status().isForbidden());
-        // Registrarse con el correo de ADMIN_EMAIL no da el rol: hay que confirmarlo desde ese correo.
+        // Registering with the ADMIN_EMAIL address does not grant the role: it must be confirmed from that email.
         MvcResult claimed = mvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"fullName\":\"Intruso\",\"email\":\"admin-flow@aquasense.test\",\"password\":\"Clave1234\"}"))
             .andExpect(status().isCreated()).andReturn();
@@ -286,7 +286,7 @@ class ApiFlowIntegrationTest {
 
     @Test
     void passwordResetRequestDoesNotRevealAccounts() throws Exception {
-        // Sin SMTP y sin el modo de desarrollo, la recuperación no está disponible, igual para cualquier correo.
+        // Without SMTP and without development mode, recovery is not available, the same for any email.
         String existing = uniqueEmail();
         register(existing);
         for (String email : new String[] {"nadie@aquasense.test", existing}) {

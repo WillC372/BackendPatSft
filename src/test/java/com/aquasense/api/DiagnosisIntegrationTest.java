@@ -21,8 +21,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * Flujo completo del diagnóstico con dos proveedores falsos locales: el primero está saturado (503)
- * y el segundo responde un JSON válido. Verifica la cadena de respaldo, la validación y la persistencia.
+ * Full diagnosis flow with two local fake providers: the first one is overloaded (503)
+ * and the second answers valid JSON. Checks the fallback chain, the validation and the persistence.
  */
 @SpringBootTest
 @AutoConfigureMockMvc

@@ -22,8 +22,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * Lectura por foto con dos proveedores de visión falsos: el primero lee 6.0 y el segundo 7.0.
- * Comprueba la segunda opinión, el ajuste por discrepancia y el guardado con origen PHOTO.
+ * Photo reading with two fake vision providers: the first one reads 6.0 and the second 7.0.
+ * Checks the second opinion, the adjustment for disagreement and saving with the PHOTO source.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
