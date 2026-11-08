@@ -49,7 +49,7 @@ public final class PdfWriter implements AutoCloseable {
 
     public PdfWriter(String title, String footer) throws IOException {
         this.regular = load("fonts/DejaVuSans.ttf");
-        this.bold = load("fonts/DejaVuSans-Bold.ttf");
+        this.bold = load("fonts/DejaVuSansBold.ttf");
         this.footer = footer;
         PDDocumentInformation info = document.getDocumentInformation();
         info.setTitle(title);

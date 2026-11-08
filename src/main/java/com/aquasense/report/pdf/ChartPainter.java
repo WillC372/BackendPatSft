@@ -33,7 +33,7 @@ public final class ChartPainter {
     private static final DateTimeFormatter SECOND = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.of("America/Bogota"));
 
     private static final Font FONT = load("fonts/DejaVuSans.ttf");
-    private static final Font BOLD = load("fonts/DejaVuSans-Bold.ttf");
+    private static final Font BOLD = load("fonts/DejaVuSansBold.ttf");
 
     private ChartPainter() {
     }

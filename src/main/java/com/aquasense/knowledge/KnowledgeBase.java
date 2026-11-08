@@ -19,13 +19,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 /**
- * Curated knowledge base of guidelines (classpath:knowledge/guidelines.json). It is loaded and validated once at startup:
+ * Curated knowledge base of guidelines (classpath:knowledge/Guidelines.json). It is loaded and validated once at startup:
  * if a fragment points to a nonexistent source, repeats an id or has no quote, the application does not start.
  */
 @Component
 public class KnowledgeBase {
 
-    static final String RESOURCE = "knowledge/guidelines.json";
+    static final String RESOURCE = "knowledge/Guidelines.json";
 
     private final String version;
     private final String note;

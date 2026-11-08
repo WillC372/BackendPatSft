@@ -1,4 +1,4 @@
--- Aligns the system profiles with the official texts of the knowledge base (knowledge/guidelines.json).
+-- Aligns the system profiles with the official texts of the knowledge base (knowledge/Guidelines.json).
 -- Measurements already stored keep the status they were classified with at the time.
 
 -- CDC, MAHC 2024: 5.7.3.4.1 requires 7.0-7.8; 6.6.3.1 considers a pH below 6.5 or above 8.0 an imminent hazard.

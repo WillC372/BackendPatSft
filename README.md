@@ -54,7 +54,7 @@ docs/                        Documentación técnica
 | Seguridad | JWT HS256 (jjwt 0.12.6), contraseñas con Argon2id (Bouncy Castle) |
 | Hardware | jSerialComm 2.11.0 (USB serie y Bluetooth clásico SPP) |
 | IA generativa | Google Gemini y Groq (planes gratuitos) por su API compatible con OpenAI, con `java.net.http`; Claude (SDK oficial de Anthropic 3.3.0) como opción de pago |
-| Informes PDF | Apache PDFBox 3.0.3, gráficas con Java2D y fuente DejaVu Sans incluida (licencia libre en `resources/fonts/DejaVu-LICENSE.txt`) |
+| Informes PDF | Apache PDFBox 3.0.3, gráficas con Java2D y fuente DejaVu Sans incluida (licencia libre en `resources/fonts/DejaVuLicense.txt`) |
 | Documentación de la API | springdoc-openapi 2.8.6 (Swagger UI) |
 | Pruebas | JUnit 5, Mockito, AssertJ, Awaitility, MockMvc, H2 (modo PostgreSQL) |
 

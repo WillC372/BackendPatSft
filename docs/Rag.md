@@ -13,7 +13,7 @@ AquaSense recupera fragmentos **literales** de normas y guías oficiales y los c
 
 **Acuarios: sin fuente.** No se encontró una norma oficial sobre el pH de acuarios que se pudiera descargar desde la red del entorno. La base no contiene fragmentos para acuarios y lo dice: recomendaciones, diagnósticos y chat muestran una nota de cobertura en lugar de una cita.
 
-Los documentos se descargaron el 7 nov 2026. Hay 20 fragmentos en `src/main/resources/knowledge/guidelines.json`. Cada uno tiene:
+Los documentos se descargaron el 7 nov 2026. Hay 20 fragmentos en `src/main/resources/knowledge/Guidelines.json`. Cada uno tiene:
 
 - `quote`: el texto literal, en inglés como el original. `[...]` marca una omisión.
 - `summaryEs`: un resumen propio en español, que la interfaz rotula como "no es traducción oficial".
@@ -29,7 +29,7 @@ Los documentos se descargaron el 7 nov 2026. Hay 20 fragmentos en `src/main/reso
 ```mermaid
 flowchart LR
     Q[Lectura, pregunta u objetivo] --> R[GuidelineRetriever]
-    KB[(guidelines.json)] --> I[Índice BM25] --> R
+    KB[(Guidelines.json)] --> I[Índice BM25] --> R
     R -->|filtra por tipo de perfil| F[Fragmentos con id]
     F --> REC[Recomendaciones: sin IA]
     F --> DX[Diagnóstico: esquema con enum de ids]
