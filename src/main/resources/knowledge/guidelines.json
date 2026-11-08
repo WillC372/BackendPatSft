@@ -1,0 +1,290 @@
+{
+  "version": "2026-11-07",
+  "note": "Fragmentos copiados textualmente (en su idioma original) de documentos oficiales descargados el 2026-11-07. El campo summaryEs es un resumen propio en español, no una traducción oficial.",
+  "sources": [
+    {
+      "id": "epa-sdws",
+      "organization": "EPA (Estados Unidos)",
+      "title": "Secondary Drinking Water Standards: Guidance for Nuisance Chemicals",
+      "edition": "Página web, última actualización 26 de mayo de 2026",
+      "url": "https://www.epa.gov/sdwa/secondary-drinking-water-standards-guidance-nuisance-chemicals",
+      "retrievedOn": "2026-11-07",
+      "language": "en",
+      "legalStatus": "Guía no obligatoria (estándar secundario). La EPA no la hace cumplir; se basa en sabor, corrosión y depósitos, no en riesgo para la salud."
+    },
+    {
+      "id": "who-gdwq-ph",
+      "organization": "OMS",
+      "title": "Chemical fact sheets: pH (Guidelines for drinking-water quality, 4th edition incorporating the first and second addenda)",
+      "edition": "Ficha técnica publicada el 18 de mayo de 2022",
+      "url": "https://www.who.int/publications/m/item/chemical-fact-sheets--ph",
+      "retrievedOn": "2026-11-07",
+      "language": "en",
+      "legalStatus": "Guía técnica internacional. No establece un valor guía de salud para el pH."
+    },
+    {
+      "id": "cdc-mahc-2024",
+      "organization": "CDC (Estados Unidos)",
+      "title": "2024 Model Aquatic Health Code (MAHC), 5th Edition",
+      "edition": "5.ª edición, publicada el 16 de diciembre de 2024",
+      "url": "https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2024/11/5th-Ed-MAHC-Code-508.pdf",
+      "retrievedOn": "2026-11-07",
+      "language": "en",
+      "legalStatus": "Código modelo de adopción voluntaria. Es obligatorio solo donde una autoridad local lo adopta."
+    },
+    {
+      "id": "fao-ipd29",
+      "organization": "FAO",
+      "title": "Water quality for agriculture (Ayers y Westcot, FAO Irrigation and Drainage Paper 29 Rev. 1)",
+      "edition": "1985",
+      "url": "https://www.fao.org/4/t0234e/T0234E00.htm",
+      "retrievedOn": "2026-11-07",
+      "language": "en",
+      "legalStatus": "Guía técnica de interpretación. No es una norma legal."
+    }
+  ],
+  "coverage": {
+    "GENERAL": "Fragmentos de la EPA y la OMS sobre agua de consumo; sirven como referencia general.",
+    "DRINKING": "Fragmentos de la EPA (estándar secundario 6.5-8.5) y de la OMS (sin valor guía de salud para el pH).",
+    "POOL": "Fragmentos del Model Aquatic Health Code 2024 de la CDC.",
+    "AQUARIUM": "La base de conocimiento no contiene una norma oficial verificada sobre el pH de acuarios. El rango del perfil es orientativo y debe ajustarse a cada especie con un especialista.",
+    "IRRIGATION": "Fragmentos de la guía FAO Water quality for agriculture.",
+    "CUSTOM": "Perfil personalizado: se usan los fragmentos generales de la EPA y la OMS."
+  },
+  "chunks": [
+    {
+      "id": "epa-ph-smcl",
+      "sourceId": "epa-sdws",
+      "section": "Table of Secondary Standards",
+      "url": "https://www.epa.gov/sdwa/secondary-drinking-water-standards-guidance-nuisance-chemicals",
+      "quote": "pH 6.5 - 8.5 low pH: bitter metallic taste; corrosion high pH: slippery feel; soda taste; deposits",
+      "summaryEs": "El estándar secundario de la EPA para el pH es 6.5-8.5. Con pH bajo el agua puede tener sabor metálico amargo y ser corrosiva; con pH alto, tacto resbaladizo, sabor a soda y depósitos.",
+      "profileTypes": ["GENERAL", "DRINKING", "CUSTOM"],
+      "tags": ["RANGE", "LOW", "HIGH"],
+      "phMin": 6.5,
+      "phMax": 8.5,
+      "keywords": "rango recomendado potable consumo sabor metálico corrosión ácido alcalino resbaladizo depósitos estándar secundario"
+    },
+    {
+      "id": "epa-smcl-nature",
+      "sourceId": "epa-sdws",
+      "section": "What are Secondary Standards?",
+      "url": "https://www.epa.gov/sdwa/secondary-drinking-water-standards-guidance-nuisance-chemicals",
+      "quote": "EPA has established National Secondary Drinking Water Standards that set non-mandatory water quality standards for 15 contaminants. EPA does not enforce these \"secondary maximum contaminant levels\" (SMCLs). They are established as guidelines to assist public water systems in managing their drinking water for aesthetic considerations, such as taste, color, and odor. These contaminants are not considered to present a risk to human health at the SMCL.",
+      "summaryEs": "Los estándares secundarios de la EPA, incluido el del pH, no son obligatorios: orientan sobre sabor, color y olor del agua y no se consideran un riesgo para la salud en esos niveles.",
+      "profileTypes": ["GENERAL", "DRINKING", "CUSTOM"],
+      "tags": ["HEALTH", "RANGE"],
+      "keywords": "obligatorio norma legal salud riesgo potabilidad estético sabor olor color"
+    },
+    {
+      "id": "epa-corrosion",
+      "sourceId": "epa-sdws",
+      "section": "Technical effects",
+      "url": "https://www.epa.gov/sdwa/secondary-drinking-water-standards-guidance-nuisance-chemicals",
+      "quote": "Corrosivity, and staining related to corrosion, not only affect the aesthetic quality of water, but may also have significant economic implications. Other effects of corrosive water, such as the corrosion of iron and copper, may stain household fixtures and impart objectionable metallic taste and red or blue-green color to the water supply. Corrosion of distribution system pipes can reduce water flow.",
+      "summaryEs": "El agua corrosiva (asociada a pH bajo) puede corroer hierro y cobre, manchar instalaciones, dar sabor metálico y color rojizo o verde azulado, y reducir el caudal de las tuberías.",
+      "profileTypes": ["GENERAL", "DRINKING", "CUSTOM"],
+      "tags": ["LOW"],
+      "keywords": "corrosión tuberías cobre hierro manchas sabor metálico ácido pH bajo caudal"
+    },
+    {
+      "id": "epa-scale",
+      "sourceId": "epa-sdws",
+      "section": "Technical effects",
+      "url": "https://www.epa.gov/sdwa/secondary-drinking-water-standards-guidance-nuisance-chemicals",
+      "quote": "Scale is a mineral deposit which builds up on the insides of hot water pipes, boilers, and heat exchangers, restricting or even blocking water flow. Sediments are loose deposits in the distribution system or home plumbing. Standards related to scale and sediments: Iron, pH, Total Dissolved Solids, Aluminum",
+      "summaryEs": "El pH es uno de los parámetros relacionados con las incrustaciones: depósitos minerales en tuberías de agua caliente, calderas e intercambiadores que pueden restringir o bloquear el flujo.",
+      "profileTypes": ["GENERAL", "DRINKING", "CUSTOM"],
+      "tags": ["HIGH"],
+      "keywords": "incrustaciones sarro depósitos calcáreo caldera calentador tuberías alcalino pH alto sedimentos"
+    },
+    {
+      "id": "epa-lab-test",
+      "sourceId": "epa-sdws",
+      "section": "What Can You Do?",
+      "url": "https://www.epa.gov/sdwa/secondary-drinking-water-standards-guidance-nuisance-chemicals",
+      "quote": "Finally, if you have a private well and you think that the well may be near a source of contamination or may have been contaminated— have your water tested by a certified laboratory.",
+      "summaryEs": "Si el agua proviene de un pozo privado que pudo contaminarse o está cerca de una fuente de contaminación, la EPA recomienda analizarla en un laboratorio certificado.",
+      "profileTypes": ["GENERAL", "DRINKING", "CUSTOM"],
+      "tags": ["LAB", "ACTION"],
+      "keywords": "laboratorio certificado análisis pozo contaminación potabilidad especialista"
+    },
+    {
+      "id": "who-ph-no-gv",
+      "sourceId": "who-gdwq-ph",
+      "section": "pH",
+      "url": "https://cdn.who.int/media/docs/default-source/wash-documents/water-safety-and-quality/chemical-fact-sheets-2022/ph-fact-sheet-2022.pdf",
+      "quote": "No health-based guideline value is proposed for pH. Although pH usually has no direct impact on consumers, it is one of the most important operational water quality parameters (see chapter 10).",
+      "summaryEs": "La OMS no propone un valor guía de salud para el pH: normalmente no afecta directamente a quien consume el agua, pero es uno de los parámetros operacionales más importantes de la calidad del agua.",
+      "profileTypes": ["GENERAL", "DRINKING", "CUSTOM"],
+      "tags": ["HEALTH", "RANGE"],
+      "keywords": "salud valor guía oms potable operacional tratamiento riesgo"
+    },
+    {
+      "id": "who-ph-reason",
+      "sourceId": "who-gdwq-ph",
+      "section": "pH: Reason for not establishing a guideline value",
+      "url": "https://cdn.who.int/media/docs/default-source/wash-documents/water-safety-and-quality/chemical-fact-sheets-2022/ph-fact-sheet-2022.pdf",
+      "quote": "Not of health concern at levels found in drinking-water",
+      "summaryEs": "Motivo de la OMS para no fijar un valor guía: el pH no es una preocupación de salud en los niveles que se encuentran en el agua de consumo.",
+      "profileTypes": ["GENERAL", "DRINKING", "CUSTOM"],
+      "tags": ["HEALTH"],
+      "keywords": "salud preocupación agua de consumo potable"
+    },
+    {
+      "id": "mahc-ph-range",
+      "sourceId": "cdc-mahc-2024",
+      "section": "5.7.3.4.1 pH Range",
+      "url": "https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2024/11/5th-Ed-MAHC-Code-508.pdf",
+      "quote": "The pH of the water shall be maintained at 7.0 - 7.8.",
+      "summaryEs": "El código modelo de la CDC exige mantener el pH del agua de piscinas y recintos acuáticos entre 7.0 y 7.8.",
+      "profileTypes": ["POOL"],
+      "tags": ["RANGE", "LOW", "HIGH"],
+      "phMin": 7.0,
+      "phMax": 7.8,
+      "keywords": "piscina rango mantener cloro recinto acuático alberca"
+    },
+    {
+      "id": "mahc-imminent-hazard",
+      "sourceId": "cdc-mahc-2024",
+      "section": "6.6.3.1 Violations Requiring Immediate Correction or Closure",
+      "url": "https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2024/11/5th-Ed-MAHC-Code-508.pdf",
+      "quote": "The AHJ shall have the right to order immediate correction or order immediate POOL closure for any of the following IMMINENT HEALTH HAZARDS violations: [...] 5) pH below 6.5; 6) pH above 8.0;",
+      "summaryEs": "Un pH menor de 6.5 o mayor de 8.0 en una piscina es un riesgo inminente para la salud: la autoridad puede exigir corrección inmediata o cerrar la piscina.",
+      "profileTypes": ["POOL"],
+      "tags": ["CRITICAL", "LOW", "HIGH", "HEALTH"],
+      "phMin": 6.5,
+      "phMax": 8.0,
+      "keywords": "cierre clausura riesgo inminente salud bañistas crítico corrección inmediata piscina"
+    },
+    {
+      "id": "mahc-testing",
+      "sourceId": "cdc-mahc-2024",
+      "section": "5.7.5 Water Quality Chemical Testing Frequency",
+      "url": "https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2024/11/5th-Ed-MAHC-Code-508.pdf",
+      "quote": "DPD-FC, COMBINED AVAILABLE CHLORINE (CAC), or TOTAL BROMINE (TB), and pH shall be tested at all AQUATIC VENUES prior to opening each day. [...] DPD-FC or bromine and pH shall be tested prior to opening to the public and every 2 hours while open to the public. [...] DPD-FC (or TB) and pH shall be tested prior to opening and every 4 hours while open to the public.",
+      "summaryEs": "El pH y el cloro (o bromo) se miden cada día antes de abrir; luego cada 2 horas con dosificación manual o cada 4 horas con dosificación automática mientras la piscina está abierta.",
+      "profileTypes": ["POOL"],
+      "tags": ["TESTING", "ACTION"],
+      "keywords": "frecuencia medir medición cada horas apertura cloro bromo prueba monitoreo"
+    },
+    {
+      "id": "mahc-adjust-substances",
+      "sourceId": "cdc-mahc-2024",
+      "section": "5.7.3.4.2 Approved Substances",
+      "url": "https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2024/11/5th-Ed-MAHC-Code-508.pdf",
+      "quote": "Approved substances for pH adjustment shall include but not be limited to muriatic (hydrochloric) acid, sodium bisulfate, carbon dioxide, sulfuric acid, sodium bicarbonate, and soda ash.",
+      "summaryEs": "Sustancias aprobadas para ajustar el pH de piscinas: ácido muriático (clorhídrico), bisulfato de sodio, dióxido de carbono y ácido sulfúrico (para bajarlo); bicarbonato de sodio y carbonato de sodio (para subirlo).",
+      "profileTypes": ["POOL"],
+      "tags": ["ACTION", "LOW", "HIGH"],
+      "keywords": "ajustar subir bajar ácido muriático bisulfato bicarbonato carbonato soda ash químicos corregir"
+    },
+    {
+      "id": "mahc-fecal-response",
+      "sourceId": "cdc-mahc-2024",
+      "section": "6.5.2.3 Treated",
+      "url": "https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2024/11/5th-Ed-MAHC-Code-508.pdf",
+      "quote": "AQUATIC VENUE water that has been contaminated by feces or vomit shall be treated as follows: 1) Check to ensure that the water’s pH is 7.5 or lower and adjust if necessary;",
+      "summaryEs": "Ante contaminación por heces o vómito, el primer paso del tratamiento es comprobar que el pH sea 7.5 o menor y ajustarlo si hace falta.",
+      "profileTypes": ["POOL"],
+      "tags": ["ACTION", "HIGH"],
+      "phMax": 7.5,
+      "keywords": "heces vómito contaminación accidente fecal desinfección tratamiento"
+    },
+    {
+      "id": "fao-ph-normal",
+      "sourceId": "fao-ipd29",
+      "section": "5.2 Abnormal pH",
+      "url": "https://www.fao.org/4/t0234e/T0234E06.htm",
+      "quote": "pH is an indicator of the acidity or basicity of a water, but is seldom a problem by itself. The main use of pH in a water analysis is for detecting an abnormal water. The normal pH range for irrigation water is from 6.5 to 8.4. An abnormal value is a warning that the water needs further evaluation.",
+      "summaryEs": "Para la FAO el rango normal de pH del agua de riego es 6.5-8.4. El pH rara vez es un problema por sí mismo; un valor anormal es una advertencia de que el agua necesita más evaluación.",
+      "profileTypes": ["IRRIGATION"],
+      "tags": ["RANGE", "LOW", "HIGH"],
+      "phMin": 6.5,
+      "phMax": 8.4,
+      "keywords": "riego rango normal agricultura cultivo anormal evaluación"
+    },
+    {
+      "id": "fao-ph-imbalance",
+      "sourceId": "fao-ipd29",
+      "section": "5.2 Abnormal pH",
+      "url": "https://www.fao.org/4/t0234e/T0234E06.htm",
+      "quote": "Irrigation water with a pH outside the normal range may cause a nutritional imbalance or may contain a toxic ion.",
+      "summaryEs": "El agua de riego con pH fuera del rango normal puede causar un desequilibrio nutricional o contener un ion tóxico.",
+      "profileTypes": ["IRRIGATION"],
+      "tags": ["LOW", "HIGH", "LAB"],
+      "keywords": "nutrientes desequilibrio nutricional ion tóxico toxicidad cultivo plantas"
+    },
+    {
+      "id": "fao-low-salinity",
+      "sourceId": "fao-ipd29",
+      "section": "5.2 Abnormal pH",
+      "url": "https://www.fao.org/4/t0234e/T0234E06.htm",
+      "quote": "Low salinity water (ECw < 0.2 dS/m) sometimes has a pH outside the normal range since it has a very low buffering capacity. This should not cause undue alarm other than to alert the user to a possible imbalance of ions and the need to establish the reason for the adverse pH through full laboratory analysis. Such water normally causes few problems for soils or crops but is very corrosive and may rapidly corrode pipelines, sprinklers and control equipment.",
+      "summaryEs": "El agua de muy baja salinidad puede tener el pH fuera de rango porque casi no amortigua cambios. No debe alarmar, pero conviene un análisis completo de laboratorio; suele afectar poco a suelos y cultivos, aunque es muy corrosiva para tuberías, aspersores y equipos.",
+      "profileTypes": ["IRRIGATION"],
+      "tags": ["LOW", "LAB"],
+      "keywords": "baja salinidad conductividad amortiguación laboratorio análisis corrosivo aspersores tuberías equipos"
+    },
+    {
+      "id": "fao-soil-correction",
+      "sourceId": "fao-ipd29",
+      "section": "5.2 Abnormal pH",
+      "url": "https://www.fao.org/4/t0234e/T0234E06.htm",
+      "quote": "Any change in the soil pH caused by the water will take place slowly since the soil is strongly buffered and resists change. An adverse pH may need to be corrected, if possible, by the introduction of an amendment into the water, but this will only be practical in a few instances. It may be easier to correct the soil pH problem that may develop rather than try to treat the water. Lime is commonly applied to the soil to correct a low pH and sulphur or other acid material may be used to correct a high pH.",
+      "summaryEs": "El suelo cambia de pH lentamente. Corregir el agua solo es práctico en pocos casos; suele ser más fácil corregir el suelo: cal para un pH bajo y azufre u otro material ácido para un pH alto.",
+      "profileTypes": ["IRRIGATION"],
+      "tags": ["ACTION", "LOW", "HIGH"],
+      "keywords": "corregir suelo cal azufre enmienda tratar agua ajustar"
+    },
+    {
+      "id": "fao-equipment",
+      "sourceId": "fao-ipd29",
+      "section": "5.2 Abnormal pH",
+      "url": "https://www.fao.org/4/t0234e/T0234E06.htm",
+      "quote": "The greatest direct hazard of an abnormal pH in water is the impact on irrigation equipment. Equipment will need to be chosen carefully for unusual water (see Section 5.8).",
+      "summaryEs": "El mayor riesgo directo de un pH anormal en el agua de riego es el daño a los equipos de riego; con agua inusual hay que elegir el equipo con cuidado.",
+      "profileTypes": ["IRRIGATION"],
+      "tags": ["LOW", "HIGH", "ACTION"],
+      "keywords": "equipos riego goteros aspersores daño obstrucción materiales"
+    },
+    {
+      "id": "fao-sprinkler-acid",
+      "sourceId": "fao-ipd29",
+      "section": "5.3 Scale deposits",
+      "url": "https://www.fao.org/4/t0234e/T0234E06.htm",
+      "quote": "As with any acid material, the low pH may cause damage to pipelines, sprinklers and other equipment, and careful choice of resistant materials will be necessary or pH must be carefully controlled. A pH not less than pH 6.5 seems to be safe for sprinklers.",
+      "summaryEs": "Al acidificar el agua, un pH bajo puede dañar tuberías y aspersores; hay que usar materiales resistentes o controlar bien el pH. Un pH no menor de 6.5 parece seguro para aspersores.",
+      "profileTypes": ["IRRIGATION"],
+      "tags": ["LOW", "ACTION"],
+      "phMin": 6.5,
+      "keywords": "aspersores acidificar ácido tuberías corrosión materiales resistentes"
+    },
+    {
+      "id": "fao-table1",
+      "sourceId": "fao-ipd29",
+      "section": "Table 1. Guidelines for interpretations of water quality for irrigation",
+      "url": "https://www.fao.org/4/t0234e/T0234E01.htm",
+      "quote": "pH Normal Range 6.5 – 8.4",
+      "summaryEs": "En la tabla de interpretación de la FAO el pH del agua de riego tiene un rango normal de 6.5 a 8.4.",
+      "profileTypes": ["IRRIGATION"],
+      "tags": ["RANGE"],
+      "phMin": 6.5,
+      "phMax": 8.4,
+      "keywords": "tabla interpretación rango normal riego"
+    },
+    {
+      "id": "fao-table2",
+      "sourceId": "fao-ipd29",
+      "section": "Table 2. Laboratory determinations needed to evaluate common irrigation water quality problems",
+      "url": "https://www.fao.org/4/t0234e/T0234E01.htm",
+      "quote": "Acid/Basicity pH 1–14 6.0 – 8.5",
+      "summaryEs": "En la tabla de determinaciones de laboratorio de la FAO, el rango usual de pH en el agua de riego es 6.0-8.5 (en una escala de 1 a 14).",
+      "profileTypes": ["IRRIGATION"],
+      "tags": ["RANGE", "LAB"],
+      "phMin": 6.0,
+      "phMax": 8.5,
+      "keywords": "rango usual laboratorio determinaciones tabla riego"
+    }
+  ]
+}
