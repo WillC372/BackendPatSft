@@ -17,21 +17,21 @@ public final class SubmitReportSchema {
     public static Map<String, Object> parameters() {
         Map<String, Object> text = Map.of("type", "string");
         Map<String, Object> properties = new LinkedHashMap<>();
-        properties.put("title", Map.of("type", "string", "description", "Título breve del informe"));
-        properties.put("executiveSummary", Map.of("type", "string", "description", "Resumen ejecutivo de 3 a 5 frases que responde al objetivo"));
-        properties.put("keyMetrics", Map.of("type", "array", "description", "Entre 2 y 6 cifras clave", "items", Map.of("type", "object",
+        properties.put("title", Map.of("type", "string", "description", "Short title of the report, in Spanish"));
+        properties.put("executiveSummary", Map.of("type", "string", "description", "Executive summary of 3 to 5 sentences that answers the goal, in Spanish"));
+        properties.put("keyMetrics", Map.of("type", "array", "description", "Between 2 and 6 key figures", "items", Map.of("type", "object",
             "properties", Map.of("label", text, "value", text), "required", List.of("label", "value"))));
-        properties.put("sections", Map.of("type", "array", "description", "Entre 2 y 7 secciones", "items", Map.of("type", "object",
+        properties.put("sections", Map.of("type", "array", "description", "Between 2 and 7 sections", "items", Map.of("type", "object",
             "properties", Map.of("heading", text, "body", text, "chart", Map.of("type", "string",
-                "description", "Gráfica que acompaña la sección", "enum",
+                "description", "Chart that goes with the section", "enum",
                 Arrays.stream(AgentReport.ChartKind.values()).map(Enum::name).toList())),
             "required", List.of("heading", "body", "chart"))));
-        properties.put("recommendations", Map.of("type", "array", "description", "Entre 1 y 6 acciones", "items", Map.of("type", "object",
+        properties.put("recommendations", Map.of("type", "array", "description", "Between 1 and 6 actions", "items", Map.of("type", "object",
             "properties", Map.of("action", text, "priority", Map.of("type", "integer", "minimum", 1, "maximum", 3), "rationale", text),
             "required", List.of("action", "priority", "rationale"))));
-        properties.put("limitations", Map.of("type", "array", "items", text, "description", "Límites de los datos o del análisis"));
+        properties.put("limitations", Map.of("type", "array", "items", text, "description", "Limits of the data or of the analysis"));
         properties.put("citedSourceIds", Map.of("type", "array", "items", text, "description",
-            "Ids de fragmentos devueltos por search_guidelines en los que se apoya el informe. Vacío si no usaste normas."));
+            "Ids of fragments returned by search_guidelines that the report relies on. Empty if you used no guidelines."));
         return Map.of("type", "object", "properties", properties, "required", List.copyOf(properties.keySet()));
     }
 }

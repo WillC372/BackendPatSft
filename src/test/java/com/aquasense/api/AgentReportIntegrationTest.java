@@ -107,7 +107,7 @@ class AgentReportIntegrationTest {
         assertThat(result.path("verification").path("checked").asInt()).isEqualTo(5);
         assertThat(result.path("verification").path("verified").asInt()).isEqualTo(5);
         assertThat(SERVER.requests().get(0)).contains("\"tool_choice\":\"required\"").contains("submit_report");
-        assertThat(SERVER.requests().get(1)).contains("\"role\":\"tool\"").contains("rangoIdeal");
+        assertThat(SERVER.requests().get(1)).contains("\"role\":\"tool\"").contains("idealRange");
 
         long id = result.path("id").asLong();
         mvc.perform(get("/api/v1/intelligence/agent-reports/" + id).header("Authorization", "Bearer " + token))
