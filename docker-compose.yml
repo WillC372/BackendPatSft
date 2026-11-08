@@ -1,0 +1,23 @@
+# Entorno local con PostgreSQL y backend. Uso: docker compose --env-file .env up --build
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: aquasense
+      POSTGRES_USER: ${DB_USER:-aquasense}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - aquasense-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  backend:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/aquasense
+    ports:
+      - "8080:8080"
+volumes:
+  aquasense-data:
