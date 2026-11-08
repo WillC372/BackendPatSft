@@ -25,8 +25,8 @@ public class DeepForecastTool implements AgentTool {
 
     @Override
     public String description() {
-        return "Predicción del pH para las próximas 12 horas con una red neuronal LSTM entrenada con el historial del usuario,"
-            + " comparada con referencias simples en datos no vistos, más la alerta anticipada. Si no hay datos suficientes lo indica.";
+        return "pH forecast for the next 12 hours with an LSTM neural network trained on the user's history,"
+            + " compared with simple baselines on unseen data, plus the early warning. If there is not enough data it says so.";
     }
 
     @Override
@@ -38,25 +38,25 @@ public class DeepForecastTool implements AgentTool {
     public Object execute(AgentContext context, JsonNode arguments) {
         DeepForecastResponse r = service.forecast(context.userId(), false);
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("entrenado", r.trained());
+        result.put("trained", r.trained());
         if (!r.trained()) {
-            result.put("motivo", r.reason());
+            result.put("reason", r.reason());
             return result;
         }
-        result.put("modeloUsado", r.evaluation().chosenLabel());
-        result.put("mejoraFrenteReferenciaPct", r.evaluation().skillPercent());
-        result.put("erroresMediosPh", r.evaluation().models().stream()
+        result.put("modelUsed", r.evaluation().chosenLabel());
+        result.put("improvementVsBaselinePct", r.evaluation().skillPercent());
+        result.put("meanPhErrors", r.evaluation().models().stream()
             .collect(java.util.stream.Collectors.toMap(DeepForecastResponse.ModelScore::label, DeepForecastResponse.ModelScore::mae,
                 (a, b) -> a, LinkedHashMap::new)));
         if (r.forecast() != null) {
-            result.put("ultimoPh", r.forecast().lastPh());
-            result.put("prediccion", r.forecast().points().stream().map(p -> Map.of("horas", p.hoursAhead(), "ph", p.chosen(),
-                "minimo", p.lower(), "maximo", p.upper())).toList());
+            result.put("lastPh", r.forecast().lastPh());
+            result.put("forecast", r.forecast().points().stream().map(p -> Map.of("hours", p.hoursAhead(), "ph", p.chosen(),
+                "min", p.lower(), "max", p.upper())).toList());
         }
         if (r.alert() != null) {
-            result.put("alerta", r.alert().message());
+            result.put("alert", r.alert().message());
         }
-        result.put("explicacion", r.explanation());
+        result.put("explanation", r.explanation());
         return result;
     }
 
@@ -68,6 +68,6 @@ public class DeepForecastTool implements AgentTool {
     @Override
     public String summarize(Object result) {
         Map<?, ?> map = (Map<?, ?>) result;
-        return Boolean.TRUE.equals(map.get("entrenado")) ? "Modelo usado: " + map.get("modeloUsado") : "Sin datos suficientes";
+        return Boolean.TRUE.equals(map.get("trained")) ? "Modelo usado: " + map.get("modelUsed") : "Sin datos suficientes";
     }
 }

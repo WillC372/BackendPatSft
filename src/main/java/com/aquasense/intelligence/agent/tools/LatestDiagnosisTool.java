@@ -24,7 +24,7 @@ public class LatestDiagnosisTool implements AgentTool {
 
     @Override
     public String description() {
-        return "Devuelve el último diagnóstico guardado (riesgo, resumen, acciones y fecha), si existe.";
+        return "Returns the last stored diagnosis (risk, summary, actions and date), if any.";
     }
 
     @Override
@@ -36,14 +36,14 @@ public class LatestDiagnosisTool implements AgentTool {
     public Object execute(AgentContext context, JsonNode arguments) {
         return diagnosisService.latest(context.userId()).<Object>map(d -> {
             Map<String, Object> result = new LinkedHashMap<>();
-            result.put("existe", true);
-            result.put("fecha", AgentFormats.DATE.format(d.createdAt()));
-            result.put("riesgo", d.riskLabel());
-            result.put("resumen", d.summary());
-            result.put("acciones", d.actions().stream().map(a -> a.action()).toList());
-            result.put("origen", d.source());
+            result.put("exists", true);
+            result.put("date", AgentFormats.DATE.format(d.createdAt()));
+            result.put("risk", d.riskLabel());
+            result.put("summary", d.summary());
+            result.put("actions", d.actions().stream().map(a -> a.action()).toList());
+            result.put("origin", d.source());
             return result;
-        }).orElse(Map.of("existe", false));
+        }).orElse(Map.of("exists", false));
     }
 
     @Override
@@ -54,6 +54,6 @@ public class LatestDiagnosisTool implements AgentTool {
     @Override
     public String summarize(Object result) {
         Map<?, ?> map = (Map<?, ?>) result;
-        return Boolean.TRUE.equals(map.get("existe")) ? "riesgo " + map.get("riesgo") + " (" + map.get("fecha") + ")" : "sin diagnósticos";
+        return Boolean.TRUE.equals(map.get("exists")) ? "riesgo " + map.get("risk") + " (" + map.get("date") + ")" : "sin diagnósticos";
     }
 }

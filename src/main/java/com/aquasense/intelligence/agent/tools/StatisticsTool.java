@@ -33,13 +33,13 @@ public class StatisticsTool implements AgentTool {
 
     @Override
     public String description() {
-        return "Calcula estadísticas del pH del periodo (promedio, mínimo, máximo, desviación, pendiente por día, tendencia), "
-            + "la comparación con el periodo anterior de igual duración, la distribución por estado y por origen.";
+        return "Computes pH statistics for the period (mean, min, max, deviation, slope per day, trend), "
+            + "the comparison with the previous period of the same length and the distribution by status and by origin.";
     }
 
     @Override
     public Map<String, Object> parameters() {
-        return Map.of("type", "object", "properties", Map.of("days", AgentTool.intParam("Duración del periodo en días", 1, 365)),
+        return Map.of("type", "object", "properties", Map.of("days", AgentTool.intParam("Length of the period in days", 1, 365)),
             "required", List.of("days"));
     }
 
@@ -52,23 +52,23 @@ public class StatisticsTool implements AgentTool {
             now.minus(Duration.ofDays(days)));
         TrendResult t = trendAnalyzer.analyze(current, previous);
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("dias", days);
-        result.put("mediciones", t.count());
-        result.put("datosSuficientes", t.enoughData());
-        result.put("mensaje", t.message());
+        result.put("days", days);
+        result.put("measurements", t.count());
+        result.put("enoughData", t.enoughData());
+        result.put("message", t.message());
         if (t.enoughData()) {
-            result.put("promedio", t.mean());
-            result.put("minimo", t.min());
-            result.put("maximo", t.max());
-            result.put("desviacion", t.stdDev());
-            result.put("pendientePhPorDia", t.slopePerDay());
-            result.put("tendencia", t.directionLabel());
-            result.put("promedioPeriodoAnterior", t.previousMean());
-            result.put("cambioVsPeriodoAnterior", t.changeVsPrevious());
+            result.put("mean", t.mean());
+            result.put("min", t.min());
+            result.put("max", t.max());
+            result.put("stdDev", t.stdDev());
+            result.put("phSlopePerDay", t.slopePerDay());
+            result.put("trend", t.directionLabel());
+            result.put("previousPeriodMean", t.previousMean());
+            result.put("changeVsPreviousPeriod", t.changeVsPrevious());
         }
-        result.put("medicionesPeriodoAnterior", previous.size());
-        result.put("porEstado", t.statusDistribution());
-        result.put("porOrigen", current.stream().collect(Collectors.groupingBy(m -> m.getSource().name(), Collectors.counting())));
+        result.put("previousPeriodMeasurements", previous.size());
+        result.put("byStatus", t.statusDistribution());
+        result.put("byOrigin", current.stream().collect(Collectors.groupingBy(m -> m.getSource().name(), Collectors.counting())));
         return result;
     }
 
@@ -80,8 +80,8 @@ public class StatisticsTool implements AgentTool {
     @Override
     public String summarize(Object result) {
         Map<?, ?> map = (Map<?, ?>) result;
-        return Boolean.TRUE.equals(map.get("datosSuficientes"))
-            ? "promedio " + map.get("promedio") + ", tendencia " + String.valueOf(map.get("tendencia")).toLowerCase()
-            : map.get("mediciones") + " mediciones (insuficientes para tendencia)";
+        return Boolean.TRUE.equals(map.get("enoughData"))
+            ? "promedio " + map.get("mean") + ", tendencia " + String.valueOf(map.get("trend")).toLowerCase()
+            : map.get("measurements") + " mediciones (insuficientes para tendencia)";
     }
 }

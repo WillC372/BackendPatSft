@@ -33,10 +33,10 @@ class ReportAgentTest {
         public Map<String, Object> parameters() { return Map.of("type", "object", "properties", Map.of()); }
         public Object execute(AgentContext context, JsonNode arguments) {
             usersSeenByTools.add(context.userId());
-            return Map.of("promedio", 7.17, "minimo", 6.55, "dias", context.clampDays(arguments.path("days").asInt()));
+            return Map.of("mean", 7.17, "min", 6.55, "days", context.clampDays(arguments.path("days").asInt()));
         }
         public String label(JsonNode arguments) { return "Calculó estadísticas"; }
-        public String summarize(Object result) { return "promedio 7.17"; }
+        public String summarize(Object result) { return "mean 7.17"; }
     };
 
     private String call(String id, String name, String args) {

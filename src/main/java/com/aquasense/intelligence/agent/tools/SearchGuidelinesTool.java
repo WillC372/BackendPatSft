@@ -39,15 +39,15 @@ public class SearchGuidelinesTool implements AgentTool {
 
     @Override
     public String description() {
-        return "Busca fragmentos literales de normas y guías oficiales (EPA, OMS, CDC, FAO) aplicables al perfil de agua activo. "
-            + "Úsala para respaldar recomendaciones o rangos con una fuente. Devuelve ids que puedes citar en citedSourceIds.";
+        return "Searches literal fragments of official guidelines (EPA, WHO, CDC, FAO) that apply to the active water profile. "
+            + "Use it to back recommendations or ranges with a source. It returns ids you can cite in citedSourceIds.";
     }
 
     @Override
     public Map<String, Object> parameters() {
         return Map.of("type", "object",
             "properties", Map.of("query", Map.of("type", "string",
-                "description", "Qué buscar, en español. Ejemplos: \"rango recomendado\", \"pH bajo corrosión\", \"frecuencia de medición\"")),
+                "description", "What to search for, in Spanish. Examples: \"rango recomendado\", \"pH bajo corrosión\", \"frecuencia de medición\"")),
             "required", List.of("query"));
     }
 
@@ -60,19 +60,19 @@ public class SearchGuidelinesTool implements AgentTool {
         WaterProfile profile = profileService.activeProfile(context.userId());
         List<Citation> found = retriever.search(query.isEmpty() ? "rango recomendado" : query, profile.getType(), null, null, LIMIT);
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("perfil", profile.getType().label());
+        result.put("profile", profile.getType().label());
         if (found.isEmpty()) {
-            result.put("cobertura", retriever.coverage(profile.getType()));
+            result.put("coverage", retriever.coverage(profile.getType()));
         }
-        result.put("fragmentos", found.stream().map(c -> {
+        result.put("fragments", found.stream().map(c -> {
             Map<String, Object> row = new LinkedHashMap<>();
             row.put("id", c.id());
-            row.put("organizacion", c.organization());
-            row.put("documento", c.title());
-            row.put("seccion", c.section());
-            row.put("citaLiteral", c.quote());
-            row.put("resumen", c.summaryEs());
-            row.put("caracter", c.legalStatus());
+            row.put("organization", c.organization());
+            row.put("document", c.title());
+            row.put("section", c.section());
+            row.put("literalQuote", c.quote());
+            row.put("summary", c.summaryEs());
+            row.put("legalStatus", c.legalStatus());
             return row;
         }).toList());
         return result;
@@ -81,7 +81,7 @@ public class SearchGuidelinesTool implements AgentTool {
     @Override
     public Set<String> citableIds(Object result) {
         Set<String> ids = new LinkedHashSet<>();
-        if (result instanceof Map<?, ?> map && map.get("fragmentos") instanceof List<?> rows) {
+        if (result instanceof Map<?, ?> map && map.get("fragments") instanceof List<?> rows) {
             rows.forEach(r -> ids.add(String.valueOf(((Map<?, ?>) r).get("id"))));
         }
         return ids;

@@ -189,7 +189,7 @@ public class AgentJobService {
                         aiProvider.recordFailure(context.userId(), "AGENT_REPORT", provider.providerName(), provider.modelName(),
                             System.currentTimeMillis() - providerStart, ex.getMessage());
                         job.trace.add(new TraceStep(job.trace.size() + 1, "provider", provider.providerName() + " no pudo terminar",
-                            Map.of("modelo", provider.modelName()), ex.getMessage(), 0, "ERROR"));
+                            Map.of("model", provider.modelName()), ex.getMessage(), 0, "ERROR"));
                     }
                 }
                 if (response == null) {

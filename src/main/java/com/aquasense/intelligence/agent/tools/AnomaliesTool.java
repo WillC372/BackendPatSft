@@ -35,14 +35,14 @@ public class AnomaliesTool implements AgentTool {
 
     @Override
     public String description() {
-        return "Detecta anomalías del periodo con las reglas del sistema: fuera de rango del perfil, cambio brusco "
-            + "(0,5 pH o más en una hora), valor atípico (puntaje z robusto mayor que 3,5) y comportamiento inusual "
-            + "según el modelo de aprendizaje automático del usuario (tipo ML_BEHAVIOR, con explicación de las variables).";
+        return "Detects anomalies in the period with the system rules: outside the profile range, sudden change "
+            + "(0.5 pH or more in one hour), outlier (robust z-score above 3.5) and unusual behavior "
+            + "according to the user's machine learning model (type ML_BEHAVIOR, with an explanation of the variables).";
     }
 
     @Override
     public Map<String, Object> parameters() {
-        return Map.of("type", "object", "properties", Map.of("days", AgentTool.intParam("Duración del periodo en días", 1, 365)),
+        return Map.of("type", "object", "properties", Map.of("days", AgentTool.intParam("Length of the period in days", 1, 365)),
             "required", List.of("days"));
     }
 
@@ -54,11 +54,11 @@ public class AnomaliesTool implements AgentTool {
         List<Anomaly> anomalies = detector.scan(measurements, profileService.activeProfile(context.userId())).stream()
             .sorted(Comparator.comparing(Anomaly::measuredAt).reversed()).limit(15).toList();
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("dias", days);
-        result.put("medicionesAnalizadas", measurements.size());
+        result.put("days", days);
+        result.put("analyzedMeasurements", measurements.size());
         result.put("total", anomalies.size());
-        result.put("anomalias", anomalies.stream().map(a -> Map.of("fecha", AgentFormats.DATE.format(a.measuredAt()),
-            "ph", a.ph(), "tipo", a.title(), "severidad", a.severity().name(), "detalle", a.message())).toList());
+        result.put("anomalies", anomalies.stream().map(a -> Map.of("date", AgentFormats.DATE.format(a.measuredAt()),
+            "ph", a.ph(), "type", a.title(), "severity", a.severity().name(), "detail", a.message())).toList());
         return result;
     }
 

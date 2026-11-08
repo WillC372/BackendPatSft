@@ -30,15 +30,15 @@ public class MeasurementsTool implements AgentTool {
 
     @Override
     public String description() {
-        return "Lista las mediciones de pH más recientes del periodo, en orden cronológico (fecha UTC, pH, estado, origen). "
-            + "Úsala para revisar valores concretos o un día específico.";
+        return "Lists the most recent pH measurements of the period, in chronological order (UTC date, pH, status, origin). "
+            + "Use it to check specific values or a specific day.";
     }
 
     @Override
     public Map<String, Object> parameters() {
         return Map.of("type", "object", "properties", Map.of(
-            "days", AgentTool.intParam("Días hacia atrás desde hoy", 1, 365),
-            "limit", AgentTool.intParam("Máximo de mediciones a devolver (las más recientes)", 1, MAX_ROWS)), "required", List.of("days"));
+            "days", AgentTool.intParam("Days back from today", 1, 365),
+            "limit", AgentTool.intParam("Maximum number of measurements to return (the most recent ones)", 1, MAX_ROWS)), "required", List.of("days"));
     }
 
     @Override
@@ -52,11 +52,11 @@ public class MeasurementsTool implements AgentTool {
                 m.getStatus().label(), m.getSource().name(), m.getTemperatureC()))
             .toList();
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("dias", days);
-        result.put("totalEnPeriodo", all.size());
-        result.put("devueltas", rows.size());
-        result.put("columnas", List.of("fecha", "ph", "estado", "origen", "temperaturaC"));
-        result.put("mediciones", rows);
+        result.put("days", days);
+        result.put("totalInPeriod", all.size());
+        result.put("returned", rows.size());
+        result.put("columns", List.of("date", "ph", "status", "origin", "temperatureC"));
+        result.put("measurements", rows);
         return result;
     }
 
@@ -68,6 +68,6 @@ public class MeasurementsTool implements AgentTool {
     @Override
     public String summarize(Object result) {
         Map<?, ?> map = (Map<?, ?>) result;
-        return map.get("devueltas") + " de " + map.get("totalEnPeriodo") + " mediciones";
+        return map.get("returned") + " de " + map.get("totalInPeriod") + " mediciones";
     }
 }
