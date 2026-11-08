@@ -124,7 +124,7 @@ class AssistantMemoryScenarioCostIntegrationTest {
         assertThat(scenario.path("adjustments").toString()).contains("norma-falsa").contains("crítica");
         assertThat(scenario.path("verification").path("unverified").toString()).contains("4.2");
         assertThat(scenario.path("verification").path("verified").asInt()).isEqualTo(4);
-        assertThat(SERVER.requests().get(2)).contains("factorConcentracionHidrogeno").contains("scenario_explanation");
+        assertThat(SERVER.requests().get(2)).contains("hydrogenConcentrationFactor").contains("scenario_explanation");
 
         // A total provider failure is recorded even if the operation is rolled back.
         SERVER.reply(503, "{\"error\":{}}");

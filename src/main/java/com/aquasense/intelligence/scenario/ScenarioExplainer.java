@@ -48,18 +48,18 @@ import org.springframework.stereotype.Service;
 public class ScenarioExplainer {
 
     static final String SYSTEM_PROMPT = """
-        Eres el motor de escenarios de AquaSense AI, un sistema que monitorea el pH del agua.
-        El usuario quiere saber qué pasaría si el pH de su agua llegara a un valor hipotético. Recibes hechos ya calculados.
-        Responde en español claro, en el JSON indicado:
-        - headline: una frase que resuma el escenario.
-        - explanation: 2 a 4 frases sobre qué significa ese pH para el uso del agua del perfil, comparado con el valor actual.
-        - effects: efectos concretos por área (por ejemplo equipos, salud, cultivos, peces, desinfección, sabor), con severidad.
-        - earlySignals: señales que el usuario podría observar antes de medir (olor, sabor, depósitos, irritación, plantas...).
-        - preventiveActions: acciones seguras para evitar llegar a ese valor; sin dosis químicas exactas.
-        - citedSourceIds: ids de fragmentosNormativos en los que te apoyas. En el texto menciona solo la organización
-          (por ejemplo "según la CDC"), nunca el id.
-        Reglas: usa solo cifras que aparezcan en los hechos; no calcules cifras nuevas. No atribuyas a una norma algo que su
-        fragmento no dice. El pH por sí solo no demuestra potabilidad. Es un escenario hipotético, no una medición.""";
+        You are the scenario engine of AquaSense AI, a system that monitors the pH of water.
+        The user wants to know what would happen if the pH of their water reached a hypothetical value. You receive facts already computed.
+        Answer in clear Spanish, in the JSON given:
+        - headline: one sentence that sums up the scenario.
+        - explanation: 2 to 4 sentences about what that pH means for the water use of the profile, compared with the current value.
+        - effects: concrete effects by area (for example equipment, health, crops, fish, disinfection, taste), with severity.
+        - earlySignals: signs the user could notice before measuring (smell, taste, deposits, irritation, plants...).
+        - preventiveActions: safe actions to avoid reaching that value; no exact chemical doses.
+        - citedSourceIds: ids from guidelineFragments you rely on. In the text mention only the organization
+          (for example "según la CDC"), never the id.
+        Rules: only use figures that appear in the facts; do not compute new figures. Do not attribute to a guideline anything its
+        fragment does not say. pH alone does not prove that water is drinkable. It is a hypothetical scenario, not a measurement.""";
 
     private static final String DISCLAIMER = "Escenario hipotético: no se guarda en el historial ni representa una medición.";
     private static final int MAX_TEXT = 600;
@@ -157,32 +157,32 @@ public class ScenarioExplainer {
     String factsJson(Facts f) {
         Map<String, Object> root = new LinkedHashMap<>();
         WaterProfile p = f.profile();
-        root.put("perfil", Map.of("nombre", p.getName(), "tipo", p.getType().label(),
-            "rangoIdeal", List.of(p.getIdealMin(), p.getIdealMax()), "rangoPrecaucion", List.of(p.getCautionMin(), p.getCautionMax())));
+        root.put("profile", Map.of("name", p.getName(), "type", p.getType().label(),
+            "idealRange", List.of(p.getIdealMin(), p.getIdealMax()), "cautionRange", List.of(p.getCautionMin(), p.getCautionMax())));
         if (f.current() != null) {
-            root.put("actual", Map.of("ph", f.current(), "estado", f.currentClass().status().label()));
-            root.put("cambio", round(f.hypothetical() - f.current(), 2));
-            root.put("factorConcentracionHidrogeno", f.hydrogenFactor());
-            root.put("explicacionFactor", "Concentración de iones H+ del escenario dividida entre la actual (calculada por el sistema).");
+            root.put("current", Map.of("ph", f.current(), "status", f.currentClass().status().label()));
+            root.put("change", round(f.hypothetical() - f.current(), 2));
+            root.put("hydrogenConcentrationFactor", f.hydrogenFactor());
+            root.put("factorExplanation", "H+ ion concentration of the scenario divided by the current one (computed by the system).");
         } else {
-            root.put("actual", "Sin mediciones");
+            root.put("current", "No measurements");
         }
-        root.put("hipotetico", Map.of("ph", f.hypothetical(), "naturaleza", f.hypotheticalClass().nature().label(),
-            "estado", f.hypotheticalClass().status().label(), "explicacion", f.hypotheticalClass().explanation()));
-        root.put("tendencia7Dias", f.trend().enoughData()
-            ? Map.of("pendientePhPorDia", round(f.trend().slopePerDay(), 3), "promedio", round(f.trend().mean(), 2),
-                "direccion", f.trend().directionLabel())
-            : Map.of("suficientesDatos", false));
-        root.put("tiempoParaLlegar", f.timeToReach());
-        root.put("reglasDelPerfil", Map.of("resumen", f.advice().summary(), "causasConocidas", f.advice().possibleCauses(),
-            "acciones", f.advice().actions()));
-        root.put("fragmentosNormativos", f.citations().stream().map(c -> Map.of("id", c.id(), "organizacion", c.organization(),
-            "seccion", c.section(), "citaLiteral", c.quote(), "resumen", c.summaryEs())).toList());
+        root.put("hypothetical", Map.of("ph", f.hypothetical(), "nature", f.hypotheticalClass().nature().label(),
+            "status", f.hypotheticalClass().status().label(), "explanation", f.hypotheticalClass().explanation()));
+        root.put("trend7Days", f.trend().enoughData()
+            ? Map.of("phSlopePerDay", round(f.trend().slopePerDay(), 3), "mean", round(f.trend().mean(), 2),
+                "direction", f.trend().directionLabel())
+            : Map.of("enoughData", false));
+        root.put("timeToReach", f.timeToReach());
+        root.put("profileRules", Map.of("summary", f.advice().summary(), "knownCauses", f.advice().possibleCauses(),
+            "actions", f.advice().actions()));
+        root.put("guidelineFragments", f.citations().stream().map(c -> Map.of("id", c.id(), "organization", c.organization(),
+            "section", c.section(), "literalQuote", c.quote(), "summary", c.summaryEs())).toList());
         if (f.citations().isEmpty()) {
-            root.put("coberturaNormativa", guidelines.coverage(p.getType()));
+            root.put("guidelineCoverage", guidelines.coverage(p.getType()));
         }
         try {
-            return "Hechos del escenario (JSON):\n" + mapper.writeValueAsString(root);
+            return "Scenario facts (JSON):\n" + mapper.writeValueAsString(root);
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException(ex);
         }
