@@ -1,4 +1,4 @@
-# Entorno local con PostgreSQL y backend. Uso: docker compose --env-file .env up --build
+# Local environment with PostgreSQL and the backend. Usage: docker compose --env-file .env up --build
 services:
   db:
     image: postgres:16

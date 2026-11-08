@@ -46,7 +46,7 @@ management:
     health:
       show-details: never
 
-# Documentación interactiva de la API. En producción conviene desactivarla: API_DOCS_ENABLED=false.
+# Interactive API documentation. In production it is better to disable it: API_DOCS_ENABLED=false.
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -68,7 +68,7 @@ aquasense:
     from: ${MAIL_FROM:no-reply@aquasense.local}
     frontend-reset-url: ${FRONTEND_RESET_URL:http://localhost:5500/#/reset-password}
     frontend-admin-verify-url: ${FRONTEND_ADMIN_VERIFY_URL:http://localhost:5500/#/verify-admin}
-    # SOLO DESARROLLO: sin SMTP, escribe el enlace de recuperación en el log. Nunca activarlo en producción.
+    # DEVELOPMENT ONLY: without an email channel, writes the recovery link to the log. Never enable it in production.
     log-reset-links: ${MAIL_LOG_RESET_LINKS:false}
   ai:
     api-key: ${ANTHROPIC_API_KEY:}
@@ -78,7 +78,7 @@ aquasense:
     daily-quota-free: ${AI_DAILY_QUOTA_FREE:20}
     daily-quota-premium: ${AI_DAILY_QUOTA_PREMIUM:200}
     cache-minutes: 10
-    # Cadena de respaldo: se intenta cada proveedor en orden; si todos fallan se usan las reglas propias.
+    # Fallback chain: every provider is tried in order; if all fail, the built-in rules are used.
     providers:
       - id: gemini
         label: Google Gemini
@@ -112,11 +112,11 @@ aquasense:
         timeout-seconds: 45
         vision: true
         tools: false
-  # Precios por millón de tokens (USD) para estimar costos. Con billing FREE el cargo real es 0 (plan gratuito).
-  # Valores de referencia publicados por agregadores de terceros (anotherwrapper.com, pricepertoken.com, morphllm.com),
-  # consultados el 7 nov 2026. NO se verificaron en las páginas oficiales: ai.google.dev/gemini-api/docs/pricing y groq.com/pricing.
-  # Pagos de Premium con PayU. Por defecto, el sandbox con las credenciales públicas de prueba de PayU
-  # (comercio 508029, cuenta 512321 Colombia): no mueve dinero real. Producción: PAYU_TEST=false y credenciales propias.
+  # Prices per million tokens (USD) to estimate costs. With billing FREE the real charge is 0 (free plan).
+  # Reference values published by third-party aggregators (anotherwrapper.com, pricepertoken.com, morphllm.com),
+  # checked on Nov 7, 2026. They were NOT verified on the official pages: ai.google.dev/gemini-api/docs/pricing and groq.com/pricing.
+  # Premium payments with PayU. By default, the sandbox with the public PayU test credentials
+  # (merchant 508029, account 512321 Colombia): it moves no real money. Production: PAYU_TEST=false and your own credentials.
   payments:
     enabled: ${PAYMENTS_ENABLED:true}
     price: ${PREMIUM_PRICE:49900}
@@ -133,7 +133,7 @@ aquasense:
       checkout-url: ${PAYU_CHECKOUT_URL:}
       api-url: ${PAYU_API_URL:}
       test: ${PAYU_TEST:true}
-  # Envío de correo. provider: auto (Mailjet, Brevo o SMTP, el primero configurado), mailjet, brevo, smtp o none.
+  # Email delivery. provider: auto (Mailjet, Brevo or SMTP, the first one configured), mailjet, brevo, smtp or none.
   mail-delivery:
     provider: ${MAIL_PROVIDER:auto}
     sender-name: ${MAIL_SENDER_NAME:AquaSense AI}
