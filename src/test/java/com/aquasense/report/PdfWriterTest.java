@@ -9,7 +9,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 
-/** El generador de PDF: tildes, saltos de línea, paginación y numeración. */
+/** The PDF generator: accents, line breaks, pagination and page numbers. */
 class PdfWriterTest {
 
     @Test
