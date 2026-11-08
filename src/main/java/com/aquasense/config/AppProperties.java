@@ -4,8 +4,8 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuración tipada leida de application.yml y variables de entorno.
- * Spring la crea una sola vez (singleton gestionado por el contenedor).
+ * Typed configuration read from application.yml and environment variables.
+ * Spring creates it only once (singleton managed by the container).
  */
 @ConfigurationProperties(prefix = "aquasense")
 public record AppProperties(Security security, Cors cors, Mail mail, Ai ai, Device device) {
@@ -18,8 +18,8 @@ public record AppProperties(Security security, Cors cors, Mail mail, Ai ai, Devi
     }
 
     /**
-     * {@code logResetLinks}: solo para desarrollo. Si no hay SMTP, permite escribir el enlace de recuperación en el log.
-     * En producción debe quedar en false (valor por defecto): sin SMTP la recuperación responde que no está disponible.
+     * {@code logResetLinks}: development only. Without SMTP, it allows writing the recovery link to the log.
+     * In production it must stay false (the default): without SMTP, recovery responds that it is not available.
      */
     public record Mail(String from, String frontendResetUrl, boolean logResetLinks, String frontendAdminVerifyUrl) {
 
@@ -43,7 +43,7 @@ public record AppProperties(Security security, Cors cors, Mail mail, Ai ai, Devi
     }
 
     /**
-     * Proveedor con API compatible con OpenAI (Gemini, Groq u otro). El orden de la lista es el orden de respaldo.
+     * Provider with an OpenAI-compatible API (Gemini, Groq or another). The list order is the fallback order.
      */
     public record Provider(String id, String label, String baseUrl, String apiKey, String model, int timeoutSeconds,
                            boolean vision, boolean tools) {
