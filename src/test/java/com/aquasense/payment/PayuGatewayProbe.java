@@ -1,6 +1,6 @@
 package com.aquasense.payment;
 
-/** Acceso de prueba al cálculo de firmas de {@link PayuGateway}. */
+/** Test access to the signature computation of {@link PayuGateway}. */
 public final class PayuGatewayProbe {
 
     private PayuGatewayProbe() {

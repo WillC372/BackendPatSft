@@ -36,12 +36,12 @@ class PayuGatewayTest {
         assertThat(PayuGateway.confirmationValue("150.00")).isEqualTo("150.0");
         assertThat(PayuGateway.confirmationValue("150.26")).isEqualTo("150.26");
         assertThat(PayuGateway.confirmationValue("150.20")).isEqualTo("150.2");
-        // Ejemplo "con dos decimales" de la documentación de PayU (su hash coincide con la cadena documentada).
+        // "Two decimals" example from the PayU documentation (its hash matches the documented string).
         Map<String, String> example = Map.of("merchant_id", "508029", "reference_sale", "TestPayU05", "value", "150.26",
             "currency", "USD", "state_pol", "4", "sign", "1d95778a651e11a0ab93c2169a519cd6");
         assertThat(gateway.validConfirmation(example)).isTrue();
-        // Ejemplo "con un decimal": la cadena documentada es ...~150.0~USD~6. El hash impreso en la documentación
-        // (b607a2c2…) no corresponde a esa cadena, así que se comprueba con el MD5 real de la cadena documentada.
+        // "One decimal" example: the documented string is ...~150.0~USD~6. The hash printed in the documentation
+        // (b607a2c2…) does not match that string, so it is checked with the real MD5 of the documented string.
         Map<String, String> oneDecimal = Map.of("merchant_id", "508029", "reference_sale", "TestPayU04", "value", "150.00",
             "currency", "USD", "state_pol", "6", "sign", PayuGateway.md5("4Vj8eK4rloUd272L48hsrarnUA~508029~TestPayU04~150.0~USD~6"));
         assertThat(gateway.validConfirmation(oneDecimal)).isTrue();
