@@ -42,25 +42,25 @@ import org.springframework.stereotype.Service;
 public class DiagnosisService {
 
     static final String SYSTEM_PROMPT = """
-        Eres el motor de diagnóstico de AquaSense AI, un sistema que monitorea el pH del agua.
-        Recibes hechos ya calculados por el sistema (mediciones, estadística, anomalías, tendencia, predicción y reglas del perfil).
-        Tu tarea es producir un diagnóstico técnico en español, en el formato JSON indicado. Reglas:
-        - Usa solo los hechos entregados. No inventes mediciones, fechas, valores ni sensores que no existan.
-        - Cada hallazgo debe citar en "evidence" valores o fechas concretas de los hechos, con el formato de fecha "2026-11-04 19:52 UTC".
-        - riskLevel: LOW si todo está en rango y estable; MODERATE si hay precaución, tendencia que se aleja del rango o anomalías leves;
-          HIGH si hay valores fuera de rango o una tendencia clara hacia el estado crítico; CRITICAL si la última medición es crítica.
-        - probableCauses: causas plausibles para el tipo de agua del perfil, con su probabilidad y la evidencia que las sugiere.
-        - actions: acciones concretas y seguras ordenadas por prioridad (1 = primero) con un plazo ("Hoy", "En 24 h", "Esta semana").
-          No indiques dosis químicas exactas; indica dosis pequeñas, seguir al fabricante y volver a medir.
-        - dataGaps: qué información falta para un diagnóstico más confiable (más mediciones, temperatura, alcalinidad, cloro, etc.).
-        - confidence entre 0 y 1: baja si hay pocas mediciones o datos simulados.
-        - nextMeasurementHours: cuándo volver a medir según el riesgo.
-        - El pH por sí solo no demuestra que el agua sea potable; no afirmes potabilidad.
-        - Si hay mediciones simuladas, dilo en un hallazgo: no representan agua real.
-        - fragmentosNormativos contiene citas literales de normas oficiales aplicables al perfil. Si un hallazgo o una acción
-          se apoya en uno, menciona la organización en el texto (por ejemplo "según la CDC") e incluye su id en citedSourceIds.
-          Cita solo ids de esa lista y no atribuyas a una norma algo que su fragmento no dice.
-          Si no hay fragmentos, deja citedSourceIds vacío y no menciones normas.""";
+        You are the diagnosis engine of AquaSense AI, a system that monitors the pH of water.
+        You receive facts already computed by the system (measurements, statistics, anomalies, trend, forecast and profile rules).
+        Your task is to produce a technical diagnosis in the JSON format given. Write every text field in Spanish. Rules:
+        - Use only the provided facts. Do not invent measurements, dates, values or sensors that do not exist.
+        - Every finding must cite in "evidence" concrete values or dates from the facts, with the date format "2026-11-04 19:52 UTC".
+        - riskLevel: LOW if everything is in range and stable; MODERATE if there is caution, a trend moving away from the range or mild anomalies;
+          HIGH if there are out-of-range values or a clear trend toward the critical state; CRITICAL if the last measurement is critical.
+        - probableCauses: plausible causes for the water type of the profile, with their likelihood and the evidence that suggests them.
+        - actions: concrete and safe actions ordered by priority (1 = first) with a timeframe ("Hoy", "En 24 h", "Esta semana").
+          Do not give exact chemical doses; suggest small doses, following the manufacturer and measuring again.
+        - dataGaps: what information is missing for a more reliable diagnosis (more measurements, temperature, alkalinity, chlorine, etc.).
+        - confidence between 0 and 1: low if there are few measurements or simulated data.
+        - nextMeasurementHours: when to measure again according to the risk.
+        - pH alone does not prove that water is drinkable; do not claim it is drinkable.
+        - If there are simulated measurements, say so in a finding: they do not represent real water.
+        - guidelineFragments contains literal quotes of official guidelines that apply to the profile. If a finding or an action
+          relies on one, mention the organization in the text (for example "según la CDC") and include its id in citedSourceIds.
+          Only cite ids from that list and do not attribute to a guideline anything its fragment does not say.
+          If there are no fragments, leave citedSourceIds empty and do not mention guidelines.""";
 
     private static final int DIAGNOSIS_SOURCES = 4;
 
@@ -191,75 +191,75 @@ public class DiagnosisService {
     String factsJson(DiagnosisFacts facts) {
         Map<String, Object> root = new LinkedHashMap<>();
         WaterProfile p = facts.profile();
-        root.put("perfil", Map.of("nombre", p.getName(), "tipo", p.getType().label(),
-            "rangoIdeal", List.of(p.getIdealMin(), p.getIdealMax()),
-            "rangoPrecaucion", List.of(p.getCautionMin(), p.getCautionMax()),
-            "descripción", p.getDescription()));
-        root.put("periodoDias", facts.periodDays());
-        root.put("totalMediciones", facts.count());
-        root.put("origen", Map.of("medidor", facts.realCount(), "manual", facts.manualCount(), "simulador", facts.simulatedCount(),
-            "fotoConIa", count(facts.measurements(), MeasurementSource.PHOTO)));
+        root.put("profile", Map.of("name", p.getName(), "type", p.getType().label(),
+            "idealRange", List.of(p.getIdealMin(), p.getIdealMax()),
+            "cautionRange", List.of(p.getCautionMin(), p.getCautionMax()),
+            "description", p.getDescription()));
+        root.put("periodDays", facts.periodDays());
+        root.put("totalMeasurements", facts.count());
+        root.put("origin", Map.of("meter", facts.realCount(), "manual", facts.manualCount(), "simulator", facts.simulatedCount(),
+            "aiPhoto", count(facts.measurements(), MeasurementSource.PHOTO)));
         List<Measurement> recent = facts.measurements().subList(Math.max(0, facts.count() - 15), facts.count());
-        root.put("ultimasMediciones", recent.stream().map(m -> {
+        root.put("lastMeasurements", recent.stream().map(m -> {
             Map<String, Object> row = new LinkedHashMap<>();
-            row.put("fechaUtc", DATE.format(m.getMeasuredAt()));
+            row.put("dateUtc", DATE.format(m.getMeasuredAt()));
             row.put("ph", m.getPh());
-            row.put("estado", m.getStatus().label());
-            row.put("origen", m.getSource().name());
+            row.put("status", m.getStatus().label());
+            row.put("origin", m.getSource().name());
             if (m.getTemperatureC() != null) {
-                row.put("temperaturaC", m.getTemperatureC());
+                row.put("temperatureC", m.getTemperatureC());
             }
             return row;
         }).toList());
         if (facts.latest() != null) {
-            root.put("clasificacionUltima", Map.of("ph", facts.latest().ph(), "naturaleza", facts.latest().nature().label(),
-                "estado", facts.latest().status().label(), "explicacion", facts.latest().explanation()));
+            root.put("lastClassification", Map.of("ph", facts.latest().ph(), "nature", facts.latest().nature().label(),
+                "status", facts.latest().status().label(), "explanation", facts.latest().explanation()));
         }
         TrendResult t = facts.trend();
         Map<String, Object> trend = new LinkedHashMap<>();
-        trend.put("suficientesDatos", t.enoughData());
-        trend.put("mensaje", t.message());
+        trend.put("enoughData", t.enoughData());
+        trend.put("message", t.message());
         if (t.enoughData()) {
-            trend.put("promedio", t.mean());
-            trend.put("mínimo", t.min());
-            trend.put("máximo", t.max());
-            trend.put("desviacion", t.stdDev());
-            trend.put("pendientePhPorDia", t.slopePerDay());
-            trend.put("dirección", t.directionLabel());
-            trend.put("cambioVsPeriodoAnterior", t.changeVsPrevious());
+            trend.put("mean", t.mean());
+            trend.put("min", t.min());
+            trend.put("max", t.max());
+            trend.put("stdDev", t.stdDev());
+            trend.put("phSlopePerDay", t.slopePerDay());
+            trend.put("direction", t.directionLabel());
+            trend.put("changeVsPreviousPeriod", t.changeVsPrevious());
         }
-        root.put("tendencia", trend);
-        root.put("anomalías", facts.anomalies().stream().limit(8).map(a -> Map.of("tipo", a.title(),
-            "severidad", a.severity().name(), "fechaUtc", DATE.format(a.measuredAt()), "ph", a.ph(), "detalle", a.message())).toList());
+        root.put("trend", trend);
+        root.put("anomalies", facts.anomalies().stream().limit(8).map(a -> Map.of("type", a.title(),
+            "severity", a.severity().name(), "dateUtc", DATE.format(a.measuredAt()), "ph", a.ph(), "detail", a.message())).toList());
         Forecast f = facts.forecast();
-        root.put("predicción", f.available()
-            ? Map.of("disponible", true, "horizonteDias", f.horizonDays(), "método", f.method(),
-                "puntos", f.points().stream().map(pt -> Map.of("fechaUtc", DATE.format(pt.at()), "ph", pt.predicted(),
-                    "minimo95", pt.lower(), "maximo95", pt.upper())).toList())
-            : Map.of("disponible", false, "motivo", f.reason()));
-        root.put("reglasDelPerfil", Map.of("resumen", facts.baseAdvice().summary(),
-            "causasConocidas", facts.baseAdvice().possibleCauses(), "accionesRecomendadas", facts.baseAdvice().actions()));
+        root.put("forecast", f.available()
+            ? Map.of("available", true, "horizonDays", f.horizonDays(), "method", f.method(),
+                "points", f.points().stream().map(pt -> Map.of("dateUtc", DATE.format(pt.at()), "ph", pt.predicted(),
+                    "min95", pt.lower(), "max95", pt.upper())).toList())
+            : Map.of("available", false, "reason", f.reason()));
+        root.put("profileRules", Map.of("summary", facts.baseAdvice().summary(),
+            "knownCauses", facts.baseAdvice().possibleCauses(), "recommendedActions", facts.baseAdvice().actions()));
         if (facts.guidelines().isEmpty()) {
-            root.put("coberturaNormativa", guidelines.coverage(p.getType()));
+            root.put("guidelineCoverage", guidelines.coverage(p.getType()));
         }
         try {
             if (facts.measurements().isEmpty()) {
-                throw new IllegalStateException("sin mediciones");
+                throw new IllegalStateException("no measurements");
             }
             var neural = deepForecast.forecast(facts.measurements().get(0).getUserId(), false);
             if (neural.trained() && neural.forecast() != null) {
-                root.put("prediccionRedNeuronal", Map.of("modeloUsado", neural.evaluation().chosenLabel(),
-                    "mejoraFrenteReferenciaPct", neural.evaluation().skillPercent(),
-                    "prediccion12h", neural.forecast().points().get(neural.forecast().points().size() - 1).chosen(),
-                    "alerta", neural.alert() == null ? "" : neural.alert().message()));
+                root.put("neuralNetworkForecast", Map.of("modelUsed", neural.evaluation().chosenLabel(),
+                    "improvementVsBaselinePct", neural.evaluation().skillPercent(),
+                    "forecast12h", neural.forecast().points().get(neural.forecast().points().size() - 1).chosen(),
+                    "alert", neural.alert() == null ? "" : neural.alert().message()));
             }
         } catch (RuntimeException ex) {
-            root.put("prediccionRedNeuronal", Map.of("disponible", false));
+            root.put("neuralNetworkForecast", Map.of("available", false));
         }
-        root.put("fragmentosNormativos", facts.guidelines().stream().map(c -> Map.of("id", c.id(),
-            "organizacion", c.organization(), "seccion", c.section(), "citaLiteral", c.quote(), "resumen", c.summaryEs())).toList());
+        root.put("guidelineFragments", facts.guidelines().stream().map(c -> Map.of("id", c.id(),
+            "organization", c.organization(), "section", c.section(), "literalQuote", c.quote(), "summary", c.summaryEs())).toList());
         try {
-            return "Hechos calculados por AquaSense (JSON):\n" + mapper.writeValueAsString(root);
+            return "Facts computed by AquaSense (JSON):\n" + mapper.writeValueAsString(root);
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException(ex);
         }

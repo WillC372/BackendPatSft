@@ -95,7 +95,7 @@ class DiagnosisIntegrationTest {
         assertThat(result.path("provider").asText()).isEqualTo("Groq");
         assertThat(result.path("confidence").asDouble()).isEqualTo(0.4);
         assertThat(result.path("adjustments").size()).isGreaterThanOrEqualTo(1);
-        assertThat(BACKUP.requests().get(0)).contains("ultimasMediciones").contains("json_schema").doesNotContain("@aquasense.test");
+        assertThat(BACKUP.requests().get(0)).contains("lastMeasurements").contains("json_schema").doesNotContain("@aquasense.test");
 
         JsonNode latest = json(mvc.perform(get("/api/v1/intelligence/diagnosis/latest").header("Authorization", "Bearer " + token))
             .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
