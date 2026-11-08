@@ -22,7 +22,7 @@ public interface MeasurementRepository extends JpaRepository<Measurement, Long>,
 
     long countByMeasuredAtAfter(Instant after);
 
-    /** Mediciones por usuario para una página de la lista de administración (una consulta, no una por fila). */
+    /** Measurements per user for one page of the administration list (one query, not one per row). */
     @org.springframework.data.jpa.repository.Query("select m.userId, count(m) from Measurement m where m.userId in :userIds group by m.userId")
     List<Object[]> countByUserIds(java.util.Collection<Long> userIds);
 

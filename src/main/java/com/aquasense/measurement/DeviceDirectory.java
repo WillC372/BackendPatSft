@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Puerto que el modulo de dispositivos implementa para resolver nombres de dispositivos.
- * Evita que el modulo de mediciones dependa de las clases internas de hardware.
+ * Port the device module implements to resolve device names.
+ * It keeps the measurement module from depending on the internal hardware classes.
  */
 public interface DeviceDirectory {
 

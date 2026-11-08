@@ -1,8 +1,8 @@
 package com.aquasense.measurement.validation;
 
 /**
- * Chain of Responsibility: cada eslabon revisa un aspecto de la lectura y pasa el control al siguiente.
- * Un eslabon puede rechazar la lectura (se detiene la cadena) o solo agregar una observacion.
+ * Chain of Responsibility: every link checks one aspect of the reading and passes control to the next one.
+ * A link can reject the reading (the chain stops) or just add a note.
  */
 public abstract class ReadingValidator {
 

@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * Sujeto del patron Observer. Spring inyecta todos los beans que implementan
- * {@link MeasurementListener}; agregar un nuevo observador no requiere modificar esta clase.
+ * Subject of the Observer pattern. Spring injects every bean that implements
+ * {@link MeasurementListener}; adding a new observer does not require changing this class.
  */
 @Component
 public class MeasurementPublisher {

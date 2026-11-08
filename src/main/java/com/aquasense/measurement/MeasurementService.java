@@ -38,7 +38,7 @@ import static com.aquasense.measurement.MeasurementSpecifications.ownedBy;
 import static com.aquasense.measurement.MeasurementSpecifications.withStatus;
 
 /**
- * Service Layer de mediciones: valida, clasifica, persiste y notifica a los observadores.
+ * Measurement Service Layer: validates, classifies, persists and notifies the observers.
  */
 @Service
 public class MeasurementService {

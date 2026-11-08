@@ -8,8 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 /**
- * Iterator: recorre el historial de un usuario pagina por pagina.
- * La exportación CSV y los informes procesan miles de mediciones sin cargarlas todas en memoria.
+ * Iterator: walks a user's history page by page.
+ * The CSV export and the reports process thousands of measurements without loading them all in memory.
  */
 public class MeasurementIterator implements Iterator<Measurement> {
 

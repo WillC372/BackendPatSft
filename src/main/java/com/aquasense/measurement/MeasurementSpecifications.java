@@ -5,8 +5,8 @@ import java.time.Instant;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * Specification: filtros del historial combinables (propietario, periodo, origen, estado)
- * sin escribir una consulta distinta por cada combinacion.
+ * Specification: combinable history filters (owner, period, source, status)
+ * without writing a different query for every combination.
  */
 public final class MeasurementSpecifications {
 
