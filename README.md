@@ -44,6 +44,15 @@ hardware/Esp32PhSensor/    Firmware de referencia para ESP32 (no probado con har
 docs/                        Documentación técnica
 ```
 
+## Convenciones de código
+
+- **Inglés:** nombres de clases, métodos y variables, comentarios y Javadoc, mensajes del log, claves de los datos que recibe la IA y las instrucciones (prompts) de cada capa de IA. Los prompts piden de forma explícita que la IA responda en español.
+- **Español:** solo lo que ve el usuario: mensajes de error de la API, textos de informes, PDF y correos, etiquetas y resúmenes de las normas.
+- **Nombres de archivo en inglés y en PascalCase**, como `MeasurementService.java`, `docs/DesignPatterns.md` o `knowledge/Guidelines.json`. Las migraciones conservan el prefijo que exige Flyway (`V1__CreateSchema.sql`).
+- **Excepciones por convención de las herramientas:** `README.md`, `pom.xml`, `application.yml`, `Dockerfile`, `docker-compose.yml`, `.gitignore` y `.env.example`. Las carpetas de paquetes Java van en minúsculas, como exige Java.
+
+Una base de datos creada antes del cambio de nombre de las migraciones necesita `flyway repair` (o actualizar `flyway_schema_history`) para registrar los nombres y sumas de verificación nuevos; una base nueva no necesita nada.
+
 ## Tecnologías
 
 | Componente | Tecnología |

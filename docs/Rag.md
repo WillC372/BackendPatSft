@@ -48,7 +48,7 @@ flowchart LR
    Solo devuelve fragmentos del tipo de perfil activo, así una norma de piscinas nunca respalda un consejo de riego. Un perfil personalizado usa los fragmentos generales de la EPA y la OMS.
 3. **Generación con citas.**
    - **Recomendaciones:** no usan IA; muestran los 3 fragmentos mejor clasificados.
-   - **Diagnóstico:** los fragmentos entran en los hechos como `fragmentosNormativos`. El esquema JSON de cada solicitud limita `citedSourceIds` a un `enum` con esos ids. `DiagnosisValidator` vuelve a comprobarlos y registra cada cita descartada en las salvaguardas. El diagnóstico por reglas cita los 3 primeros.
+   - **Diagnóstico:** los fragmentos entran en los hechos como `guidelineFragments`. El esquema JSON de cada solicitud limita `citedSourceIds` a un `enum` con esos ids. `DiagnosisValidator` vuelve a comprobarlos y registra cada cita descartada en las salvaguardas. El diagnóstico por reglas cita los 3 primeros.
    - **Chat:** recibe hasta 4 fragmentos y debe citarlos como `[id]`. `CitationReferences` conserva solo los ids entregados y borra del texto cualquier otro.
    - **Agente:** usa la herramienta `search_guidelines`; el tipo de perfil lo fija el servidor. En `submit_report` solo se conservan los ids que esa herramienta devolvió en la misma ejecución; el resto se informa en `discardedCitations`.
 

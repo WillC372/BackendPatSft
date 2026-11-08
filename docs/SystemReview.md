@@ -37,5 +37,5 @@ Alcance: seguridad del backend y del frontend, robustez, recorrido automático d
   - `MAIL_LOG_RESET_LINKS=false` (ya es el valor por defecto).
   - `JWT_SECRET` largo y aleatorio.
   - `CORS_ORIGINS` solo con el dominio real.
-- **Frontend con HTTPS:** servirlo con HTTPS y una política CSP en el servidor web de producción. El servidor `server.mjs` es solo para desarrollo.
+- **Frontend con HTTPS:** servirlo con HTTPS y una política CSP en el servidor web de producción. El servidor `Server.mjs` es solo para desarrollo.
 - **Token de sesión:** se guarda en `localStorage`. Es habitual en aplicaciones de una sola página, pero depende de que no haya XSS. Mantener el escapado al agregar pantallas.
