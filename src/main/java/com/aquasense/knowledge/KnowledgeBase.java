@@ -19,8 +19,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 /**
- * Base de conocimiento normativa curada (classpath:knowledge/guidelines.json). Se carga y valida una vez al iniciar:
- * si un fragmento apunta a una fuente inexistente, repite un id o no tiene cita, la aplicación no arranca.
+ * Curated knowledge base of guidelines (classpath:knowledge/guidelines.json). It is loaded and validated once at startup:
+ * if a fragment points to a nonexistent source, repeats an id or has no quote, the application does not start.
  */
 @Component
 public class KnowledgeBase {

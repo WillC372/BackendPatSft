@@ -4,16 +4,16 @@ import com.aquasense.profile.ProfileType;
 import java.util.Set;
 
 /**
- * Fragmento citable: {@code quote} es el texto literal del documento (en su idioma original) y
- * {@code summaryEs} es un resumen propio en español. Nunca se muestra el resumen como si fuera la cita.
+ * Citable fragment: {@code quote} is the literal text of the document (in its original language) and
+ * {@code summaryEs} is our own summary in Spanish. The summary is never shown as if it were the quote.
  */
 public record KnowledgeChunk(String id, String sourceId, String section, String url, String quote, String summaryEs,
                              Set<ProfileType> profileTypes, Set<Tag> tags, Double phMin, Double phMax, String keywords) {
 
-    /** Etiquetas de tema que permiten priorizar fragmentos según el estado del agua. */
+    /** Topic tags that allow prioritizing fragments according to the water state. */
     public enum Tag { RANGE, LOW, HIGH, CRITICAL, ACTION, TESTING, HEALTH, LAB }
 
-    /** Texto que se indexa: cita, resumen, sección y palabras clave en español. */
+    /** Indexed text: quote, summary, section and keywords in Spanish. */
     String searchableText() {
         return String.join(" ", section, quote, summaryEs, keywords == null ? "" : keywords);
     }

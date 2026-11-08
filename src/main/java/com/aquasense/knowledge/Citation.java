@@ -1,7 +1,7 @@
 package com.aquasense.knowledge;
 
 /**
- * Fragmento recuperado listo para mostrarse junto a una recomendación, un diagnóstico, un informe o el chat.
+ * Retrieved fragment ready to be shown next to a recommendation, a diagnosis, a report or the chat.
  */
 public record Citation(String id, String sourceId, String organization, String title, String edition, String section,
                        String quote, String quoteLanguage, String summaryEs, String url, String legalStatus, double score) {
@@ -12,7 +12,7 @@ public record Citation(String id, String sourceId, String organization, String t
             Math.round(score * 1000) / 1000.0);
     }
 
-    /** Referencia corta para mostrar en el texto, por ejemplo "CDC (Estados Unidos), 5.7.3.4.1 pH Range". */
+    /** Short reference to show in the text, for example "CDC (Estados Unidos), 5.7.3.4.1 pH Range". */
     public String shortReference() {
         return organization + ", " + section;
     }

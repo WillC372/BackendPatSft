@@ -14,9 +14,9 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 /**
- * Recuperación de fragmentos normativos (la "R" de RAG). Combina BM25 sobre el texto de cada fragmento con dos
- * señales de dominio: las etiquetas de tema que pide el estado del agua y si el rango del fragmento habla del valor
- * medido. Solo devuelve fragmentos aplicables al tipo de perfil, así una norma de piscinas nunca respalda un consejo de riego.
+ * Retrieval of guideline fragments (the "R" in RAG). It combines BM25 over the text of every fragment with two
+ * domain signals: the topic tags requested by the water state and whether the range of the fragment covers the measured
+ * value. It only returns fragments that apply to the profile type, so a pool guideline never backs an irrigation tip.
  */
 @Service
 public class GuidelineRetriever {
@@ -35,7 +35,7 @@ public class GuidelineRetriever {
         this.index = new Bm25Index(chunks.stream().map(KnowledgeChunk::searchableText).toList());
     }
 
-    /** Búsqueda libre (chat, agente, biblioteca). {@code type} nulo busca en toda la base. */
+    /** Free search (chat, agent, library). A null {@code type} searches the whole knowledge base. */
     public List<Citation> search(String query, ProfileType type, Set<KnowledgeChunk.Tag> preferred, Double ph, int limit) {
         Set<KnowledgeChunk.Tag> tags = preferred == null ? Set.of() : preferred;
         double[] text = index.score(query == null ? "" : query);
@@ -62,7 +62,7 @@ public class GuidelineRetriever {
         return results.subList(0, Math.min(Math.max(limit, 0), results.size()));
     }
 
-    /** Fragmentos que respaldan la interpretación de una medición para un perfil. */
+    /** Fragments that support the interpretation of a measurement for a profile. */
     public List<Citation> forReading(WaterProfile profile, Classification reading, int limit) {
         ProfileType type = profile.getType();
         if (reading == null) {
@@ -88,7 +88,7 @@ public class GuidelineRetriever {
         return knowledgeBase.coverage(type);
     }
 
-    /** Resuelve ids citados por la IA. Los ids desconocidos se descartan; nunca se inventa un fragmento. */
+    /** Resolves the ids cited by the AI. Unknown ids are discarded; a fragment is never invented. */
     public List<Citation> resolve(Collection<String> ids) {
         List<Citation> citations = new ArrayList<>();
         for (String id : new LinkedHashSet<>(ids == null ? List.<String>of() : ids)) {

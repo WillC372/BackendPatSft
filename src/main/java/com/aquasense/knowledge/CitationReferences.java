@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Referencias en texto libre con el formato {@code [id-del-fragmento]}. La IA del chat cita así; el sistema conserva
- * solo los ids que le entregó en el contexto y borra cualquier otro, para que una cita inventada nunca llegue a la pantalla.
+ * Free-text references with the format {@code [fragment-id]}. The chat AI cites this way; the system keeps
+ * only the ids it provided in the context and removes any other, so an invented citation never reaches the screen.
  */
 public final class CitationReferences {
 

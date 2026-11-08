@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Índice BM25 en memoria (Okapi BM25, k1 = 1.2, b = 0.75). Es determinista, no necesita servicios externos
- * y basta para una base pequeña y curada: cada resultado se puede explicar por los términos que coinciden.
+ * In-memory BM25 index (Okapi BM25, k1 = 1.2, b = 0.75). It is deterministic, needs no external services
+ * and is enough for a small curated knowledge base: every result can be explained by the matching terms.
  */
 public final class Bm25Index {
 
@@ -38,7 +38,7 @@ public final class Bm25Index {
         return lengths.size();
     }
 
-    /** Puntaje BM25 de cada documento para la consulta (0 si no comparte términos). */
+    /** BM25 score of every document for the query (0 if it shares no terms). */
     public double[] score(String query) {
         double[] scores = new double[size()];
         int n = size();

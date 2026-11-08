@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Biblioteca normativa: fuentes, búsqueda y fragmentos individuales. Solo lectura.
+ * Guidelines library: sources, search and individual fragments. Read only.
  */
 @RestController
 @RequestMapping("/api/v1/knowledge")

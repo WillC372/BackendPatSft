@@ -9,9 +9,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Convierte texto en términos para el índice. Funciona igual para español e inglés: minúsculas, sin tildes,
- * sin palabras vacías y con un recorte a 6 caracteres que agrupa variantes ("corrosión", "corrosivo",
- * "corrosive" → "corros"). Los números decimales se conservan ("6.5", "8,4" → "8.4").
+ * Turns text into index terms. It works the same for Spanish and English: lowercase, no accents,
+ * no stop words and a cut at 6 characters that groups variants ("corrosión", "corrosivo",
+ * "corrosive" → "corros"). Decimal numbers are kept ("6.5", "8,4" → "8.4").
  */
 public final class TextAnalyzer {
 
