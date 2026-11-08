@@ -52,7 +52,7 @@ public final class AdminDtos {
      * Which actions the server allows on this account and, if not, why. The UI disables the buttons with this
      * reason; the server checks again when it receives the change.
      */
-    public record Guards(String roleBlockedReason, String statusBlockedReason) {
+    public record Guards(String roleBlockedReason, String statusBlockedReason, String deleteBlockedReason) {
     }
 
     public record PaymentRow(Long id, Long userId, String userEmail, String referenceCode, BigDecimal amount, String currency,

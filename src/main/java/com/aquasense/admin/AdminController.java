@@ -69,6 +69,12 @@ public class AdminController {
         return service.changeStatus(CurrentUser.id(), id, request.enabled(), request.reason());
     }
 
+    @org.springframework.web.bind.annotation.DeleteMapping("/users/{id}")
+    public org.springframework.http.ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.deleteUser(CurrentUser.id(), id);
+        return org.springframework.http.ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/payments")
     public List<PaymentRow> payments(@RequestParam(defaultValue = "30") int limit) {
         return service.recentPayments(limit);

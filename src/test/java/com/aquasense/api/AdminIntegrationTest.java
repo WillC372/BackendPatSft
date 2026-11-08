@@ -190,6 +190,62 @@ class AdminIntegrationTest {
         call(get("/api/v1/admin/payments")).andExpect(status().isOk());
     }
 
+    @Autowired
+    private com.aquasense.payment.PaymentRepository payments;
+
+    @Autowired
+    private com.aquasense.measurement.MeasurementRepository measurements;
+
+    @Test
+    void accountsAreDeletedWithTheirDataUnlessProtected() throws Exception {
+        JsonNode reg = register("borrar-" + tag + "@aquasense.test", "Borrar " + tag);
+        long id = reg.path("user").path("id").asLong();
+        String token = reg.path("token").asText();
+        mvc.perform(post("/api/v1/measurements").header("Authorization", "Bearer " + token)
+            .contentType(MediaType.APPLICATION_JSON).content("{\"ph\":7.2}")).andExpect(status().isCreated());
+        assertThat(measurements.countByUserId(id)).isEqualTo(1);
+        assertThat(body(call(get("/api/v1/admin/users/" + id))).path("guards").path("deleteBlockedReason").isNull()).isTrue();
+
+        call(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/v1/admin/users/" + id))
+            .andExpect(status().isNoContent());
+        assertThat(users.findById(id)).isEmpty();
+        assertThat(measurements.countByUserId(id)).isZero();
+        mvc.perform(get("/api/v1/users/me").header("Authorization", "Bearer " + token)).andExpect(status().isUnauthorized());
+        assertThat(body(call(get("/api/v1/admin/activity"))).get(0).path("action").asText()).isEqualTo("ADMIN_USER_DELETED");
+
+        // Own account (use Settings), and accounts with real approved payments, are kept.
+        call(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/v1/admin/users/" + adminId))
+            .andExpect(status().isConflict());
+        long paid = register("pagado-" + tag + "@aquasense.test", "Pagado " + tag).path("user").path("id").asLong();
+        tx.executeWithoutResult(s -> {
+            var p = new com.aquasense.payment.Payment(paid, "PAYU", "REAL-" + tag, new java.math.BigDecimal("49900"), "COP", 30, false);
+            p.update(com.aquasense.payment.PaymentStatus.APPROVED, "1", "tx", "APPROVED", "VISA");
+            payments.save(p);
+        });
+        assertThat(body(call(get("/api/v1/admin/users/" + paid))).path("guards").path("deleteBlockedReason").asText())
+            .contains("pagos reales");
+        call(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/v1/admin/users/" + paid))
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    void usersDeleteTheirOwnAccountWithTheirPassword() throws Exception {
+        String email = "yo-" + tag + "@aquasense.test";
+        JsonNode reg = register(email, "Yo " + tag);
+        String token = reg.path("token").asText();
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/v1/users/me")
+                .header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON).content("{\"password\":\"Otra12345\"}"))
+            .andExpect(status().isBadRequest());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/v1/users/me")
+                .header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON).content("{\"password\":\"Clave1234\"}"))
+            .andExpect(status().isNoContent());
+        assertThat(users.findByEmailIgnoreCase(email)).isEmpty();
+        mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
+            .content("{\"email\":\"" + email + "\",\"password\":\"Clave1234\"}")).andExpect(status().isUnauthorized());
+        // The email can be registered again as a new, empty account.
+        register(email, "Yo otra vez");
+    }
+
     private ResultActions call(org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder request) throws Exception {
         return mvc.perform(request.header("Authorization", "Bearer " + admin));
     }

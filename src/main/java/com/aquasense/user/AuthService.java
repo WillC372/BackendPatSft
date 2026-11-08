@@ -46,11 +46,13 @@ public class AuthService {
     private final MailService mailService;
     private final AuditService auditService;
     private final String adminEmail;
+    private final AccountDeletionService accountDeletion;
 
     public AuthService(UserRepository userRepository, UserSettingsRepository settingsRepository,
                        PasswordResetTokenRepository resetTokenRepository, PasswordEncoder passwordEncoder,
                        JwtService jwtService, ProfileService profileService, MailService mailService,
-                       AuditService auditService, AppProperties properties) {
+                       AuditService auditService, AppProperties properties, AccountDeletionService accountDeletion) {
+        this.accountDeletion = accountDeletion;
         this.userRepository = userRepository;
         this.settingsRepository = settingsRepository;
         this.resetTokenRepository = resetTokenRepository;
@@ -150,6 +152,21 @@ public class AuthService {
         user.recordLogin(Instant.now());
         auditService.record(user.getId(), "USER_LOGIN", request.rememberMe() ? "Sesión recordada" : "Sesión normal");
         return tokenFor(user, request.rememberMe()).withNotice(requestAdminVerification(user));
+    }
+
+    /** The user deletes their own account; the password is asked again so a stolen session cannot do it. */
+    @Transactional
+    public void deleteOwnAccount(Long userId, String password) {
+        User user = userRepository.findById(userId).orElseThrow(() -> BusinessException.notFound("La cuenta ya no existe."));
+        if (password == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw BusinessException.badRequest("La contraseña no es correcta.");
+        }
+        String blocked = accountDeletion.blockedReason(user);
+        if (blocked != null) {
+            throw BusinessException.conflict(blocked);
+        }
+        accountDeletion.delete(user);
+        org.slf4j.LoggerFactory.getLogger(AuthService.class).info("Account {} deleted by its owner.", userId);
     }
 
     @Transactional

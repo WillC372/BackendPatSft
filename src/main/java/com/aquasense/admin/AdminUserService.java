@@ -99,6 +99,7 @@ public class AdminUserService {
         Map.entry("ADMIN_ROLE_CHANGED", "Cambió el rol de un usuario"),
         Map.entry("ADMIN_USER_DISABLED", "Desactivó una cuenta"),
         Map.entry("ADMIN_USER_ENABLED", "Reactivó una cuenta"),
+        Map.entry("ADMIN_USER_DELETED", "Eliminó una cuenta"),
         Map.entry("ACCOUNT_PLAN_CHANGED", "Un administrador cambió su plan"),
         Map.entry("ACCOUNT_ROLE_CHANGED", "Un administrador cambió su rol"),
         Map.entry("ACCOUNT_DISABLED", "Un administrador desactivó la cuenta"),
@@ -116,11 +117,13 @@ public class AdminUserService {
     private final AuthService authService;
     private final PaymentProperties paymentProperties;
     private final ApplicationEventPublisher events;
+    private final com.aquasense.user.AccountDeletionService accountDeletion;
 
     public AdminUserService(UserRepository users, MeasurementRepository measurements, WaterProfileRepository profiles,
                             PaymentRepository payments, AiUsageRepository aiUsage, AuditRepository auditRepository,
                             AuditService audit, AuthService authService, PaymentProperties paymentProperties,
-                            ApplicationEventPublisher events) {
+                            ApplicationEventPublisher events, com.aquasense.user.AccountDeletionService accountDeletion) {
+        this.accountDeletion = accountDeletion;
         this.users = users;
         this.measurements = measurements;
         this.profiles = profiles;
@@ -183,7 +186,7 @@ public class AdminUserService {
             .map(e -> activityRow(e, Map.of(userId, user.getEmail()))).toList();
         return new UserDetail(row(user, total, adminId), user.getDisabledReason(), user.getDisabledAt(), stats, pays, activity,
             new Guards(roleBlockedReason(adminId, user, user.getRole() == Role.ADMIN ? Role.USER : Role.ADMIN),
-                statusBlockedReason(adminId, user, !user.isEnabled())));
+                statusBlockedReason(adminId, user, !user.isEnabled()), deleteBlockedReason(adminId, user)));
     }
 
     @Transactional
@@ -254,6 +257,36 @@ public class AdminUserService {
                 text));
         }
         return detail(adminId, userId);
+    }
+
+    /**
+     * Permanently deletes an account and all its data. The action is recorded in the administrator's audit trail
+     * (the user's own entries are deleted with the account) and the user gets an email if delivery is configured.
+     */
+    @Transactional
+    public void deleteUser(Long adminId, Long userId) {
+        User user = find(userId);
+        String blocked = deleteBlockedReason(adminId, user);
+        if (blocked != null) {
+            throw BusinessException.conflict(blocked);
+        }
+        audit.record(adminId, "ADMIN_USER_DELETED", user.getEmail() + " (#" + user.getId() + ") · Cuenta eliminada con sus datos");
+        events.publishEvent(new AccountNotice(user.getEmail(), "Tu cuenta de AquaSense AI fue eliminada", "Cuenta eliminada",
+            List.of("Hola, " + user.getFullName() + ".",
+                "Un administrador eliminó tu cuenta de AquaSense AI junto con sus mediciones, perfiles e informes.",
+                "Si crees que es un error, responde a este correo o escribe al administrador.")));
+        accountDeletion.delete(user);
+    }
+
+    /** Reason why the account cannot be deleted, or {@code null} if it can. */
+    String deleteBlockedReason(Long adminId, User user) {
+        if (user.getId().equals(adminId)) {
+            return "No puedes eliminar tu propia cuenta desde aquí; usa Configuración.";
+        }
+        if (user.getRole() == Role.ADMIN && authService.isAdminEmail(user.getEmail())) {
+            return "Es el administrador principal configurado en el servidor (ADMIN_EMAIL).";
+        }
+        return accountDeletion.blockedReason(user);
     }
 
     @Transactional(readOnly = true)

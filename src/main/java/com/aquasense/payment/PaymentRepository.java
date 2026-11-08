@@ -20,6 +20,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     long countByStatus(PaymentStatus status);
 
+    boolean existsByUserIdAndStatusAndTestMode(Long userId, PaymentStatus status, boolean testMode);
+
     @org.springframework.data.jpa.repository.Query("select coalesce(sum(p.amount), 0) from Payment p where p.status = :status and p.testMode = :testMode")
     java.math.BigDecimal sumAmount(PaymentStatus status, boolean testMode);
 }

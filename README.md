@@ -184,6 +184,7 @@ La pantalla "Administración" (solo rol `ADMIN`) muestra las cifras del sistema 
 - **Usuarios:** búsqueda por nombre o correo y filtros por rol, plan y estado, con paginación.
 - **Plan:** dar Premium por 30, 90 o 365 días, o sin vencimiento, y volver a Gratuito.
 - **Rol:** hacer administrador o quitar el rol. Las sesiones abiertas del usuario se cierran para que el cambio rija de inmediato.
+- **Eliminar:** borrar para siempre una cuenta con todos sus datos, escribiendo su correo para confirmar. Cada usuario también puede eliminar su propia cuenta desde Configuración, con su contraseña. No se elimina la propia cuenta desde Administración, el administrador principal, el último administrador activo ni una cuenta con pagos reales aprobados.
 - **Estado:** desactivar una cuenta con un motivo opcional, o reactivarla. Una cuenta desactivada no inicia sesión (403), sus tokens dejan de valer y no recibe enlaces de recuperación. Sus datos se conservan.
 - **Pagos y actividad:** últimos pagos de todos los usuarios (los de prueba se distinguen de los reales) y registro de las acciones de administración.
 

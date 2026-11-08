@@ -10,6 +10,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | POST | `/auth/forgot-password` | Enviar enlace de restablecimiento (pública; no revela si el correo existe) |
 | POST | `/auth/reset-password` | Cambiar contraseña con el token (pública) |
 | GET | `/users/me` | Datos de la cuenta |
+| DELETE | `/users/me` | `{ password }`. Elimina la propia cuenta y todos sus datos (204); 400 si la contraseña no coincide, 409 si es el último administrador activo o tiene pagos reales |
 | GET / PUT | `/users/me/settings` | Tema, notificaciones, guardado automático, perfil activo |
 | GET | `/users/me/activity` | Historial de operaciones |
 | GET | `/dashboard` | Resumen para la pantalla de inicio |
@@ -72,6 +73,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | PUT | `/admin/users/{id}/plan` | `{ plan, days? }`. Premium con vencimiento en `days` días (1 a 730) o sin vencimiento; `FREE` lo quita (rol `ADMIN`) |
 | PUT | `/admin/users/{id}/role` | `{ role }`. Cierra las sesiones del usuario. 409 si es la propia cuenta, el administrador de `ADMIN_EMAIL`, el último administrador activo o una cuenta desactivada que se quiere hacer administrador (rol `ADMIN`) |
 | PUT | `/admin/users/{id}/status` | `{ enabled, reason? }`. Desactivar cierra sus sesiones y bloquea el inicio de sesión (403). 409 con las mismas protecciones del rol (rol `ADMIN`) |
+| DELETE | `/admin/users/{id}` | Elimina la cuenta y todos sus datos (204). 409 si es la propia cuenta, el administrador de `ADMIN_EMAIL`, el último administrador activo o una cuenta con pagos reales aprobados (rol `ADMIN`) |
 | GET | `/admin/payments?limit=` · `/admin/activity?limit=` | Últimos pagos de todos los usuarios y acciones de administración (rol `ADMIN`) |
 
 Errores: JSON `{ timestamp, status, error, message, fields }` con mensajes en español. Códigos: 400 validación, 401 sin sesión, 403 sin permiso, 404 no encontrado o ajeno, 409 conflicto de estado, 422 lectura rechazada, 429 límite alcanzado, 503 medidor o IA no disponibles.

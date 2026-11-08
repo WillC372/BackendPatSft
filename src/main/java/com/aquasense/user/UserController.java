@@ -10,6 +10,8 @@ import com.aquasense.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,9 +26,11 @@ public class UserController {
     private final UserSettingsRepository settingsRepository;
     private final ProfileService profileService;
     private final AuditService auditService;
+    private final AuthService authService;
 
     public UserController(UserRepository userRepository, UserSettingsRepository settingsRepository,
-                          ProfileService profileService, AuditService auditService) {
+                          ProfileService profileService, AuditService auditService, AuthService authService) {
+        this.authService = authService;
         this.userRepository = userRepository;
         this.settingsRepository = settingsRepository;
         this.profileService = profileService;
@@ -67,5 +71,15 @@ public class UserController {
     private UserSettings settingsFor(Long userId) {
         return settingsRepository.findById(userId).orElseGet(() ->
             settingsRepository.save(UserSettings.defaultsFor(userId, profileService.defaultProfile().getId())));
+    }
+
+    /** Permanently deletes the account of the current user and all their data. The password is required again. */
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAccount(@Valid @RequestBody DeleteAccountRequest request) {
+        authService.deleteOwnAccount(CurrentUser.id(), request.password());
+        return ResponseEntity.noContent().build();
+    }
+
+    public record DeleteAccountRequest(@jakarta.validation.constraints.NotBlank(message = "Escribe tu contraseña.") String password) {
     }
 }
