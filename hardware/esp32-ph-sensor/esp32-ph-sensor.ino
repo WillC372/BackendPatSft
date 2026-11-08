@@ -1,11 +1,11 @@
-// Firmware AquaSense para ESP32 + sonda de pH analogica (por ejemplo, DFRobot Gravity pH V2).
-// Expone el protocolo de texto que entiende AquaSenseFirmwareAdapter por USB (Serial) y por
-// Bluetooth clasico SPP (BluetoothSerial). NO compilado ni probado con hardware en esta entrega.
+// AquaSense firmware for ESP32 + analog pH probe (for example, DFRobot Gravity pH V2).
+// It exposes the text protocol understood by AquaSenseFirmwareAdapter over USB (Serial) and over
+// classic Bluetooth SPP (BluetoothSerial). NOT compiled or tested with hardware in this delivery.
 //
-// Protocolo (lineas terminadas en \n):
+// Protocol (lines terminated with \n):
 //   PING            -> PONG AQUASENSE-PH-001
 //   READ            -> PH:7.12;T:NA
-//   CAL:MID:7.00    -> OK   (tambien CAL:LOW:4.00 y CAL:HIGH:10.00)
+//   CAL:MID:7.00    -> OK   (also CAL:LOW:4.00 and CAL:HIGH:10.00)
 
 #include <BluetoothSerial.h>
 #include <Preferences.h>
@@ -16,8 +16,8 @@ const char* DEVICE_ID = "AQUASENSE-PH-001";
 
 BluetoothSerial bt;
 Preferences prefs;
-float neutralVoltage = 1500.0;  // mV a pH 7 (se reemplaza al calibrar)
-float acidVoltage = 2032.0;     // mV a pH 4 (se reemplaza al calibrar)
+float neutralVoltage = 1500.0;  // mV at pH 7 (replaced on calibration)
+float acidVoltage = 2032.0;     // mV at pH 4 (replaced on calibration)
 
 float readMillivolts() {
   long total = 0;
