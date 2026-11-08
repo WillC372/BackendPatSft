@@ -261,6 +261,14 @@ class ApiFlowIntegrationTest {
     }
 
     @Test
+    void unknownRoutesAndWrongMethodsAreClientErrors() throws Exception {
+        String token = register(uniqueEmail());
+        mvc.perform(get("/api/v1/no-such-route").header("Authorization", bearer(token))).andExpect(status().isNotFound());
+        mvc.perform(delete("/api/v1/users/me/settings").header("Authorization", bearer(token)))
+            .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
     void logoutRevokesExistingTokens() throws Exception {
         String token = register(uniqueEmail());
         mvc.perform(get("/api/v1/users/me").header("Authorization", bearer(token))).andExpect(status().isOk());

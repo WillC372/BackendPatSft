@@ -64,6 +64,32 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(401).body(ApiError.of(401, "Unauthorized", "Credenciales inválidas o sesión expirada."));
     }
 
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<ApiError> handleNoRoute(Exception ex) {
+        return ResponseEntity.status(404).body(ApiError.of(404, "Not Found", "La ruta solicitada no existe."));
+    }
+
+    @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiError> handleMethod(Exception ex) {
+        return ResponseEntity.status(405).body(ApiError.of(405, "Method Not Allowed", "Método HTTP no permitido para esta ruta."));
+    }
+
+    @ExceptionHandler(org.springframework.web.HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<ApiError> handleNotAcceptable(Exception ex) {
+        return ResponseEntity.status(406).build();
+    }
+
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiError> handleMissingParameter(org.springframework.web.bind.MissingServletRequestParameterException ex) {
+        return ResponseEntity.badRequest().body(ApiError.of(400, "Bad Request", "Falta el parámetro " + ex.getParameterName() + "."));
+    }
+
+    /** A client that closed a live stream (SSE) is not an error and must not be logged as one. */
+    @ExceptionHandler(org.springframework.web.context.request.async.AsyncRequestNotUsableException.class)
+    public void handleClientGone(Exception ex) {
+        LOG.debug("Client disconnected: {}", ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnexpected(Exception ex) {
         LOG.error("Unexpected error", ex);
