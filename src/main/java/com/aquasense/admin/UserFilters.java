@@ -7,7 +7,7 @@ import java.util.Locale;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * Specification: filtros combinables de la lista de usuarios (texto, rol, plan y estado). Cada filtro vacío no restringe.
+ * Specification: combinable filters for the user list (text, role, plan and status). An empty filter does not restrict.
  */
 final class UserFilters {
 

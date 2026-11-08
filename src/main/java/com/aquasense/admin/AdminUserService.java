@@ -50,16 +50,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Administración de usuarios: consulta, cambio de plan, de rol y de estado de la cuenta.
+ * User administration: lookup and changes of plan, role and account status.
  *
- * <p>Reglas que el servidor aplica siempre, aunque la interfaz ya las refleje:
+ * <p>Rules the server always enforces, even though the UI already reflects them:
  * <ul>
- *   <li>Un administrador no cambia su propio rol ni desactiva su propia cuenta.</li>
- *   <li>La cuenta de ADMIN_EMAIL (administrador principal) no pierde el rol ni se desactiva desde la pantalla.</li>
- *   <li>Siempre queda al menos un administrador activo.</li>
- *   <li>Una cuenta desactivada no recibe el rol de administrador.</li>
+ *   <li>An administrator cannot change their own role or disable their own account.</li>
+ *   <li>The ADMIN_EMAIL account (main administrator) cannot lose the role or be disabled from the screen.</li>
+ *   <li>At least one active administrator always remains.</li>
+ *   <li>A disabled account cannot receive the administrator role.</li>
  * </ul>
- * Cada cambio queda en la auditoría dos veces: como acción del administrador y en el historial del usuario afectado.
+ * Every change is audited twice: as an action of the administrator and in the history of the affected user.
  */
 @Service
 public class AdminUserService {
@@ -68,7 +68,7 @@ public class AdminUserService {
     private static final DateTimeFormatter LONG_DATE = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy",
         Locale.forLanguageTag("es-CO")).withZone(ZoneId.of("America/Bogota"));
 
-    /** Nombres legibles de las acciones de la auditoría. Una acción sin nombre se muestra con su código. */
+    /** Readable names of the audit actions. An action without a name is shown with its code. */
     static final Map<String, String> ACTION_LABELS = Map.ofEntries(
         Map.entry("USER_REGISTERED", "Creó su cuenta"),
         Map.entry("USER_LOGIN", "Inició sesión"),
@@ -262,7 +262,7 @@ public class AdminUserService {
         return list.stream().map(p -> paymentRow(p, emails.get(p.getUserId()))).toList();
     }
 
-    /** Acciones de administración (cambios de plan, rol y estado, y la confirmación del administrador principal). */
+    /** Administration actions (plan, role and status changes, and the confirmation of the main administrator). */
     @Transactional(readOnly = true)
     public List<ActivityRow> adminActivity(int limit) {
         List<AuditEntry> list = auditRepository.findByActionStartingWithOrderByCreatedAtDesc("ADMIN_",
@@ -272,7 +272,7 @@ public class AdminUserService {
         return list.stream().map(e -> activityRow(e, emails)).toList();
     }
 
-    /** Motivo por el que no se puede pasar a {@code target}, o {@code null} si se puede. */
+    /** Reason why the user cannot be moved to {@code target}, or {@code null} if it is allowed. */
     String roleBlockedReason(Long adminId, User user, Role target) {
         if (user.getId().equals(adminId)) {
             return "No puedes cambiar tu propio rol.";
@@ -291,7 +291,7 @@ public class AdminUserService {
         return null;
     }
 
-    /** Motivo por el que no se puede activar ({@code enable}) o desactivar la cuenta, o {@code null} si se puede. */
+    /** Reason why the account cannot be enabled ({@code enable}) or disabled, or {@code null} if it is allowed. */
     String statusBlockedReason(Long adminId, User user, boolean enable) {
         if (enable) {
             return null;

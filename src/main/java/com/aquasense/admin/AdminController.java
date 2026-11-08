@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Administración de usuarios y planes. El acceso se restringe al rol ADMIN en SecurityConfig ({@code /api/v1/admin/**}).
+ * User and plan administration. Access is restricted to the ADMIN role in SecurityConfig ({@code /api/v1/admin/**}).
  */
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -39,7 +39,7 @@ public class AdminController {
         return service.summary();
     }
 
-    /** Lista paginada, de la cuenta más nueva a la más antigua. {@code status}: ACTIVE o DISABLED. */
+    /** Paginated list, from the newest account to the oldest. {@code status}: ACTIVE or DISABLED. */
     @GetMapping("/users")
     public UserPage users(@RequestParam(required = false) String q, @RequestParam(required = false) Role role,
                           @RequestParam(required = false) Plan plan, @RequestParam(required = false) AccountStatus status,
@@ -53,7 +53,7 @@ public class AdminController {
         return service.detail(CurrentUser.id(), id);
     }
 
-    /** {@code days}: duración de Premium; sin él, Premium no vence. Con plan FREE se ignora. */
+    /** {@code days}: Premium duration; without it, Premium does not expire. Ignored for the FREE plan. */
     @PutMapping("/users/{id}/plan")
     public UserDetail plan(@PathVariable Long id, @Valid @RequestBody PlanChange request) {
         return service.changePlan(CurrentUser.id(), id, request);

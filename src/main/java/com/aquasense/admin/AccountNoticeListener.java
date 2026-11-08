@@ -6,9 +6,9 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
- * Observer: avisa por correo al usuario cuando un administrador cambia su plan, su rol o el estado de su cuenta.
- * Escucha después del commit: si el cambio se revierte no se envía nada, y un fallo del correo no deshace el cambio.
- * Sin servicio de correo configurado, el aviso se omite.
+ * Observer: emails the user when an administrator changes their plan, role or account status.
+ * It listens after the commit: if the change is rolled back nothing is sent, and an email failure does not undo the change.
+ * Without a configured email service, the notice is skipped.
  */
 @Component
 public class AccountNoticeListener {

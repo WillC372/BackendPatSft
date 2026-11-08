@@ -11,13 +11,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-/** Contratos de la API de administración. */
+/** Contracts of the administration API. */
 public final class AdminDtos {
 
     private AdminDtos() {
     }
 
-    /** Cifras del panel. Los pagos de prueba (sandbox) se cuentan aparte de los reales para no confundirlos. */
+    /** Dashboard figures. Test (sandbox) payments are counted apart from real ones so they are not confused. */
     public record Summary(long users, long admins, long premium, long premiumManual, long premiumPaid, long disabled,
                           long newLast7Days, long activeLast7Days, long measurements, long measurementsLast7Days,
                           Payments payments, PlanInfo plan) {
@@ -31,7 +31,7 @@ public final class AdminDtos {
                            boolean paymentsEnabled) {
     }
 
-    /** Fila de la lista de usuarios. {@code self}: es la cuenta del administrador que consulta. */
+    /** Row of the user list. {@code self}: it is the account of the administrator making the request. */
     public record UserRow(Long id, String email, String fullName, String role, String plan, Instant premiumUntil,
                           boolean manualPremium, boolean enabled, Instant createdAt, Instant lastLoginAt, long measurements,
                           boolean self, boolean configuredAdmin) {
@@ -49,8 +49,8 @@ public final class AdminDtos {
     }
 
     /**
-     * Qué acciones permite el servidor sobre esta cuenta y, si no, por qué. La interfaz desactiva los botones con este
-     * motivo; el servidor vuelve a comprobarlo al recibir el cambio.
+     * Which actions the server allows on this account and, if not, why. The UI disables the buttons with this
+     * reason; the server checks again when it receives the change.
      */
     public record Guards(String roleBlockedReason, String statusBlockedReason) {
     }
