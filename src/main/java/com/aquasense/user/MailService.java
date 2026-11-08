@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
 /**
- * Envía los correos de la aplicación por el canal configurado (API de Brevo o SMTP).
+ * Sends the application emails through the configured channel (Mailjet or Brevo API, or SMTP).
  *
- * <p>Sin canal configurado hay dos comportamientos:
+ * <p>Without a configured channel there are two behaviors:
  * <ul>
- *   <li>Producción (por defecto): la recuperación no está disponible y el enlace nunca se escribe en el log, porque
- *       cualquiera con acceso a los registros podría usarlo para tomar una cuenta.</li>
- *   <li>Desarrollo ({@code MAIL_LOG_RESET_LINKS=true}): el enlace se escribe en el log para poder probar el flujo.
- *       Al iniciar se avisa que este modo está activo.</li>
+ *   <li>Production (default): recovery is not available and the link is never written to the log, because
+ *       anyone with access to the logs could use it to take over an account.</li>
+ *   <li>Development ({@code MAIL_LOG_RESET_LINKS=true}): the link is written to the log so the flow can be tested.
+ *       A warning at startup says this mode is active.</li>
  * </ul>
  */
 @Service
@@ -63,7 +63,7 @@ public class MailService {
         return Optional.empty();
     }
 
-    /** Indica si la recuperación por correo puede funcionar (un canal, o el modo de desarrollo que escribe en el log). */
+    /** Tells whether email recovery can work (a channel, or the development mode that writes to the log). */
     public boolean isPasswordRecoveryAvailable() {
         return channel != null || config.logResetLinks();
     }
@@ -90,7 +90,7 @@ public class MailService {
         return deliver(resetMail(email, link), "password reset");
     }
 
-    /** Enlace para confirmar que el dueño del correo de ADMIN_EMAIL es quien se registró. */
+    /** Link to confirm that the owner of the ADMIN_EMAIL address is the one who registered. */
     public boolean sendAdminVerification(String email, String rawToken) {
         String link = config.frontendAdminVerifyUrl() + "?token=" + rawToken;
         if (channel == null) {
@@ -119,7 +119,7 @@ public class MailService {
         return deliver(new OutgoingMail(email, "AquaSense AI - Confirma tu cuenta de administrador", text, html), "admin verification");
     }
 
-    /** Aviso simple de la cuenta (pago aprobado, Premium por vencer). Sin canal de correo no se envía nada. */
+    /** Simple account notice (approved payment, Premium about to expire). Without an email channel nothing is sent. */
     public boolean sendNotice(String to, String subject, String title, java.util.List<String> paragraphs) {
         if (channel == null) {
             return false;
@@ -131,7 +131,7 @@ public class MailService {
         return deliver(new OutgoingMail(to, subject, text, layout(title, html.toString())), "notice");
     }
 
-    /** Correo de prueba para que un administrador compruebe la configuración. */
+    /** Test email so an administrator can check the configuration. */
     public void sendTest(String to) {
         if (channel == null) {
             throw new MailDeliveryException("No hay un canal de correo configurado.");

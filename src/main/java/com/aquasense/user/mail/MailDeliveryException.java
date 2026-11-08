@@ -1,6 +1,6 @@
 package com.aquasense.user.mail;
 
-/** El canal no pudo entregar el correo. El mensaje nunca incluye el contenido del correo ni enlaces. */
+/** The channel could not deliver the email. The message never includes the email content or links. */
 public class MailDeliveryException extends RuntimeException {
 
     public MailDeliveryException(String message) {

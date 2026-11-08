@@ -3,7 +3,7 @@ package com.aquasense.user.mail;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuración del envío de correo. {@code provider}: auto (Mailjet, Brevo o SMTP, el primero configurado), mailjet, brevo, smtp o none.
+ * Email delivery configuration. {@code provider}: auto (Mailjet, Brevo or SMTP, the first one configured), mailjet, brevo, smtp or none.
  */
 @ConfigurationProperties(prefix = "aquasense.mail-delivery")
 public record MailDeliveryProperties(String provider, String senderName, Brevo brevo, Mailjet mailjet) {
@@ -15,7 +15,7 @@ public record MailDeliveryProperties(String provider, String senderName, Brevo b
         mailjet = mailjet == null ? new Mailjet(null, null, null, 0) : mailjet;
     }
 
-    /** Mailjet Send API v3.1 con autenticación básica: llave de API como usuario y llave secreta como contraseña. */
+    /** Mailjet Send API v3.1 with basic authentication: API key as the user and secret key as the password. */
     public record Mailjet(String apiKey, String secretKey, String baseUrl, int timeoutSeconds) {
 
         public Mailjet {

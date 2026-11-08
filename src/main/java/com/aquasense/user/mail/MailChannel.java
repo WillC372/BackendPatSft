@@ -1,12 +1,12 @@
 package com.aquasense.user.mail;
 
 /**
- * Strategy: un canal de envío de correo (API HTTP de Brevo o SMTP). El servicio de correo elige el canal según la
- * configuración, sin depender de cómo entrega cada uno.
+ * Strategy: an email delivery channel (Mailjet or Brevo HTTP API, or SMTP). The mail service picks the channel from the
+ * configuration, without depending on how each one delivers.
  */
 public interface MailChannel {
 
-    /** Identificador usado en la configuración: "brevo" o "smtp". */
+    /** Identifier used in the configuration: "mailjet", "brevo" or "smtp". */
     String id();
 
     String label();

@@ -31,7 +31,7 @@ public class PasswordResetToken {
     @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
     private Purpose purpose = Purpose.PASSWORD_RESET;
 
-    /** Para qué sirve el enlace enviado por correo. */
+    /** What the link sent by email is for. */
     public enum Purpose { PASSWORD_RESET, ADMIN_VERIFY }
 
     protected PasswordResetToken() {

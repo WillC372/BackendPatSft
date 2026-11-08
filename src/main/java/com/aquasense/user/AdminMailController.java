@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Estado del envío de correo y correo de prueba (rol ADMIN). La prueba solo se envía al correo del administrador
- * que la pide, así el endpoint no puede usarse para enviar correos a terceros.
+ * Email delivery status and test email (ADMIN role). The test is only sent to the email of the administrator
+ * who requests it, so the endpoint cannot be used to send emails to third parties.
  */
 @RestController
 @RequestMapping("/api/v1/admin/mail")

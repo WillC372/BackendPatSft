@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
- * Repository: encapsula el acceso a datos de usuarios; los servicios no escriben SQL.
+ * Repository: encapsulates access to user data; services do not write SQL.
  */
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 

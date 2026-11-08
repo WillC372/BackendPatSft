@@ -7,7 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-/** Adapter de SMTP (Spring Mail) para servidores donde el puerto de correo está disponible. */
+/** SMTP adapter (Spring Mail) for servers where the mail port is available. */
 @Component
 public class SmtpMailChannel implements MailChannel {
 

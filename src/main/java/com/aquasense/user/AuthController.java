@@ -55,7 +55,7 @@ public class AuthController {
     public MessageResponse forgotPassword(@Valid @RequestBody ForgotPasswordRequest request, HttpServletRequest http) {
         rateLimiter.check("forgot:" + http.getRemoteAddr());
         if (!mailService.isPasswordRecoveryAvailable()) {
-            // Se responde igual para cualquier correo, así no se revela qué cuentas existen.
+            // The response is the same for any email, so it does not reveal which accounts exist.
             throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "La recuperación de contraseña por correo no está"
                 + " disponible porque el servidor no tiene un servicio de correo configurado. Contacta al administrador.");
         }

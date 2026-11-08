@@ -61,14 +61,14 @@ public class AuthService {
         }
     }
 
-    /** Si el correo es el de ADMIN_EMAIL (el administrador principal configurado en el servidor). */
+    /** Whether the email is the ADMIN_EMAIL one (the main administrator configured on the server). */
     public boolean isAdminEmail(String email) {
         return adminEmail != null && !adminEmail.isBlank() && email.equalsIgnoreCase(adminEmail.trim());
     }
 
     /**
-     * El rol de administrador nunca se asigna solo por escribir el correo de ADMIN_EMAIL: se envía un enlace a ese correo
-     * y el rol se activa cuando su dueño lo abre. Así nadie puede registrarse antes con ese correo y quedarse con el rol.
+     * The administrator role is never granted just by typing the ADMIN_EMAIL address: a link is sent to that email
+     * and the role is activated when its owner opens it. This way nobody can register first with that email and keep the role.
      */
     private String requestAdminVerification(User user) {
         if (user.getRole() == Role.ADMIN || !isAdminEmail(user.getEmail())) {
@@ -128,7 +128,7 @@ public class AuthService {
         User user = userRepository.findByEmailIgnoreCase(normalize(request.email()))
             .filter(found -> passwordEncoder.matches(request.password(), found.getPasswordHash()))
             .orElseThrow(() -> new BusinessException(HttpStatus.UNAUTHORIZED, "Correo o contraseña incorrectos."));
-        // Se comprueba después de la contraseña: así el aviso no revela a un tercero que la cuenta existe.
+        // Checked after the password: this way the notice does not reveal to a third party that the account exists.
         if (!user.isEnabled()) {
             auditService.recordIndependently(user.getId(), "LOGIN_BLOCKED", "Intento de inicio de sesión con la cuenta desactivada");
             throw new BusinessException(HttpStatus.FORBIDDEN, "Esta cuenta está desactivada. Escribe al administrador para reactivarla.");
@@ -148,7 +148,7 @@ public class AuthService {
 
     @Transactional
     public boolean requestPasswordReset(String rawEmail) {
-        // Una cuenta desactivada no recibe enlaces; la respuesta al usuario es la misma para no revelar su estado.
+        // A disabled account receives no links; the response to the user is the same so its status is not revealed.
         return userRepository.findByEmailIgnoreCase(normalize(rawEmail)).filter(User::isEnabled).map(user -> {
             String rawToken = newToken();
             resetTokenRepository.save(new PasswordResetToken(user.getId(), sha256(rawToken),
@@ -168,7 +168,7 @@ public class AuthService {
         User user = userRepository.findById(token.getUserId())
             .orElseThrow(() -> BusinessException.notFound("La cuenta ya no existe."));
         user.changePassword(passwordEncoder.encode(newPassword));
-        // Cualquier otro enlace de recuperación pendiente de esta cuenta deja de servir.
+        // Any other pending recovery link of this account stops working.
         resetTokenRepository.findByUserIdAndPurposeAndUsedAtIsNull(user.getId(), PasswordResetToken.Purpose.PASSWORD_RESET)
             .forEach(t -> t.markUsed(now));
         token.markUsed(now);

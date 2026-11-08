@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Adapter de la API de correo transaccional de Brevo ({@code POST /v3/smtp/email}, encabezado {@code api-key}).
- * Funciona por HTTPS, así que sirve también donde el puerto SMTP está bloqueado.
+ * Adapter for the Brevo transactional email API ({@code POST /v3/smtp/email}, header {@code api-key}).
+ * It works over HTTPS, so it also works where the SMTP port is blocked.
  */
 @Component
 public class BrevoMailChannel implements MailChannel {
@@ -86,7 +86,7 @@ public class BrevoMailChannel implements MailChannel {
         }
     }
 
-    /** Extrae el mensaje de error de Brevo (por ejemplo, remitente no verificado) sin devolver el cuerpo completo. */
+    /** Extracts the Brevo error message (for example, unverified sender) without returning the whole body. */
     private String brevoMessage(String body) {
         try {
             String message = mapper.readTree(body).path("message").asText("");

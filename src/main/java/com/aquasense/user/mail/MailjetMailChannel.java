@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Adapter de la API de envío de Mailjet ({@code POST /v3.1/send}) con autenticación básica. Funciona por HTTPS,
- * así que sirve también donde el puerto SMTP está bloqueado.
+ * Adapter for the Mailjet send API ({@code POST /v3.1/send}) with basic authentication. It works over HTTPS,
+ * so it also works where the SMTP port is blocked.
  */
 @Component
 public class MailjetMailChannel implements MailChannel {
@@ -100,7 +100,7 @@ public class MailjetMailChannel implements MailChannel {
         }
     }
 
-    /** Mensaje de error de Mailjet (por ejemplo, remitente no validado o credenciales inválidas), recortado. */
+    /** Mailjet error message (for example, sender not validated or invalid credentials), trimmed. */
     private String errorOf(String body) {
         String text;
         try {

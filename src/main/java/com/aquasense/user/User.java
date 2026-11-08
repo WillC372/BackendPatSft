@@ -73,7 +73,7 @@ public class User {
         revokeTokens();
     }
 
-    /** Activa el rol de administrador y cierra las sesiones abiertas para que el nuevo rol entre en vigor. */
+    /** Activates the administrator role and closes the open sessions so the new role takes effect. */
     public void promoteToAdmin() {
         this.role = Role.ADMIN;
         revokeTokens();
@@ -83,14 +83,14 @@ public class User {
         this.tokenVersion++;
     }
 
-    /** Cambio manual de plan (administración): Premium sin vencimiento, o vuelta a Gratuito. */
+    /** Manual plan change (administration): Premium without expiry, or back to Free. */
     public void changePlan(Plan newPlan) {
         changePlan(newPlan, null);
     }
 
     /**
-     * Cambio manual de plan (administración). Premium con fecha de vencimiento ({@code until}) o sin ella ({@code null});
-     * Gratuito borra cualquier vencimiento.
+     * Manual plan change (administration). Premium with an expiry date ({@code until}) or without one ({@code null});
+     * Free clears any expiry.
      */
     public void changePlan(Plan newPlan, Instant until) {
         this.plan = newPlan;
@@ -98,13 +98,13 @@ public class User {
         this.premiumReminderFor = null;
     }
 
-    /** Quita el rol de administrador y cierra sus sesiones para que el cambio rija de inmediato. */
+    /** Removes the administrator role and closes their sessions so the change takes effect right away. */
     public void demoteToUser() {
         this.role = Role.USER;
         revokeTokens();
     }
 
-    /** Desactiva la cuenta: no puede iniciar sesión y sus sesiones abiertas dejan de valer. */
+    /** Disables the account: it cannot log in and its open sessions stop being valid. */
     public void disable(String reason, Instant now) {
         this.enabled = false;
         this.disabledReason = reason;
@@ -122,7 +122,7 @@ public class User {
         this.lastLoginAt = now;
     }
 
-    /** Premium asignado por un administrador, sin fecha de vencimiento. */
+    /** Premium assigned by an administrator, without an expiry date. */
     public boolean isManualPremium() {
         return plan == Plan.PREMIUM && premiumUntil == null;
     }
@@ -137,8 +137,8 @@ public class User {
     public Instant getPremiumReminderFor() { return premiumReminderFor; }
 
     /**
-     * Extiende Premium por un periodo pagado. Si ya tenía Premium con vencimiento vigente, se suma desde esa fecha;
-     * si lo tenía asignado sin vencimiento por un administrador, se mantiene así.
+     * Extends Premium for a paid period. If Premium was already active with a valid expiry, it adds from that date;
+     * if it was assigned without expiry by an administrator, it stays that way.
      */
     public Instant extendPremium(java.time.Duration period, Instant now) {
         if (plan == Plan.PREMIUM && premiumUntil == null) {
@@ -150,7 +150,7 @@ public class User {
         return premiumUntil;
     }
 
-    /** Vuelve a Gratuito si el periodo pagado terminó. */
+    /** Goes back to Free if the paid period ended. */
     public boolean expirePremiumIfDue(Instant now) {
         if (plan == Plan.PREMIUM && premiumUntil != null && !premiumUntil.isAfter(now)) {
             this.plan = Plan.FREE;
