@@ -22,7 +22,7 @@ Los documentos se descargaron el 7 nov 2026. Hay 20 fragmentos en `src/main/reso
 - `tags`: rango, pH bajo, pH alto, crítico, acción, frecuencia de medición, salud o laboratorio.
 - `phMin` y `phMax`, cuando el fragmento define un rango.
 
-`scripts/verify_knowledge_quotes.py` comprueba que cada cita aparezca literal en el texto descargado (resultado: 20/20). Los documentos no se guardan en el repositorio. Para repetir la prueba hay que descargarlos de las URL de la tabla y convertir los PDF a texto con `pdftotext -layout`.
+`scripts/VerifyKnowledgeQuotes.py` comprueba que cada cita aparezca literal en el texto descargado (resultado: 20/20). Los documentos no se guardan en el repositorio. Para repetir la prueba hay que descargarlos de las URL de la tabla y convertir los PDF a texto con `pdftotext -layout`.
 
 ## Cómo funciona
 

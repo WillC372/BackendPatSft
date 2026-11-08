@@ -40,7 +40,7 @@ src/main/java/com/aquasense/
 src/main/resources/
 ├── application.yml
 └── db/migration/   Migraciones Flyway (V1 esquema, V2 perfiles del sistema)
-hardware/esp32-ph-sensor/   Firmware de referencia para ESP32 (no probado con hardware)
+hardware/Esp32PhSensor/    Firmware de referencia para ESP32 (no probado con hardware)
 docs/                        Documentación técnica
 ```
 

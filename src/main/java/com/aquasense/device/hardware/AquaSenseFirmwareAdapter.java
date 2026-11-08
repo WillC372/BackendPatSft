@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.Locale;
 
 /**
- * Adapter for the AquaSense ESP32 firmware included in hardware/esp32-ph-sensor.
+ * Adapter for the AquaSense ESP32 firmware included in hardware/Esp32PhSensor.
  * Text protocol: "READ" answers "PH:7.12;T:24.5"; "CAL:MID:7.00" answers "OK" or "ERR:reason".
  */
 public class AquaSenseFirmwareAdapter implements PhMeter {

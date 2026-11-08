@@ -20,7 +20,7 @@ Los precios y la disponibilidad deben confirmarse con el proveedor al momento de
 | `READ` | `PH:7.12;T:NA` (o `T:24.5` si hay sensor de temperatura) |
 | `CAL:MID:7.00` / `CAL:LOW:4.00` | `OK` o `ERR:motivo` |
 
-Firmware de referencia: `hardware/esp32-ph-sensor/esp32-ph-sensor.ino`. Conexión sugerida: salida analógica de la placa de la sonda al GPIO34 del ESP32, alimentación de 3,3 V y GND común.
+Firmware de referencia: `hardware/Esp32PhSensor/Esp32PhSensor.ino`. Conexión sugerida: salida analógica de la placa de la sonda al GPIO34 del ESP32, alimentación de 3,3 V y GND común.
 
 ## Bluetooth
 
