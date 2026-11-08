@@ -248,7 +248,14 @@ mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test
 
 ## Despliegue
 
-Preparado para **Render** (backend con Docker, plan gratuito), **Neon** (PostgreSQL) y **Vercel** (frontend). La guía paso a paso está en [`docs/Deployment.md`](docs/Deployment.md).
+Publicado el 8 nov 2026 en **Render** (backend con Docker, plan gratuito), **Neon** (PostgreSQL) y **Vercel** (frontend). La guía paso a paso está en [`docs/Deployment.md`](docs/Deployment.md).
+
+| Parte | Dirección |
+|---|---|
+| Aplicación | https://frontendpatsft.vercel.app |
+| API | https://aquasense-backend-willc372.onrender.com/api/v1 (salud: `/actuator/health`, documentación: `/swagger-ui.html`) |
+
+Verificado en producción: el formulario de registro y el de medición de la página de Vercel llaman a la API de Render y guardan en Neon; CORS acepta solo el dominio de Vercel (otro origen recibe 403); el diagnóstico y el chat responden con Gemini y citas válidas; el informe PDF se descarga con sus fuentes; el correo está configurado.
 
 - `render.yaml` crea el servicio con su verificación de salud (`/actuator/health`), genera `JWT_SECRET` y fija las direcciones del frontend. Las claves (base de datos, IA y correo) se escriben en el panel de Render, nunca en el repositorio.
 - La base se configura con una sola variable, `DATABASE_URL`, con la cadena que entrega Neon (`postgresql://usuario:clave@host/db?sslmode=require`).

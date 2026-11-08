@@ -14,7 +14,7 @@ flowchart LR
 
 | Parte | Servicio | Dirección |
 |---|---|---|
-| Frontend | Vercel | `https://frontendpatsft.vercel.app` |
+| Frontend | Vercel | `https://frontendpatsft.vercel.app` (publicado el 8 nov 2026) |
 | Backend | Render (plan gratuito, Docker) | `https://aquasense-backend-willc372.onrender.com` |
 | Base de datos | Neon (PostgreSQL gratuito, no vence) | la entrega Neon |
 
