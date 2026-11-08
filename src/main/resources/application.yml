@@ -1,5 +1,7 @@
 server:
   port: ${PORT:8080}
+  # Behind a hosting proxy (Render) set FORWARD_HEADERS_STRATEGY=native so the client IP and HTTPS are detected.
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
   error:
     include-stacktrace: never
 
@@ -10,6 +12,8 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/aquasense}
     username: ${DB_USER:aquasense}
     password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
   jpa:
     open-in-view: false
     hibernate:
