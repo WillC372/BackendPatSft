@@ -26,6 +26,17 @@ Firmware de referencia: `hardware/Esp32PhSensor/Esp32PhSensor.ino`. Conexión su
 
 El backend usa jSerialComm. Un dispositivo Bluetooth clásico con perfil SPP, una vez emparejado en el sistema operativo, aparece como puerto serie (`COMx` en Windows, `/dev/rfcommX` en Linux, `/dev/tty.*` en macOS) y se conecta igual que uno USB. BLE (Bluetooth de baja energía) no está soportado desde el backend.
 
+## Medidores sin cable de datos: lectura por cámara
+
+Para un medidor de pH que solo tiene pantalla (de laboratorio, de bolsillo o tipo lapicero), la pantalla **Conexión → Medidor por cámara** del frontend lo usa como un medidor conectado:
+
+1. La cámara (del computador o del celular) apunta a la pantalla del medidor, dentro del recuadro guía.
+2. El navegador compara cada 1,5 s una miniatura en escala de grises del recuadro. Cuando el número cambia y la imagen queda estable, envía **un solo cuadro** a `POST /vision/ph-reading` con `kind=METER_DISPLAY`. También se puede leer a mano ("Leer ahora") o cada 1, 5 o 15 minutos.
+3. El backend lo lee con IA de visión (el mismo flujo y las mismas salvaguardas de la lectura por foto: margen ±0,05 y confianza máxima 0,9 para pantallas).
+4. Si la lectura es confiable (80 % o más), se guarda con origen `PHOTO` y la nota "Lectura por cámara". Si no, se muestra sin guardar.
+
+Cada lectura usa una consulta de la cuota diaria de IA (20 en el plan gratuito, 200 en Premium); por eso la imagen se compara en el equipo del usuario y solo se consulta cuando el número cambia. Una sesión de cámara admite como máximo 40 lecturas. Probado con una cámara simulada que muestra 7.42 y luego 6.95: dos consultas a la IA, dos mediciones guardadas, ninguna mientras la pantalla no cambió.
+
 ## Qué está probado y qué falta
 
 | Elemento | Estado |
@@ -33,6 +44,7 @@ El backend usa jSerialComm. Un dispositivo Bluetooth clásico con perfil SPP, un
 | Adaptadores Atlas EZO y firmware ESP32 | Probados con un enlace serie falso (`AdapterTest`) |
 | Máquina de estados, reconexión tras fallo, lectura en vivo | Probados con el simulador y el enlace falso |
 | Detección de puertos serie del sistema | Probada en Linux (detecta los puertos disponibles) |
+| Lectura por cámara de la pantalla de un medidor | Probada con una cámara simulada y un proveedor de IA local; falta con un medidor real |
 | Lectura con un medidor físico real | **Pendiente: requiere hardware** |
 | Calibración real (respuesta `*OK` del EZO, `OK` del ESP32) | **Pendiente: requiere hardware** |
 | Compilación del firmware ESP32 | **Pendiente: no se compiló** |
