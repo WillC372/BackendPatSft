@@ -1,0 +1,179 @@
+server:
+  port: ${PORT:8080}
+  error:
+    include-stacktrace: never
+
+spring:
+  application:
+    name: aquasense-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/aquasense}
+    username: ${DB_USER:aquasense}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+    locations: classpath:db/migration
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USER:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+# Documentación interactiva de la API. En producción conviene desactivarla: API_DOCS_ENABLED=false.
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: ${API_DOCS_ENABLED:true}
+  api-docs:
+    path: /v3/api-docs
+    enabled: ${API_DOCS_ENABLED:true}
+
+aquasense:
+  security:
+    jwt-secret: ${JWT_SECRET:}
+    access-token-hours: 8
+    remember-me-days: 30
+    admin-email: ${ADMIN_EMAIL:}
+    rate-limit-per-minute: ${RATE_LIMIT_PER_MINUTE:10}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5500,http://127.0.0.1:5500}
+  mail:
+    from: ${MAIL_FROM:no-reply@aquasense.local}
+    frontend-reset-url: ${FRONTEND_RESET_URL:http://localhost:5500/#/reset-password}
+    frontend-admin-verify-url: ${FRONTEND_ADMIN_VERIFY_URL:http://localhost:5500/#/verify-admin}
+    # SOLO DESARROLLO: sin SMTP, escribe el enlace de recuperación en el log. Nunca activarlo en producción.
+    log-reset-links: ${MAIL_LOG_RESET_LINKS:false}
+  ai:
+    api-key: ${ANTHROPIC_API_KEY:}
+    model: ${AI_MODEL:claude-opus-5-5}
+    effort: ${AI_EFFORT:low}
+    max-tokens: 16000
+    daily-quota-free: ${AI_DAILY_QUOTA_FREE:20}
+    daily-quota-premium: ${AI_DAILY_QUOTA_PREMIUM:200}
+    cache-minutes: 10
+    # Cadena de respaldo: se intenta cada proveedor en orden; si todos fallan se usan las reglas propias.
+    providers:
+      - id: gemini
+        label: Google Gemini
+        base-url: https://generativelanguage.googleapis.com/v1beta/openai
+        api-key: ${GEMINI_API_KEY:}
+        model: ${GEMINI_MODEL:gemini-3.5-flash}
+        timeout-seconds: 45
+        vision: true
+        tools: true
+      - id: gemini-lite
+        label: Google Gemini
+        base-url: https://generativelanguage.googleapis.com/v1beta/openai
+        api-key: ${GEMINI_API_KEY:}
+        model: ${GEMINI_FALLBACK_MODEL:gemini-3.5-flash-lite}
+        timeout-seconds: 30
+        vision: true
+        tools: true
+      - id: groq
+        label: Groq
+        base-url: https://api.groq.com/openai/v1
+        api-key: ${GROQ_API_KEY:}
+        model: ${GROQ_MODEL:openai/gpt-oss-120b}
+        timeout-seconds: 45
+        vision: false
+        tools: true
+      - id: groq-vision
+        label: Groq
+        base-url: https://api.groq.com/openai/v1
+        api-key: ${GROQ_API_KEY:}
+        model: ${GROQ_VISION_MODEL:qwen/qwen3.8-27b}
+        timeout-seconds: 45
+        vision: true
+        tools: false
+  # Precios por millón de tokens (USD) para estimar costos. Con billing FREE el cargo real es 0 (plan gratuito).
+  # Valores de referencia publicados por agregadores de terceros (anotherwrapper.com, pricepertoken.com, morphllm.com),
+  # consultados el 7 nov 2026. NO se verificaron en las páginas oficiales: ai.google.dev/gemini-api/docs/pricing y groq.com/pricing.
+  # Pagos de Premium con PayU. Por defecto, el sandbox con las credenciales públicas de prueba de PayU
+  # (comercio 508029, cuenta 512321 Colombia): no mueve dinero real. Producción: PAYU_TEST=false y credenciales propias.
+  payments:
+    enabled: ${PAYMENTS_ENABLED:true}
+    price: ${PREMIUM_PRICE:49900}
+    currency: COP
+    period-days: ${PREMIUM_PERIOD_DAYS:30}
+    reminder-days: 3
+    response-url: ${PAYMENTS_RESPONSE_URL:http://localhost:5500/#/billing}
+    confirmation-url: ${PAYMENTS_CONFIRMATION_URL:}
+    payu:
+      merchant-id: ${PAYU_MERCHANT_ID:}
+      account-id: ${PAYU_ACCOUNT_ID:}
+      api-key: ${PAYU_API_KEY:}
+      api-login: ${PAYU_API_LOGIN:}
+      checkout-url: ${PAYU_CHECKOUT_URL:}
+      api-url: ${PAYU_API_URL:}
+      test: ${PAYU_TEST:true}
+  # Envío de correo. provider: auto (Mailjet, Brevo o SMTP, el primero configurado), mailjet, brevo, smtp o none.
+  mail-delivery:
+    provider: ${MAIL_PROVIDER:auto}
+    sender-name: ${MAIL_SENDER_NAME:AquaSense AI}
+    brevo:
+      api-key: ${BREVO_API_KEY:}
+      base-url: ${BREVO_BASE_URL:https://api.brevo.com/v3}
+      timeout-seconds: 15
+    mailjet:
+      api-key: ${MAILJET_API_KEY:}
+      secret-key: ${MAILJET_SECRET_KEY:}
+      base-url: ${MAILJET_BASE_URL:https://api.mailjet.com}
+      timeout-seconds: 15
+  ai-pricing:
+    billing: ${AI_BILLING:FREE}
+    note: Precios de referencia de terceros, no verificados en la página oficial del proveedor. Revisa y ajusta antes de usarlos para facturar.
+    models:
+      - model: gemini-3.5-flash
+        input-per-million: ${PRICE_GEMINI_FLASH_IN:1.50}
+        output-per-million: ${PRICE_GEMINI_FLASH_OUT:9.00}
+        source: Agregadores de terceros (anotherwrapper.com, pricepertoken.com)
+        checked-on: "2026-11-07"
+        verified: false
+      - model: gemini-3.5-flash-lite
+        input-per-million: ${PRICE_GEMINI_LITE_IN:0.30}
+        output-per-million: ${PRICE_GEMINI_LITE_OUT:2.50}
+        source: Agregadores de terceros (anotherwrapper.com, pricepertoken.com)
+        checked-on: "2026-11-07"
+        verified: false
+      - model: openai/gpt-oss-120b
+        input-per-million: ${PRICE_GROQ_OSS_IN:0.15}
+        output-per-million: ${PRICE_GROQ_OSS_OUT:0.60}
+        source: Agregadores de terceros (morphllm.com, flexprice.io)
+        checked-on: "2026-11-07"
+        verified: false
+      - model: qwen/qwen3.8-27b
+        input-per-million: ${PRICE_GROQ_QWEN_IN:0.80}
+        output-per-million: ${PRICE_GROQ_QWEN_OUT:4.00}
+        source: Agregador de terceros (morphllm.com); modelo en vista previa
+        checked-on: "2026-11-07"
+        verified: false
+  device:
+    sample-interval-ms: 1000
+    measure-samples: 5
