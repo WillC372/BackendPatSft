@@ -36,18 +36,18 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody RegisterRequest request, HttpServletRequest http) {
         rateLimiter.check("register:" + http.getRemoteAddr());
-        return authService.register(request);
+        return authService.register(request, http.getHeader("User-Agent"));
     }
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest http) {
         rateLimiter.check("login:" + http.getRemoteAddr());
-        return authService.login(request);
+        return authService.login(request, http.getHeader("User-Agent"));
     }
 
     @PostMapping("/logout")
     public MessageResponse logout() {
-        authService.logout(CurrentUser.id());
+        authService.logout(CurrentUser.id(), CurrentUser.sessionId());
         return new MessageResponse("Sesión cerrada.");
     }
 

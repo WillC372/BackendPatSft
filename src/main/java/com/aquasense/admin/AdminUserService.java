@@ -68,44 +68,7 @@ public class AdminUserService {
     private static final DateTimeFormatter LONG_DATE = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy",
         Locale.forLanguageTag("es-CO")).withZone(ZoneId.of("America/Bogota"));
 
-    /** Readable names of the audit actions. An action without a name is shown with its code. */
-    static final Map<String, String> ACTION_LABELS = Map.ofEntries(
-        Map.entry("USER_REGISTERED", "Creó su cuenta"),
-        Map.entry("USER_LOGIN", "Inició sesión"),
-        Map.entry("USER_LOGOUT", "Cerró sesión"),
-        Map.entry("LOGIN_BLOCKED", "Intento de ingreso con la cuenta desactivada"),
-        Map.entry("PASSWORD_RESET_REQUESTED", "Pidió restablecer la contraseña"),
-        Map.entry("PASSWORD_RESET", "Restableció la contraseña"),
-        Map.entry("SETTINGS_UPDATED", "Cambió su configuración"),
-        Map.entry("MEASUREMENT_SAVED", "Guardó una medición"),
-        Map.entry("MEASUREMENT_DELETED", "Borró una medición"),
-        Map.entry("PROFILE_CREATED", "Creó un perfil de agua"),
-        Map.entry("PROFILE_UPDATED", "Editó un perfil de agua"),
-        Map.entry("PROFILE_DELETED", "Borró un perfil de agua"),
-        Map.entry("PROFILE_DUPLICATED", "Duplicó un perfil de agua"),
-        Map.entry("PROFILE_ACTIVATED", "Cambió el perfil activo"),
-        Map.entry("REPORT_GENERATED", "Generó un informe"),
-        Map.entry("AGENT_REPORT", "Pidió un informe al agente de IA"),
-        Map.entry("AI_DIAGNOSIS", "Pidió un diagnóstico con IA"),
-        Map.entry("PAYMENT_STARTED", "Inició un pago"),
-        Map.entry("PREMIUM_PAID", "Pagó Premium"),
-        Map.entry("PAYMENT_DECLINED", "Pago rechazado"),
-        Map.entry("PAYMENT_MISMATCH", "Pago con datos que no coinciden"),
-        Map.entry("PREMIUM_EXPIRED", "Venció su Premium"),
-        Map.entry("ADMIN_VERIFICATION_SENT", "Se envió el enlace para confirmar el rol de administrador"),
-        Map.entry("ADMIN_ROLE_CONFIRMED", "Confirmó el rol de administrador por correo"),
-        Map.entry("ADMIN_VERIFICATION_FAILED", "No se pudo enviar el enlace para confirmar el rol de administrador"),
-        Map.entry("ADMIN_PLAN_CHANGED", "Cambió el plan de un usuario"),
-        Map.entry("ADMIN_ROLE_CHANGED", "Cambió el rol de un usuario"),
-        Map.entry("ADMIN_USER_DISABLED", "Desactivó una cuenta"),
-        Map.entry("ADMIN_USER_ENABLED", "Reactivó una cuenta"),
-        Map.entry("ADMIN_USER_DELETED", "Eliminó una cuenta"),
-        Map.entry("ACCOUNT_PLAN_CHANGED", "Un administrador cambió su plan"),
-        Map.entry("ACCOUNT_ROLE_CHANGED", "Un administrador cambió su rol"),
-        Map.entry("ACCOUNT_DISABLED", "Un administrador desactivó la cuenta"),
-        Map.entry("ACCOUNT_ENABLED", "Un administrador reactivó la cuenta"),
-        Map.entry("MAIL_TEST_SENT", "Envió un correo de prueba"),
-        Map.entry("MAIL_TEST_FAILED", "Falló el correo de prueba"));
+    static final Map<String, String> ACTION_LABELS = com.aquasense.audit.ActionLabels.ALL;
 
     private final UserRepository users;
     private final MeasurementRepository measurements;
@@ -113,6 +76,7 @@ public class AdminUserService {
     private final PaymentRepository payments;
     private final AiUsageRepository aiUsage;
     private final AuditRepository auditRepository;
+    private final com.aquasense.user.SessionHistoryService sessions;
     private final AuditService audit;
     private final AuthService authService;
     private final PaymentProperties paymentProperties;
@@ -122,8 +86,10 @@ public class AdminUserService {
     public AdminUserService(UserRepository users, MeasurementRepository measurements, WaterProfileRepository profiles,
                             PaymentRepository payments, AiUsageRepository aiUsage, AuditRepository auditRepository,
                             AuditService audit, AuthService authService, PaymentProperties paymentProperties,
-                            ApplicationEventPublisher events, com.aquasense.user.AccountDeletionService accountDeletion) {
+                            ApplicationEventPublisher events, com.aquasense.user.AccountDeletionService accountDeletion,
+                            com.aquasense.user.SessionHistoryService sessions) {
         this.accountDeletion = accountDeletion;
+        this.sessions = sessions;
         this.users = users;
         this.measurements = measurements;
         this.profiles = profiles;
@@ -163,6 +129,19 @@ public class AdminUserService {
         List<UserRow> rows = result.getContent().stream()
             .map(u -> row(u, counts.getOrDefault(u.getId(), 0L), adminId)).toList();
         return new UserPage(rows, result.getTotalElements(), safePage, safeSize, result.getTotalPages());
+    }
+
+    /** Session history of any user (administration). */
+    @Transactional(readOnly = true)
+    public com.aquasense.user.dto.SessionDtos.SessionPage sessions(Long userId, int page, int size) {
+        find(userId);
+        return sessions.list(userId, null, page, size);
+    }
+
+    @Transactional(readOnly = true)
+    public com.aquasense.user.dto.SessionDtos.SessionDetail session(Long userId, Long sessionId) {
+        find(userId);
+        return sessions.detail(userId, sessionId, null);
     }
 
     @Transactional(readOnly = true)
@@ -219,6 +198,7 @@ public class AdminUserService {
         } else {
             user.demoteToUser();
         }
+        sessions.endAll(user.getId(), com.aquasense.user.UserSession.EndReason.ROLE_CHANGED, null);
         String label = role == Role.ADMIN ? "Administrador" : "Usuario";
         record(adminId, user, "ADMIN_ROLE_CHANGED", "ACCOUNT_ROLE_CHANGED", "Rol: " + label);
         events.publishEvent(new AccountNotice(user.getEmail(), "Tu rol en AquaSense AI cambió", "Cambio de rol",
@@ -245,6 +225,7 @@ public class AdminUserService {
                 List.of("Hola, " + user.getFullName() + ".", "Un administrador reactivó tu cuenta. Ya puedes iniciar sesión.")));
         } else {
             user.disable(cleanReason, Instant.now());
+            sessions.endAll(user.getId(), com.aquasense.user.UserSession.EndReason.ACCOUNT_DISABLED, null);
             record(adminId, user, "ADMIN_USER_DISABLED", "ACCOUNT_DISABLED",
                 "Cuenta desactivada" + (cleanReason == null ? "" : ". Motivo: " + cleanReason));
             List<String> text = new ArrayList<>(List.of("Hola, " + user.getFullName() + ".",

@@ -47,12 +47,15 @@ public class AuthService {
     private final AuditService auditService;
     private final String adminEmail;
     private final AccountDeletionService accountDeletion;
+    private final SessionHistoryService sessions;
 
     public AuthService(UserRepository userRepository, UserSettingsRepository settingsRepository,
                        PasswordResetTokenRepository resetTokenRepository, PasswordEncoder passwordEncoder,
                        JwtService jwtService, ProfileService profileService, MailService mailService,
-                       AuditService auditService, AppProperties properties, AccountDeletionService accountDeletion) {
+                       AuditService auditService, AppProperties properties, AccountDeletionService accountDeletion,
+                       SessionHistoryService sessions) {
         this.accountDeletion = accountDeletion;
+        this.sessions = sessions;
         this.userRepository = userRepository;
         this.settingsRepository = settingsRepository;
         this.resetTokenRepository = resetTokenRepository;
@@ -117,6 +120,7 @@ public class AuthService {
             throw BusinessException.badRequest("Esta cuenta ya no corresponde al correo de administrador configurado.");
         }
         user.promoteToAdmin();
+        sessions.endAll(user.getId(), UserSession.EndReason.ROLE_CHANGED, null);
         auditService.record(user.getId(), "ADMIN_ROLE_CONFIRMED", "Rol de administrador confirmado por correo");
     }
 
@@ -128,6 +132,12 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
+        return register(request, null);
+    }
+
+    /** {@code userAgent}: browser of the request, summarized in the session history ("Chrome en Windows"). */
+    @Transactional
+    public AuthResponse register(RegisterRequest request, String userAgent) {
         String email = normalize(request.email());
         if (userRepository.existsByEmailIgnoreCase(email)) {
             throw BusinessException.conflict("Ya existe una cuenta con ese correo.");
@@ -135,12 +145,17 @@ public class AuthService {
         User user = userRepository.save(new User(email, request.fullName().trim(),
             passwordEncoder.encode(request.password()), Role.USER));
         settingsRepository.save(UserSettings.defaultsFor(user.getId(), profileService.defaultProfile().getId()));
-        auditService.record(user.getId(), "USER_REGISTERED", "Cuenta creada");
-        return tokenFor(user, false).withNotice(requestAdminVerification(user));
+        return openSession(user, false, userAgent, "USER_REGISTERED", "Cuenta creada")
+            .withNotice(requestAdminVerification(user));
     }
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
+        return login(request, null);
+    }
+
+    @Transactional
+    public AuthResponse login(LoginRequest request, String userAgent) {
         User user = userRepository.findByEmailIgnoreCase(normalize(request.email()))
             .filter(found -> passwordEncoder.matches(request.password(), found.getPasswordHash()))
             .orElseThrow(() -> new BusinessException(HttpStatus.UNAUTHORIZED, "Correo o contraseña incorrectos."));
@@ -150,8 +165,8 @@ public class AuthService {
             throw new BusinessException(HttpStatus.FORBIDDEN, "Esta cuenta está desactivada. Escribe al administrador para reactivarla.");
         }
         user.recordLogin(Instant.now());
-        auditService.record(user.getId(), "USER_LOGIN", request.rememberMe() ? "Sesión recordada" : "Sesión normal");
-        return tokenFor(user, request.rememberMe()).withNotice(requestAdminVerification(user));
+        return openSession(user, request.rememberMe(), userAgent, "USER_LOGIN",
+            request.rememberMe() ? "Sesión recordada" : "Sesión normal").withNotice(requestAdminVerification(user));
     }
 
     /** The user deletes their own account; the password is asked again so a stolen session cannot do it. */
@@ -169,12 +184,21 @@ public class AuthService {
         org.slf4j.LoggerFactory.getLogger(AuthService.class).info("Account {} deleted by its owner.", userId);
     }
 
+    /** Closes the current session: its history is kept and its token stops working. Other sessions stay open. */
     @Transactional
-    public void logout(Long userId) {
-        userRepository.findById(userId).ifPresent(user -> {
-            user.revokeTokens();
-            auditService.record(userId, "USER_LOGOUT", "Tokens revocados");
-        });
+    public void logout(Long userId, Long sessionId) {
+        auditService.record(userId, "USER_LOGOUT", "Sesión cerrada");
+        sessions.end(sessionId, userId, UserSession.EndReason.LOGOUT);
+    }
+
+    /** Closes every other open session of the user (other browsers or devices), keeping the current one. */
+    @Transactional
+    public int closeOtherSessions(Long userId, Long sessionId) {
+        int closed = sessions.endAll(userId, UserSession.EndReason.CLOSED_FROM_OTHER, sessionId);
+        if (closed > 0) {
+            auditService.record(userId, "SESSIONS_CLOSED", closed + (closed == 1 ? " sesión cerrada" : " sesiones cerradas"));
+        }
+        return closed;
     }
 
     @Transactional
@@ -203,12 +227,18 @@ public class AuthService {
         resetTokenRepository.findByUserIdAndPurposeAndUsedAtIsNull(user.getId(), PasswordResetToken.Purpose.PASSWORD_RESET)
             .forEach(t -> t.markUsed(now));
         token.markUsed(now);
+        sessions.endAll(user.getId(), UserSession.EndReason.PASSWORD_CHANGED, null);
         auditService.record(user.getId(), "PASSWORD_RESET", "Contraseña restablecida");
     }
 
-    private AuthResponse tokenFor(User user, boolean rememberMe) {
+    /** Starts a new session (a new entry of the history) and issues its token. */
+    private AuthResponse openSession(User user, boolean rememberMe, String userAgent, String action, String detail) {
+        Instant now = Instant.now();
+        Instant expiresAt = now.plus(jwtService.lifetime(rememberMe));
+        UserSession session = sessions.start(user.getId(), now, expiresAt, rememberMe, userAgent);
+        auditService.recordInSession(user.getId(), session.getId(), action, detail);
         JwtService.IssuedToken issued = jwtService.issue(user.getId(), user.getEmail(), user.getRole().name(),
-            user.getTokenVersion(), rememberMe);
+            user.getTokenVersion(), session.getId(), now, expiresAt);
         return new AuthResponse(issued.token(), issued.expiresAt(), UserResponse.from(user), null);
     }
 

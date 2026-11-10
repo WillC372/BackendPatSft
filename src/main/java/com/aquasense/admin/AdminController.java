@@ -75,6 +75,18 @@ public class AdminController {
         return org.springframework.http.ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/users/{id}/sessions")
+    public com.aquasense.user.dto.SessionDtos.SessionPage sessions(@PathVariable Long id,
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "20") int size) {
+        return service.sessions(id, page, size);
+    }
+
+    @GetMapping("/users/{id}/sessions/{sessionId}")
+    public com.aquasense.user.dto.SessionDtos.SessionDetail session(@PathVariable Long id, @PathVariable Long sessionId) {
+        return service.session(id, sessionId);
+    }
+
     @GetMapping("/payments")
     public List<PaymentRow> payments(@RequestParam(defaultValue = "30") int limit) {
         return service.recentPayments(limit);

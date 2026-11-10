@@ -20,4 +20,8 @@ public final class CurrentUser {
     public static Long id() {
         return get().id();
     }
+
+    public static Long sessionId() {
+        return get().sessionId();
+    }
 }

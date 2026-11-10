@@ -20,10 +20,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final com.aquasense.user.SessionHistoryService sessions;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository,
+                                   com.aquasense.user.SessionHistoryService sessions) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.sessions = sessions;
     }
 
     @Override
@@ -31,12 +34,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith(BEARER_PREFIX)) {
+            // Valid token: correct signature, enabled account, current token version and a session that is still open.
             jwtService.parse(header.substring(BEARER_PREFIX.length()))
+                .filter(claims -> claims.sessionId() != null && sessions.touch(claims.sessionId(), claims.userId()))
                 .flatMap(claims -> userRepository.findById(claims.userId())
-                    .filter(user -> user.isEnabled() && claims.version() != null && user.getTokenVersion() == claims.version()))
-                .ifPresent(user -> {
-                    AuthenticatedUser principal = new AuthenticatedUser(user.getId(), user.getEmail(), user.getRole().name());
-                    var authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
+                    .filter(user -> user.isEnabled() && claims.version() != null && user.getTokenVersion() == claims.version())
+                    .map(user -> new AuthenticatedUser(user.getId(), user.getEmail(), user.getRole().name(), claims.sessionId())))
+                .ifPresent(principal -> {
+                    var authority = new SimpleGrantedAuthority("ROLE_" + principal.role());
                     var authentication = new UsernamePasswordAuthenticationToken(principal, null, List.of(authority));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 });

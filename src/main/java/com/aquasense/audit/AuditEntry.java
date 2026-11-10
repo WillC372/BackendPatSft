@@ -19,6 +19,10 @@ public class AuditEntry {
     @Column(name = "user_id")
     private Long userId;
 
+    /** Session in which the user did it; {@code null} for automatic actions or those done by an administrator. */
+    @Column(name = "session_id")
+    private Long sessionId;
+
     private String action;
     private String detail;
 
@@ -29,7 +33,12 @@ public class AuditEntry {
     }
 
     public AuditEntry(Long userId, String action, String detail) {
+        this(userId, null, action, detail);
+    }
+
+    public AuditEntry(Long userId, Long sessionId, String action, String detail) {
         this.userId = userId;
+        this.sessionId = sessionId;
         this.action = action;
         this.detail = detail.length() > 500 ? detail.substring(0, 500) : detail;
         this.createdAt = Instant.now();
@@ -37,6 +46,7 @@ public class AuditEntry {
 
     public Long getId() { return id; }
     public Long getUserId() { return userId; }
+    public Long getSessionId() { return sessionId; }
     public String getAction() { return action; }
     public String getDetail() { return detail; }
     public Instant getCreatedAt() { return createdAt; }
