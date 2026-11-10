@@ -62,11 +62,32 @@ public class IntelligenceFacade {
 
         If you receive guideline fragments and your answer relies on one, cite it with its id in square brackets, for example [epa-ph-smcl].
         Only cite ids from the provided list and do not attribute to a guideline anything its fragment does not say.
-        If no fragment applies, do not cite and state that the answer is not based on a guideline.""";
+        If no fragment applies, do not cite anything.""";
     private static final String CHAT_MEMORY_RULES = """
 
         The previous messages of this conversation are context: use them to understand references such as "eso" or "lo de ayer".
         If the current data contradicts something said before, the current data prevails and you must point out the change.""";
+    /** Fixed answer for questions outside the assistant's topic; the UI shows it as is. */
+    public static final String OFF_TOPIC_ANSWER =
+        "Solo puedo responder preguntas sobre la calidad del agua, el pH y el uso de AquaSense. Esa pregunta está fuera de ese tema.";
+    static final String CHAT_PROMPT = """
+        You are AquaSense Intelligence, the assistant of AquaSense AI, an application that measures and analyzes the pH of water.
+        Your topic is water quality and pH. Answer any question within it, for example: acidity and alkalinity; water chemistry
+        related to pH (alkalinity, hardness, chlorine, carbon dioxide, buffers); drinking water, pools, aquariums, ponds, irrigation,
+        crops and hydroponics; how to raise or lower pH safely; effects of pH on health, pipes, equipment, fish and plants;
+        pH meters, electrodes, test strips and calibration; official guidelines; the user's own measurements, alerts and profiles;
+        and how to use AquaSense.
+        If the question is not about that topic (sports, politics, entertainment, programming, homework of other subjects, etc.),
+        reply with exactly this sentence and nothing else: "%s"
+        Greetings and thanks are fine: answer briefly and offer help with the topic.
+        Always answer in Spanish, clearly and for a person without chemistry training, in at most about 220 words.
+        You may use short lists with hyphens; do not use Markdown headings and do not introduce yourself.
+        For general questions use your knowledge of water chemistry; when a retrieved guideline fragment applies, rely on it and cite it.
+        For questions about the user's own water use only the user data given below: never invent measurements, dates or values,
+        and if there is no data say so and suggest how to measure.
+        Make clear what comes from the user's data, what comes from an official guideline and what is general knowledge.
+        Remember that pH alone does not prove that water is drinkable or safe.
+        For chemical corrections suggest small doses, following the manufacturer and measuring again; never give exact doses.""".formatted(OFF_TOPIC_ANSWER);
     private static final String SYSTEM_PROMPT = """
         You are AquaSense Intelligence, the assistant of an application that measures the pH of water.
         Always answer in Spanish, clearly and briefly (180 words at most), for a person without chemistry training.
@@ -233,7 +254,7 @@ public class IntelligenceFacade {
         List<Citation> context = chatContext(userId, question, profile);
         String memoryNote = omittedTurns > 0
             ? "(The conversation has " + omittedTurns + " earlier messages that are not included because of length.)\n" : "";
-        AiAnswer answer = aiProvider.complete(new AiPrompt(userId, "CHAT", SYSTEM_PROMPT + CHAT_CITATION_RULES + CHAT_MEMORY_RULES,
+        AiAnswer answer = aiProvider.complete(new AiPrompt(userId, "CHAT", CHAT_PROMPT + CHAT_CITATION_RULES + CHAT_MEMORY_RULES,
             memoryNote + "Current user data (recomputed now):\n" + facts + "\n" + guidelineContext(context, profile)
                 + "\nUser question:\n" + question.trim()).withHistory(history));
         java.util.Set<String> allowed = new java.util.HashSet<>(previouslyCited);
@@ -243,12 +264,12 @@ public class IntelligenceFacade {
     }
 
     /**
-     * Fragments for the chat: first those that match the question and, if missing, those that apply to the last
-     * measurement of the profile. This way a general question ("how is my water?") also receives the official range.
+     * Fragments for the chat: first those that match the question in the whole knowledge base (a question about pools
+     * finds the pool guideline even if the active profile is another use) and, if room is left, those that apply to the
+     * last measurement of the active profile. This way a general question ("how is my water?") also gets the official range.
      */
     List<Citation> chatContext(Long userId, String question, WaterProfile profile) {
-        List<Citation> context = new ArrayList<>(guidelines.search(question + " " + profile.getType().label(),
-            profile.getType(), null, null, CHAT_SOURCES));
+        List<Citation> context = new ArrayList<>(guidelines.search(question, null, null, null, CHAT_SOURCES - 1));
         if (context.size() < CHAT_SOURCES) {
             Classification latest = measurementService.latest(userId).map(m -> classifier.classify(m.ph(), profile)).orElse(null);
             for (Citation c : guidelines.forReading(profile, latest, CHAT_SOURCES)) {
