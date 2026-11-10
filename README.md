@@ -244,7 +244,7 @@ El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENAB
 mvn test
 ```
 
-141 pruebas automatizadas: patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados, y un flujo completo de la API (registro, aislamiento entre usuarios, simulador, IA sin clave, informes, cierre de sesión, roles). Se ejecutan con H2 en modo PostgreSQL; para correrlas contra PostgreSQL real:
+140 pruebas automatizadas: patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados, y un flujo completo de la API (registro, aislamiento entre usuarios, simulador, IA sin clave, informes, cierre de sesión, roles). Se ejecutan con H2 en modo PostgreSQL; para correrlas contra PostgreSQL real:
 
 ```bash
 mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test \
