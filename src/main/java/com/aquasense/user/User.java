@@ -56,6 +56,9 @@ public class User {
     @Column(name = "last_login_at")
     private Instant lastLoginAt;
 
+    /** Demonstration account of the login screen (see {@code DemoAccounts}). */
+    private boolean demo;
+
     protected User() {
     }
 
@@ -77,6 +80,14 @@ public class User {
     public void promoteToAdmin() {
         this.role = Role.ADMIN;
         revokeTokens();
+    }
+
+    public boolean isDemo() {
+        return demo;
+    }
+
+    public void markDemo() {
+        this.demo = true;
     }
 
     public void revokeTokens() {

@@ -18,6 +18,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     long countByRoleAndEnabledTrue(Role role);
 
+    /** Active administrators that are real people (the demonstration administrator does not count). */
+    long countByRoleAndEnabledTrueAndDemoFalse(Role role);
+
     long countByPlan(Plan plan);
 
     long countByPlanAndPremiumUntilIsNull(Plan plan);

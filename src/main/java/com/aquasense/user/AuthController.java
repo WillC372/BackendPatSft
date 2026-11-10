@@ -26,7 +26,10 @@ public class AuthController {
     private final RateLimiter rateLimiter;
     private final MailService mailService;
 
-    public AuthController(AuthService authService, RateLimiter rateLimiter, MailService mailService) {
+    private final DemoAccounts demoAccounts;
+
+    public AuthController(AuthService authService, RateLimiter rateLimiter, MailService mailService, DemoAccounts demoAccounts) {
+        this.demoAccounts = demoAccounts;
         this.authService = authService;
         this.rateLimiter = rateLimiter;
         this.mailService = mailService;
@@ -43,6 +46,12 @@ public class AuthController {
     public AuthResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest http) {
         rateLimiter.check("login:" + http.getRemoteAddr());
         return authService.login(request, http.getHeader("User-Agent"));
+    }
+
+    /** Demonstration accounts for the buttons of the login screen (one per role). Empty if they are disabled. */
+    @org.springframework.web.bind.annotation.GetMapping("/demo-accounts")
+    public java.util.List<DemoAccounts.DemoAccount> demoAccounts() {
+        return demoAccounts.list();
     }
 
     @PostMapping("/logout")

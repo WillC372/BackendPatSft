@@ -65,6 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminUserService {
 
     static final int MAX_PAGE_SIZE = 100;
+    static final String DEMO_LOCKED = "Es una cuenta de demostración: no se puede modificar para que los botones de acceso sigan funcionando.";
     private static final DateTimeFormatter LONG_DATE = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy",
         Locale.forLanguageTag("es-CO")).withZone(ZoneId.of("America/Bogota"));
 
@@ -171,6 +172,9 @@ public class AdminUserService {
     @Transactional
     public UserDetail changePlan(Long adminId, Long userId, PlanChange change) {
         User user = find(userId);
+        if (user.isDemo()) {
+            throw BusinessException.conflict(DEMO_LOCKED);
+        }
         Instant until = change.plan() == Plan.PREMIUM && change.days() != null
             ? Instant.now().plus(Duration.ofDays(change.days())) : null;
         String before = planText(user.getPlan(), user.getPremiumUntil());
@@ -261,6 +265,9 @@ public class AdminUserService {
 
     /** Reason why the account cannot be deleted, or {@code null} if it can. */
     String deleteBlockedReason(Long adminId, User user) {
+        if (user.isDemo()) {
+            return DEMO_LOCKED;
+        }
         if (user.getId().equals(adminId)) {
             return "No puedes eliminar tu propia cuenta desde aquí; usa Configuración.";
         }
@@ -289,6 +296,9 @@ public class AdminUserService {
 
     /** Reason why the user cannot be moved to {@code target}, or {@code null} if it is allowed. */
     String roleBlockedReason(Long adminId, User user, Role target) {
+        if (user.isDemo()) {
+            return DEMO_LOCKED;
+        }
         if (user.getId().equals(adminId)) {
             return "No puedes cambiar tu propio rol.";
         }
@@ -299,7 +309,7 @@ public class AdminUserService {
             if (authService.isAdminEmail(user.getEmail())) {
                 return "Es el administrador principal configurado en el servidor (ADMIN_EMAIL).";
             }
-            if (users.countByRoleAndEnabledTrue(Role.ADMIN) <= 1 && user.isEnabled()) {
+            if (users.countByRoleAndEnabledTrueAndDemoFalse(Role.ADMIN) <= 1 && user.isEnabled()) {
                 return "Debe quedar al menos un administrador activo.";
             }
         }
@@ -308,6 +318,9 @@ public class AdminUserService {
 
     /** Reason why the account cannot be enabled ({@code enable}) or disabled, or {@code null} if it is allowed. */
     String statusBlockedReason(Long adminId, User user, boolean enable) {
+        if (user.isDemo()) {
+            return DEMO_LOCKED;
+        }
         if (enable) {
             return null;
         }
@@ -318,7 +331,7 @@ public class AdminUserService {
             if (authService.isAdminEmail(user.getEmail())) {
                 return "Es el administrador principal configurado en el servidor (ADMIN_EMAIL).";
             }
-            if (users.countByRoleAndEnabledTrue(Role.ADMIN) <= 1) {
+            if (users.countByRoleAndEnabledTrueAndDemoFalse(Role.ADMIN) <= 1) {
                 return "Debe quedar al menos un administrador activo.";
             }
         }
@@ -337,7 +350,7 @@ public class AdminUserService {
     private UserRow row(User u, long measurementCount, Long adminId) {
         return new UserRow(u.getId(), u.getEmail(), u.getFullName(), u.getRole().name(), u.getPlan().name(), u.getPremiumUntil(),
             u.isManualPremium(), u.isEnabled(), u.getCreatedAt(), u.getLastLoginAt(), measurementCount, u.getId().equals(adminId),
-            authService.isAdminEmail(u.getEmail()));
+            authService.isAdminEmail(u.getEmail()), u.isDemo());
     }
 
     private Map<Long, Long> measurementCounts(Collection<Long> ids) {

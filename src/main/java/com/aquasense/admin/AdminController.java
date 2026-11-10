@@ -28,10 +28,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/admin")
 public class AdminController {
 
-    private final AdminUserService service;
+    static final String DEMO_READ_ONLY = "La cuenta de demostración de administrador solo puede consultar: no puede hacer cambios.";
+    static final String DEMO_PRIVATE = "La cuenta de demostración no puede ver el detalle de las cuentas reales; abre una cuenta de demostración.";
 
-    public AdminController(AdminUserService service) {
+    private final AdminUserService service;
+    private final com.aquasense.user.DemoAccounts demo;
+
+    public AdminController(AdminUserService service, com.aquasense.user.DemoAccounts demo) {
         this.service = service;
+        this.demo = demo;
+    }
+
+    /** The demonstration administrator sees real accounts with masked names and emails. */
+    private boolean viewerIsDemo() {
+        return demo.isDemo(CurrentUser.id());
+    }
+
+    private void requireVisible(Long targetId) {
+        if (viewerIsDemo() && !demo.isDemo(targetId)) {
+            throw new com.aquasense.common.BusinessException(org.springframework.http.HttpStatus.FORBIDDEN, DEMO_PRIVATE);
+        }
+    }
+
+    private void requireRealAdmin() {
+        demo.forbidFor(CurrentUser.id(), DEMO_READ_ONLY);
     }
 
     @GetMapping("/summary")
@@ -45,32 +65,44 @@ public class AdminController {
                           @RequestParam(required = false) Plan plan, @RequestParam(required = false) AccountStatus status,
                           @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
         String text = q == null ? null : q.length() > 100 ? q.substring(0, 100) : q;
-        return service.list(CurrentUser.id(), text, role, plan, status == null ? null : status == AccountStatus.ACTIVE, page, size);
+        UserPage result = service.list(CurrentUser.id(), text, role, plan, status == null ? null : status == AccountStatus.ACTIVE, page, size);
+        if (!viewerIsDemo()) {
+            return result;
+        }
+        return new UserPage(result.items().stream().map(r -> r.demo() ? r : new com.aquasense.admin.AdminDtos.UserRow(r.id(),
+            com.aquasense.user.DemoAccounts.maskEmail(r.email()), com.aquasense.user.DemoAccounts.maskName(r.fullName()), r.role(),
+            r.plan(), r.premiumUntil(), r.manualPremium(), r.enabled(), r.createdAt(), r.lastLoginAt(), r.measurements(), r.self(),
+            r.configuredAdmin(), false)).toList(), result.total(), result.page(), result.size(), result.totalPages());
     }
 
     @GetMapping("/users/{id}")
     public UserDetail user(@PathVariable Long id) {
+        requireVisible(id);
         return service.detail(CurrentUser.id(), id);
     }
 
     /** {@code days}: Premium duration; without it, Premium does not expire. Ignored for the FREE plan. */
     @PutMapping("/users/{id}/plan")
     public UserDetail plan(@PathVariable Long id, @Valid @RequestBody PlanChange request) {
+        requireRealAdmin();
         return service.changePlan(CurrentUser.id(), id, request);
     }
 
     @PutMapping("/users/{id}/role")
     public UserDetail role(@PathVariable Long id, @Valid @RequestBody RoleChange request) {
+        requireRealAdmin();
         return service.changeRole(CurrentUser.id(), id, request.role());
     }
 
     @PutMapping("/users/{id}/status")
     public UserDetail status(@PathVariable Long id, @Valid @RequestBody StatusChange request) {
+        requireRealAdmin();
         return service.changeStatus(CurrentUser.id(), id, request.enabled(), request.reason());
     }
 
     @org.springframework.web.bind.annotation.DeleteMapping("/users/{id}")
     public org.springframework.http.ResponseEntity<Void> delete(@PathVariable Long id) {
+        requireRealAdmin();
         service.deleteUser(CurrentUser.id(), id);
         return org.springframework.http.ResponseEntity.noContent().build();
     }
@@ -79,22 +111,32 @@ public class AdminController {
     public com.aquasense.user.dto.SessionDtos.SessionPage sessions(@PathVariable Long id,
             @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
             @org.springframework.web.bind.annotation.RequestParam(defaultValue = "20") int size) {
+        requireVisible(id);
         return service.sessions(id, page, size);
     }
 
     @GetMapping("/users/{id}/sessions/{sessionId}")
     public com.aquasense.user.dto.SessionDtos.SessionDetail session(@PathVariable Long id, @PathVariable Long sessionId) {
+        requireVisible(id);
         return service.session(id, sessionId);
     }
 
     @GetMapping("/payments")
     public List<PaymentRow> payments(@RequestParam(defaultValue = "30") int limit) {
-        return service.recentPayments(limit);
+        List<PaymentRow> rows = service.recentPayments(limit);
+        if (!viewerIsDemo()) {
+            return rows;
+        }
+        return rows.stream().map(p -> new PaymentRow(p.id(), p.userId(), com.aquasense.user.DemoAccounts.maskEmail(p.userEmail()),
+            p.referenceCode(), p.amount(), p.currency(), p.periodDays(), p.status(), p.statusLabel(), p.paymentMethod(),
+            p.testMode(), p.createdAt(), p.premiumUntil())).toList();
     }
 
     @GetMapping("/activity")
     public List<ActivityRow> activity(@RequestParam(defaultValue = "30") int limit) {
-        return service.adminActivity(limit);
+        List<ActivityRow> rows = service.adminActivity(limit);
+        // Administration actions name real accounts; the demonstration administrator only sees its own.
+        return viewerIsDemo() ? rows.stream().filter(r -> demo.isDemo(r.userId())).toList() : rows;
     }
 
     public enum AccountStatus { ACTIVE, DISABLED }

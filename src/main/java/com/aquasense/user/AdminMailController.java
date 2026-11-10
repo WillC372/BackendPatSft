@@ -23,7 +23,11 @@ public class AdminMailController {
     private final UserRepository userRepository;
     private final AuditService auditService;
 
-    public AdminMailController(MailService mailService, UserRepository userRepository, AuditService auditService) {
+    private final DemoAccounts demo;
+
+    public AdminMailController(MailService mailService, UserRepository userRepository, AuditService auditService,
+                               DemoAccounts demo) {
+        this.demo = demo;
         this.mailService = mailService;
         this.userRepository = userRepository;
         this.auditService = auditService;
@@ -36,6 +40,7 @@ public class AdminMailController {
 
     @PostMapping("/test")
     public Map<String, Object> test() {
+        demo.forbidFor(CurrentUser.id(), "La cuenta de demostración de administrador no puede enviar correos.");
         User admin = userRepository.findById(CurrentUser.id()).orElseThrow(() -> BusinessException.notFound("Usuario no encontrado."));
         try {
             mailService.sendTest(admin.getEmail());

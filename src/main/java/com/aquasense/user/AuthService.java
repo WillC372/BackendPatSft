@@ -173,6 +173,9 @@ public class AuthService {
     @Transactional
     public void deleteOwnAccount(Long userId, String password) {
         User user = userRepository.findById(userId).orElseThrow(() -> BusinessException.notFound("La cuenta ya no existe."));
+        if (user.isDemo()) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "Las cuentas de demostración no se pueden eliminar.");
+        }
         if (password == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
             throw BusinessException.badRequest("La contraseña no es correcta.");
         }
@@ -204,7 +207,7 @@ public class AuthService {
     @Transactional
     public boolean requestPasswordReset(String rawEmail) {
         // A disabled account receives no links; the response to the user is the same so its status is not revealed.
-        return userRepository.findByEmailIgnoreCase(normalize(rawEmail)).filter(User::isEnabled).map(user -> {
+        return userRepository.findByEmailIgnoreCase(normalize(rawEmail)).filter(u -> u.isEnabled() && !u.isDemo()).map(user -> {
             String rawToken = newToken();
             resetTokenRepository.save(new PasswordResetToken(user.getId(), sha256(rawToken),
                 Instant.now().plus(RESET_TOKEN_LIFETIME)));

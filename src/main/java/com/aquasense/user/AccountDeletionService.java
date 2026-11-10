@@ -26,7 +26,7 @@ public class AccountDeletionService {
     /** Reason why the account cannot be deleted, or {@code null} if it can. */
     @Transactional(readOnly = true)
     public String blockedReason(User user) {
-        if (user.getRole() == Role.ADMIN && user.isEnabled() && users.countByRoleAndEnabledTrue(Role.ADMIN) <= 1) {
+        if (user.getRole() == Role.ADMIN && user.isEnabled() && users.countByRoleAndEnabledTrueAndDemoFalse(Role.ADMIN) <= 1) {
             return "Es el único administrador activo: asigna otro administrador antes de eliminarla.";
         }
         if (payments.existsByUserIdAndStatusAndTestMode(user.getId(), PaymentStatus.APPROVED, false)) {

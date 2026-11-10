@@ -82,6 +82,9 @@ public class PaymentService {
             throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "Los pagos no están habilitados en este servidor.");
         }
         User user = user(userId);
+        if (user.isDemo()) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "Las cuentas de demostración no pueden hacer pagos. Crea tu propia cuenta para pasar a Premium.");
+        }
         if (user.getPlan() == Plan.PREMIUM && user.getPremiumUntil() == null) {
             throw BusinessException.conflict("Tu cuenta ya tiene Premium asignado por un administrador, sin vencimiento.");
         }

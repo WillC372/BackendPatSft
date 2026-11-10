@@ -6,6 +6,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 |---|---|---|
 | POST | `/auth/register` | Crear cuenta (pública) |
 | POST | `/auth/login` | Iniciar sesión; `rememberMe` extiende la sesión a 30 días (pública) |
+| GET | `/auth/demo-accounts` | Cuentas de demostración para los botones del inicio de sesión, una por rol del caso de estudio (Usuario, Usuario Premium, Administrador), con su correo y contraseña. Son cuentas reales con límites: no se pueden eliminar, recuperar la contraseña ni pagar; el administrador de demostración solo consulta (no hace cambios, ve enmascarados los datos de las cuentas reales y no abre su detalle). Se desactivan con `DEMO_ACCOUNTS_ENABLED=false` |
 | POST | `/auth/logout` | Cierra la sesión actual: su token deja de servir y la sesión queda guardada en el historial. Cada token lleva su sesión (`sid`) |
 | POST | `/auth/forgot-password` | Enviar enlace de restablecimiento (pública; no revela si el correo existe) |
 | POST | `/auth/reset-password` | Cambiar contraseña con el token (pública) |

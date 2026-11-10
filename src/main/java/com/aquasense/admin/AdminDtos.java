@@ -34,7 +34,7 @@ public final class AdminDtos {
     /** Row of the user list. {@code self}: it is the account of the administrator making the request. */
     public record UserRow(Long id, String email, String fullName, String role, String plan, Instant premiumUntil,
                           boolean manualPremium, boolean enabled, Instant createdAt, Instant lastLoginAt, long measurements,
-                          boolean self, boolean configuredAdmin) {
+                          boolean self, boolean configuredAdmin, boolean demo) {
     }
 
     public record UserPage(List<UserRow> items, long total, int page, int size, int totalPages) {
