@@ -26,7 +26,7 @@ class OpenAiCompatibleProviderTest {
     void setUp() throws Exception {
         server = new FakeAiServer();
         provider = new OpenAiCompatibleProvider(
-            new AppProperties.Provider("groq", "Groq", server.baseUrl(), "test-key", "openai/gpt-oss-120b", 5, true, true), mapper);
+            new AppProperties.Provider("groq", "Groq", server.baseUrl(), "test-key", "openai/gpt-oss-120b", 5, true, true, true, "low"), mapper);
     }
 
     @AfterEach
@@ -50,6 +50,32 @@ class OpenAiCompatibleProviderTest {
         assertThat(body.path("response_format").path("type").asText()).isEqualTo("json_schema");
         assertThat(body.path("response_format").path("json_schema").path("strict").asBoolean()).isTrue();
         assertThat(body.at("/response_format/json_schema/schema/properties/riskLevel/enum").size()).isEqualTo(4);
+    }
+
+    @Test
+    void streamsTextFragmentsAsTheModelWritesThem() throws Exception {
+        server.reply(200, String.join("\n",
+            "data: {\"model\":\"openai/gpt-oss-120b\",\"choices\":[{\"delta\":{\"role\":\"assistant\"}}]}", "",
+            "data: {\"choices\":[{\"delta\":{\"content\":\"El pH \"}}]}", "",
+            "data: {\"choices\":[{\"delta\":{\"content\":\"es neutro.\"}}]}", "",
+            "data: {\"choices\":[],\"usage\":{\"prompt_tokens\":50,\"completion_tokens\":4}}", "",
+            "data: [DONE]", ""));
+        java.util.List<String> deltas = new java.util.ArrayList<>();
+        AiAnswer answer = provider.stream(new AiPrompt(1L, "CHAT", "sistema", "pregunta"), deltas::add);
+        assertThat(deltas).containsExactly("El pH ", "es neutro.");
+        assertThat(answer.text()).isEqualTo("El pH es neutro.");
+        assertThat(answer.inputTokens()).isEqualTo(50);
+        assertThat(answer.outputTokens()).isEqualTo(4);
+        JsonNode body = mapper.readTree(server.requests().get(0));
+        assertThat(body.path("stream").asBoolean()).isTrue();
+        assertThat(body.path("reasoning_effort").asText()).isEqualTo("low");
+    }
+
+    @Test
+    void failedStreamsReportTheProviderAsUnavailable() {
+        server.reply(429, "{\"error\":\"rate\"}");
+        assertThatThrownBy(() -> provider.stream(new AiPrompt(1L, "CHAT", "sistema", "pregunta"), d -> { }))
+            .isInstanceOf(AiUnavailableException.class).hasMessageContaining("límite");
     }
 
     @Test
@@ -89,7 +115,7 @@ class OpenAiCompatibleProviderTest {
     @Test
     void providerWithoutKeyIsNotAvailable() {
         var unconfigured = new OpenAiCompatibleProvider(
-            new AppProperties.Provider("gemini", "Google Gemini", server.baseUrl(), "", "gemini-3.5-flash", 5, true, true), mapper);
+            new AppProperties.Provider("gemini", "Google Gemini", server.baseUrl(), "", "gemini-3.5-flash", 5, true, true, false, null), mapper);
         assertThat(unconfigured.isAvailable()).isFalse();
         assertThatThrownBy(() -> unconfigured.complete(new AiPrompt(1L, "CHAT", "s", "u"))).isInstanceOf(AiUnavailableException.class);
     }

@@ -59,17 +59,55 @@ public class FallbackAiProvider implements AiTextProvider {
         return providers;
     }
 
-    @Override
-    public AiAnswer complete(AiPrompt prompt) {
-        List<String> failures = new ArrayList<>();
-        List<AiTextProvider> candidates = available().stream()
+    /** Interactive requests: the user is waiting on screen, so the fastest models go first. */
+    static final java.util.Set<String> INTERACTIVE = java.util.Set.of("CHAT", "CONCLUSION");
+
+    private List<AiTextProvider> candidates(AiPrompt prompt) {
+        List<AiTextProvider> candidates = new ArrayList<>(available().stream()
             .filter(provider -> !prompt.hasImage() || provider.supportsVision())
             .filter(provider -> !prompt.excludedModels().contains(provider.modelName()))
-            .toList();
+            .toList());
         if (candidates.isEmpty()) {
             throw new AiUnavailableException(prompt.hasImage()
                 ? "Ningún proveedor configurado puede analizar imágenes." : "No hay proveedores de IA disponibles para esta solicitud.");
         }
+        if (INTERACTIVE.contains(prompt.purpose())) {
+            candidates.sort(java.util.Comparator.comparing(provider -> !provider.isFast()));
+        }
+        return candidates;
+    }
+
+    /**
+     * Streaming with the same fallback: if a provider fails before sending any text, the next one is tried. Once text
+     * has reached the user, a failure is reported instead of mixing two answers.
+     */
+    @Override
+    public AiAnswer stream(AiPrompt prompt, java.util.function.Consumer<String> onDelta) {
+        List<String> failures = new ArrayList<>();
+        for (AiTextProvider provider : candidates(prompt)) {
+            long start = System.currentTimeMillis();
+            boolean[] sent = {false};
+            try {
+                return provider.stream(prompt, delta -> {
+                    sent[0] = true;
+                    onDelta.accept(delta);
+                });
+            } catch (AiUnavailableException ex) {
+                LOG.warn("AI provider {} ({}) failed while streaming: {}", provider.providerName(), provider.modelName(), ex.getMessage());
+                notifyFailure(prompt, provider, start, ex.getMessage());
+                if (sent[0]) {
+                    throw new AiUnavailableException("La respuesta se interrumpió: " + ex.getMessage(), ex);
+                }
+                failures.add(ex.getMessage());
+            }
+        }
+        throw new AiUnavailableException("Ningún proveedor de IA respondió: " + String.join(" | ", failures));
+    }
+
+    @Override
+    public AiAnswer complete(AiPrompt prompt) {
+        List<String> failures = new ArrayList<>();
+        List<AiTextProvider> candidates = candidates(prompt);
         for (AiTextProvider provider : candidates) {
             long start = System.currentTimeMillis();
             try {

@@ -33,4 +33,19 @@ public interface AiTextProvider {
     }
 
     AiAnswer complete(AiPrompt prompt);
+
+    /** Model that answers in a few seconds; it goes first for interactive requests. */
+    default boolean isFast() {
+        return false;
+    }
+
+    /**
+     * Same as {@link #complete(AiPrompt)} but hands each fragment of the answer to {@code onDelta} as it is generated.
+     * Providers without streaming deliver the whole text at once.
+     */
+    default AiAnswer stream(AiPrompt prompt, java.util.function.Consumer<String> onDelta) {
+        AiAnswer answer = complete(prompt);
+        onDelta.accept(answer.text());
+        return answer;
+    }
 }

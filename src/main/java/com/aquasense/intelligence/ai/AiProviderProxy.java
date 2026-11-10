@@ -117,6 +117,27 @@ public class AiProviderProxy implements AiTextProvider, AiCallListener {
         return answer;
     }
 
+    /** Streaming version of {@link #complete(AiPrompt)} with the same cache, quota and usage log. */
+    public AiAnswer stream(AiPrompt prompt, java.util.function.Consumer<String> onDelta) {
+        if (!realProvider.isAvailable()) {
+            throw new AiUnavailableException("La IA generativa no está configurada en el servidor (GEMINI_API_KEY, GROQ_API_KEY o ANTHROPIC_API_KEY).");
+        }
+        String key = cacheKey(prompt);
+        AiAnswer cached = readCache(key);
+        if (cached != null) {
+            recorder.save(AiUsage.success(prompt.userId(), prompt.purpose(), cached, 0, BigDecimal.ZERO));
+            onDelta.accept(cached.text());
+            return cached;
+        }
+        ensureQuota(prompt.userId());
+        long start = System.currentTimeMillis();
+        AiAnswer answer = realProvider.stream(prompt, onDelta);
+        recorder.save(AiUsage.success(prompt.userId(), prompt.purpose(), answer, System.currentTimeMillis() - start,
+            pricing.estimate(answer.model(), answer.inputTokens(), answer.outputTokens())));
+        writeCache(key, answer);
+        return answer;
+    }
+
     /**
      * Checks the quota before a multi-turn task (agent). The whole task counts as one request.
      */

@@ -65,6 +65,87 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
     }
 
     @Override
+    public boolean isFast() {
+        return config.fast();
+    }
+
+    /**
+     * Streaming ("stream": true): the API sends server-sent events with fragments of the answer; each fragment is handed
+     * to {@code onDelta} as soon as it arrives. Structured (JSON) and image requests use the normal call.
+     */
+    @Override
+    public AiAnswer stream(AiPrompt prompt, java.util.function.Consumer<String> onDelta) {
+        if (!isAvailable()) {
+            throw new AiUnavailableException(config.label() + " no está configurado.");
+        }
+        if (prompt.expectsJson() || prompt.hasImage()) {
+            AiAnswer answer = complete(prompt);
+            onDelta.accept(answer.text());
+            return answer;
+        }
+        String json;
+        try {
+            ObjectNode body = (ObjectNode) mapper.readTree(requestBody(prompt));
+            body.put("stream", true);
+            body.putObject("stream_options").put("include_usage", true);
+            json = mapper.writeValueAsString(body);
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
+        HttpResponse<java.util.stream.Stream<String>> response;
+        try {
+            response = http.send(request(json), HttpResponse.BodyHandlers.ofLines());
+        } catch (IOException ex) {
+            throw new AiUnavailableException(config.label() + ": no se pudo conectar (" + ex.getClass().getSimpleName() + ").", ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new AiUnavailableException(config.label() + ": solicitud interrumpida.", ex);
+        }
+        int status = response.statusCode();
+        if (status >= 400) {
+            response.body().close();
+            throw new AiUnavailableException(config.label() + (status == 429 ? ": límite de uso del plan gratuito alcanzado."
+                : status >= 500 ? ": servicio saturado o no disponible (" + status + ")." : ": solicitud rechazada (" + status + ")."));
+        }
+        StringBuilder text = new StringBuilder();
+        long[] tokens = new long[2];
+        String[] model = {config.model()};
+        try (java.util.stream.Stream<String> lines = response.body()) {
+            lines.forEach(line -> {
+                if (!line.startsWith("data:")) {
+                    return;
+                }
+                String data = line.substring(5).trim();
+                if (data.isEmpty() || "[DONE]".equals(data)) {
+                    return;
+                }
+                try {
+                    JsonNode node = mapper.readTree(data);
+                    String delta = node.path("choices").path(0).path("delta").path("content").asText("");
+                    if (!delta.isEmpty()) {
+                        text.append(delta);
+                        onDelta.accept(delta);
+                    }
+                    JsonNode usage = node.path("usage");
+                    if (usage.isObject()) {
+                        tokens[0] = usage.path("prompt_tokens").asLong(tokens[0]);
+                        tokens[1] = usage.path("completion_tokens").asLong(tokens[1]);
+                    }
+                    model[0] = node.path("model").asText(model[0]);
+                } catch (IOException ex) {
+                    throw new java.io.UncheckedIOException(ex);
+                }
+            });
+        } catch (java.io.UncheckedIOException ex) {
+            throw new AiUnavailableException(config.label() + ": respuesta con formato inesperado.", ex);
+        }
+        if (text.toString().isBlank()) {
+            throw new AiUnavailableException(config.label() + ": respuesta vacía.");
+        }
+        return new AiAnswer(text.toString().trim(), config.label(), model[0], tokens[0], tokens[1], false);
+    }
+
+    @Override
     public AiAnswer complete(AiPrompt prompt) {
         if (!isAvailable()) {
             throw new AiUnavailableException(config.label() + " no está configurado.");
@@ -138,16 +219,19 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
         }
     }
 
-    private HttpResponse<String> exchange(String json) {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(config.baseUrl().replaceAll("/$", "") + "/chat/completions"))
+    private HttpRequest request(String json) {
+        return HttpRequest.newBuilder(URI.create(config.baseUrl().replaceAll("/$", "") + "/chat/completions"))
             .timeout(Duration.ofSeconds(config.timeoutSeconds() > 0 ? config.timeoutSeconds() : 45))
             .header("Authorization", "Bearer " + config.apiKey())
             .header("Content-Type", "application/json")
             .header("User-Agent", USER_AGENT)
             .POST(HttpRequest.BodyPublishers.ofString(json))
             .build();
+    }
+
+    private HttpResponse<String> exchange(String json) {
         try {
-            return http.send(request, HttpResponse.BodyHandlers.ofString());
+            return http.send(request(json), HttpResponse.BodyHandlers.ofString());
         } catch (IOException ex) {
             throw new AiUnavailableException(config.label() + ": no se pudo conectar (" + ex.getClass().getSimpleName() + ").", ex);
         } catch (InterruptedException ex) {
@@ -173,6 +257,9 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
     String requestBody(AiPrompt prompt) {
         ObjectNode body = mapper.createObjectNode();
         body.put("model", config.model());
+        if (config.reasoningEffort() != null && !config.reasoningEffort().isBlank()) {
+            body.put("reasoning_effort", config.reasoningEffort());
+        }
         ArrayNode messages = body.putArray("messages");
         messages.addObject().put("role", "system").put("content", prompt.system());
         prompt.history().forEach(turn -> messages.addObject().put("role", turn.assistant() ? "assistant" : "user")
