@@ -17,6 +17,7 @@ aquasense:
     # Tests never call the real USGS API; ReferenceDataImportTest uses a local server with recorded responses.
     enabled: false
     initial-delay-ms: 3600000
+    retry-wait-ms: 50
   security:
     jwt-secret: test-secret-key-that-is-long-enough-for-hs256-signing-0123456789
     access-token-hours: 8

@@ -73,17 +73,29 @@ public class ReferenceDataImporter {
         try {
             Instant now = Instant.now();
             stationCount = importLatest(now);
+            // One station that fails (limit of the USGS, timeout) does not stop the others.
+            List<String> failed = new java.util.ArrayList<>();
             for (String id : featured) {
-                readingCount += importSeries(id, now);
+                try {
+                    readingCount += importSeries(id, now);
+                } catch (IOException | RuntimeException ex) {
+                    failed.add(id + " (" + ex.getMessage() + ")");
+                }
             }
-            describeExtremes(now);
+            try {
+                describeExtremes(now);
+            } catch (IOException | RuntimeException ex) {
+                log.debug("Station names not refreshed: {}", ex.toString());
+            }
             tx.executeWithoutResult(s -> {
                 stations.findByFeaturedTrueOrderByNameAsc().stream().filter(st -> !featured.contains(st.getId()))
                     .forEach(st -> st.feature(false));
                 readings.deleteOlderThan(now.minus(KEEP));
             });
-            run.finish(stationCount, readingCount, true, null);
-            log.info("Official pH data imported: {} stations, {} new readings.", stationCount, readingCount);
+            String partial = failed.isEmpty() ? null : "Sin actualizar en esta ronda: " + String.join(", ", failed);
+            run.finish(stationCount, readingCount, true, partial);
+            log.info("Official pH data imported: {} stations, {} new readings.{}", stationCount, readingCount,
+                partial == null ? "" : " " + partial);
         } catch (IOException | RuntimeException ex) {
             run.finish(stationCount, readingCount, false, ex.getMessage());
             log.warn("Official pH data could not be imported: {}", ex.toString());

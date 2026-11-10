@@ -63,6 +63,8 @@ aquasense:
   reference:
     enabled: ${REFERENCE_DATA_ENABLED:true}
     base-url: https://api.waterdata.usgs.gov/ogcapi/v0
+    # Optional api.data.gov key: raises the USGS request limit (the data is public without it).
+    api-key: ${USGS_API_KEY:}
     # Featured USGS stations that report pH continuously (rivers in different states).
     featured: ${REFERENCE_STATIONS:USGS-01467200,USGS-01463500,USGS-04231600,USGS-03374100,USGS-08062500,USGS-09070500,USGS-11467000,USGS-14211010}
   demo:

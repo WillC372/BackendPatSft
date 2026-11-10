@@ -200,7 +200,7 @@ class ApiFlowIntegrationTest {
         var streamed = mvc.perform(post("/api/v1/intelligence/chat/stream").header("Authorization", bearer(token))
                 .contentType(MediaType.APPLICATION_JSON).content("{\"question\":\"Como está mi agua?\"}"))
             .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.request().asyncStarted()).andReturn();
-        for (int i = 0; i < 100 && !streamed.getResponse().getContentAsString().contains("event:error"); i++) {
+        for (int i = 0; i < 100 && !streamed.getResponse().getContentAsString().contains("\"message\""); i++) {
             Thread.sleep(100);
         }
         assertThat(streamed.getResponse().getContentAsString())

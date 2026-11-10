@@ -90,7 +90,9 @@ Errores: JSON `{ timestamp, status, error, message, fields }` con mensajes en es
 Datos reales de pH de las estaciones de monitoreo continuo del Servicio Geológico de EE. UU. (USGS), importados de la
 API pública Water Data OGC (`api.waterdata.usgs.gov/ogcapi/v0`, parámetro `00400`) al iniciar el servidor y cada 3 horas.
 Se guardan aparte de las mediciones de los usuarios. Los valores recientes son provisionales hasta que el USGS los revisa,
-y ese estado se muestra con cada valor. Se conservan 30 días de lecturas.
+y ese estado se muestra con cada valor. Se conservan 30 días de lecturas. Si el USGS rechaza una solicitud por su límite (429) o
+falla un momento, se espera y se repite; si una estación no se puede actualizar, las demás sí. La variable opcional
+`USGS_API_KEY` (clave gratuita de api.data.gov) sube ese límite.
 
 | Método | Ruta | Descripción |
 |---|---|---|

@@ -36,10 +36,21 @@ public class UsgsWaterDataClient {
     private final HttpClient http;
     private final ObjectMapper mapper;
     private final String baseUrl;
+    private final String apiKey;
+    private final long retryWaitMs;
 
+    /**
+     * {@code apiKey}: optional api.data.gov key; without it the USGS applies a lower request limit per IP address.
+     * {@code retryWaitMs}: longest wait before repeating a request the USGS rejected for its limit (429) or a
+     * temporary failure (5xx).
+     */
     public UsgsWaterDataClient(ObjectMapper mapper,
-                               @Value("${aquasense.reference.base-url:https://api.waterdata.usgs.gov/ogcapi/v0}") String baseUrl) {
+                               @Value("${aquasense.reference.base-url:https://api.waterdata.usgs.gov/ogcapi/v0}") String baseUrl,
+                               @Value("${aquasense.reference.api-key:}") String apiKey,
+                               @Value("${aquasense.reference.retry-wait-ms:20000}") long retryWaitMs) {
         this.mapper = mapper;
+        this.apiKey = apiKey == null ? "" : apiKey.trim();
+        this.retryWaitMs = retryWaitMs;
         this.baseUrl = baseUrl.replaceAll("/$", "");
         this.http = HttpClient.newBuilder().proxy(ProxySelector.getDefault()).connectTimeout(Duration.ofSeconds(15))
             .followRedirects(HttpClient.Redirect.NORMAL).build();
@@ -113,22 +124,50 @@ public class UsgsWaterDataClient {
     }
 
     private JsonNode get(String url) throws IOException {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofSeconds(60))
-            .header("Accept", "application/geo+json, application/json").header("User-Agent", "AquaSense-AI/1.0").GET().build();
-        HttpResponse<String> response;
+        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofSeconds(60))
+            .header("Accept", "application/geo+json, application/json").header("User-Agent", "AquaSense-AI/1.0").GET();
+        if (!apiKey.isEmpty()) {
+            builder.header("X-Api-Key", apiKey);
+        }
+        HttpRequest request = builder.build();
+        for (int attempt = 1; ; attempt++) {
+            HttpResponse<String> response;
+            try {
+                response = http.send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                throw new IOException("USGS request interrupted", ex);
+            }
+            int status = response.statusCode();
+            if (status == 404) {
+                return null;
+            }
+            if ((status == 429 || status >= 500) && attempt < 3) {
+                pause(response, attempt);
+                continue;
+            }
+            if (status >= 400) {
+                throw new IOException("USGS answered " + status + (status == 429 ? " (request limit reached)" : ""));
+            }
+            return mapper.readTree(response.body());
+        }
+    }
+
+    /** Waits what the USGS asks for in Retry-After, or longer on each attempt, never more than {@code retryWaitMs}. */
+    private void pause(HttpResponse<String> response, int attempt) throws IOException {
+        long wait = response.headers().firstValue("Retry-After").map(v -> {
+            try {
+                return Long.parseLong(v.trim()) * 1000;
+            } catch (NumberFormatException ex) {
+                return -1L;
+            }
+        }).filter(v -> v >= 0).orElse(retryWaitMs / 4 * attempt);
         try {
-            response = http.send(request, HttpResponse.BodyHandlers.ofString());
+            Thread.sleep(Math.min(wait, retryWaitMs));
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new IOException("USGS request interrupted", ex);
         }
-        if (response.statusCode() == 404) {
-            return null;
-        }
-        if (response.statusCode() >= 400) {
-            throw new IOException("USGS answered " + response.statusCode());
-        }
-        return mapper.readTree(response.body());
     }
 
     private static String text(JsonNode node, String field) {

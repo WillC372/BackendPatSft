@@ -65,7 +65,9 @@ public class ReferenceDataService {
         long above = recent.stream().filter(s -> s.getLastPh().compareTo(HIGH) > 0).count();
         List<Station> featured = stations.findByFeaturedTrueOrderByNameAsc().stream().map(ReferenceDataService::view).toList();
         return new Summary(SOURCE, SOURCE_URL, last == null ? null : last.getStartedAt(), last != null && last.isSuccess(),
-            last == null || last.isSuccess() ? null : "La última actualización falló; se muestran los datos anteriores.",
+            last == null ? null : !last.isSuccess()
+                ? "La última actualización falló (" + last.getMessage() + "); se muestran los datos anteriores."
+                : last.getMessage() == null ? null : "Algunas estaciones destacadas no se pudieron actualizar en la última ronda; se muestran sus datos anteriores.",
             lastOk == null ? null : lastOk.getFinishedAt(), recent.size(), median,
             recent.isEmpty() ? null : recent.get(0).getLastPh(), recent.isEmpty() ? null : recent.get(recent.size() - 1).getLastPh(),
             below, recent.size() - below - above, above, featured,

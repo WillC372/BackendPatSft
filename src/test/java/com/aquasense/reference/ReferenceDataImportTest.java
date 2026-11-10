@@ -66,7 +66,8 @@ class ReferenceDataImportTest {
         assertThat(first.isSuccess()).isTrue();
         // The recorded response has 5 stations; one has no value (sensor without data) and is skipped.
         assertThat(first.getStations()).isEqualTo(4);
-        assertThat(first.getReadings()).isEqualTo(6);
+        // Six readings on the first import of this database (another test may have imported them already).
+        assertThat(first.getReadings()).isIn(0, 6);
         ReferenceImport second = importer.refresh();
         assertThat(second.getReadings()).isZero();
         assertThat(readings.findByStationIdAndMeasuredAtAfterOrderByMeasuredAtAsc("USGS-01467200", Instant.EPOCH)).hasSize(6);
@@ -91,10 +92,13 @@ class ReferenceDataImportTest {
     }
 
     @Test
-    void aFailedImportIsRecordedAndKeepsThePreviousData() {
+    void temporaryRejectionsAreRetriedAndAPersistentFailureKeepsThePreviousData() {
         importer.refresh();
         FAIL_NEXT.set(1);
+        assertThat(importer.refresh().isSuccess()).isTrue();
+        FAIL_NEXT.set(100);
         ReferenceImport failed = importer.refresh();
+        FAIL_NEXT.set(0);
         assertThat(failed.isSuccess()).isFalse();
         assertThat(failed.getMessage()).contains("503");
         assertThat(readings.findByStationIdAndMeasuredAtAfterOrderByMeasuredAtAsc("USGS-01467200", Instant.EPOCH)).isNotEmpty();
