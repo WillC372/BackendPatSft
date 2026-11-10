@@ -84,3 +84,16 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | GET | `/admin/payments?limit=` · `/admin/activity?limit=` | Últimos pagos de todos los usuarios y acciones de administración (rol `ADMIN`) |
 
 Errores: JSON `{ timestamp, status, error, message, fields }` con mensajes en español. Códigos: 400 validación, 401 sin sesión, 403 sin permiso, 404 no encontrado o ajeno, 409 conflicto de estado, 422 lectura rechazada, 429 límite alcanzado, 503 medidor o IA no disponibles.
+
+## Datos oficiales (USGS)
+
+Datos reales de pH de las estaciones de monitoreo continuo del Servicio Geológico de EE. UU. (USGS), importados de la
+API pública Water Data OGC (`api.waterdata.usgs.gov/ogcapi/v0`, parámetro `00400`) al iniciar el servidor y cada 3 horas.
+Se guardan aparte de las mediciones de los usuarios. Los valores recientes son provisionales hasta que el USGS los revisa,
+y ese estado se muestra con cada valor. Se conservan 30 días de lecturas.
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/reference/summary` | Estaciones que reportaron pH en las últimas 24 horas: cantidad, mediana, mínimo, máximo, cuántas están bajo 6,5, entre 6,5 y 8,5 y sobre 8,5; las estaciones destacadas con su último valor, y las de pH más bajo y más alto. Incluye la fecha de la última importación y si funcionó |
+| GET | `/reference/stations/{id}/readings?days=7` | Serie de una estación (1 a 30 días; como máximo 400 puntos promediados), con mínimo, máximo y promedio |
+
