@@ -71,6 +71,13 @@ public class DeviceController {
         return service.savePending(CurrentUser.id(), pendingId, request == null ? null : request.note());
     }
 
+    /** Reading of a meter read by the browser on the user's computer (Web Serial). */
+    @PostMapping("/browser-readings")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MeasurementResponse browserReading(@Valid @RequestBody com.aquasense.device.dto.BrowserReadingRequest request) {
+        return service.recordBrowserReading(CurrentUser.id(), request);
+    }
+
     @PostMapping("/calibrate")
     public MessageResponse calibrate(@Valid @RequestBody CalibrateRequest request) {
         return new MessageResponse(service.calibrate(CurrentUser.id(), request));

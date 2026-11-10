@@ -261,6 +261,25 @@ class ApiFlowIntegrationTest {
     }
 
     @Test
+    void browserReadMetersSaveRealMeasurements() throws Exception {
+        String token = register(uniqueEmail());
+        MvcResult saved = mvc.perform(post("/api/v1/devices/browser-readings").header("Authorization", bearer(token))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"ph\":7.034,\"temperatureC\":24.5,\"protocol\":\"TEXT_METER\",\"deviceName\":\"Hanna HI2211\"}"))
+            .andExpect(status().isCreated()).andReturn();
+        JsonNode m = json(saved);
+        assertThat(m.path("ph").asDouble()).isEqualTo(7.03);
+        assertThat(m.path("source").asText()).isEqualTo("REAL");
+        JsonNode devices = json(mvc.perform(get("/api/v1/devices").header("Authorization", bearer(token))).andReturn());
+        assertThat(devices.get(0).path("name").asText()).isEqualTo("Hanna HI2211");
+        assertThat(devices.get(0).path("simulated").asBoolean()).isFalse();
+        mvc.perform(post("/api/v1/devices/browser-readings").header("Authorization", bearer(token)).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"ph\":15,\"protocol\":\"TEXT_METER\",\"deviceName\":\"x\"}")).andExpect(status().isBadRequest());
+        mvc.perform(post("/api/v1/devices/browser-readings").header("Authorization", bearer(token)).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"ph\":7,\"protocol\":\"SIMULATOR\",\"deviceName\":\"x\"}")).andExpect(status().isBadRequest());
+    }
+
+    @Test
     void unknownRoutesAndWrongMethodsAreClientErrors() throws Exception {
         String token = register(uniqueEmail());
         mvc.perform(get("/api/v1/no-such-route").header("Authorization", bearer(token))).andExpect(status().isNotFound());
