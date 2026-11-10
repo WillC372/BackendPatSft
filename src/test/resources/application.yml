@@ -35,6 +35,7 @@ aquasense:
   device:
     sample-interval-ms: 50
     measure-samples: 3
+    simulator-enabled: true
 
 management:
   health:

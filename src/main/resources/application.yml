@@ -181,3 +181,5 @@ aquasense:
   device:
     sample-interval-ms: 1000
     measure-samples: 5
+    # The simulated meter is only for automated tests: a deployed app shows real meters only.
+    simulator-enabled: ${SIMULATOR_ENABLED:false}

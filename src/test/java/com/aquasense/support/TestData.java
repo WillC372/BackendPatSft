@@ -37,7 +37,7 @@ public final class TestData {
             new AppProperties.Cors(List.of("http://localhost:5500")),
             new AppProperties.Mail("test@aquasense.local", "http://localhost:5500/#/reset-password", false, null),
             new AppProperties.Ai(apiKey, "claude-opus-5-5", "low", 16000, freeQuota, 100, 10, java.util.List.of()),
-            new AppProperties.Device(20, 3));
+            new AppProperties.Device(20, 3, true));
     }
 
     private static void setId(Object entity, long id) {

@@ -55,6 +55,7 @@ public class DeviceService {
     private final MeasurementService measurementService;
     private final UserSettingsRepository settingsRepository;
     private final int measureSamples;
+    private final boolean simulatorEnabled;
     private final Map<String, PendingReading> pending = new ConcurrentHashMap<>();
 
     public DeviceService(DeviceConnection connection, PhMeterFactory meterFactory, DeviceCommandInvoker invoker,
@@ -67,6 +68,7 @@ public class DeviceService {
         this.measurementService = measurementService;
         this.settingsRepository = settingsRepository;
         this.measureSamples = properties.device().measureSamples();
+        this.simulatorEnabled = properties.device().simulatorEnabled();
     }
 
     @Transactional(readOnly = true)
@@ -74,9 +76,11 @@ public class DeviceService {
         Map<String, Long> registered = new ConcurrentHashMap<>();
         repository.findByOwnerIdOrderByLastConnectedAtDesc(userId).forEach(d -> registered.put(d.getPort(), d.getId()));
         List<DetectedDeviceResponse> result = new ArrayList<>();
-        result.add(new DetectedDeviceResponse(SimulatedPhMeter.PORT, "Simulador AquaSense",
-            "Genera lecturas de prueba. No mide agua real.", "SIMULADO", true, MeterProtocol.SIMULATOR.name(),
-            registered.get(SimulatedPhMeter.PORT)));
+        if (simulatorEnabled) {
+            result.add(new DetectedDeviceResponse(SimulatedPhMeter.PORT, "Simulador AquaSense",
+                "Genera lecturas de prueba. No mide agua real.", "SIMULADO", true, MeterProtocol.SIMULATOR.name(),
+                registered.get(SimulatedPhMeter.PORT)));
+        }
         meterFactory.detectPorts().forEach(port -> result.add(new DetectedDeviceResponse(port.systemName(),
             port.descriptiveName(), port.description(), port.bluetooth() ? "BLUETOOTH_SPP" : "USB_SERIAL", false,
             MeterProtocol.AQUASENSE_ESP32.name(), registered.get(port.systemName()))));
@@ -99,6 +103,9 @@ public class DeviceService {
         }
         if (current.state() == DeviceState.CONNECTED || current.state() == DeviceState.LIVE) {
             throw BusinessException.conflict("Ya hay un medidor conectado. Desconéctalo primero.");
+        }
+        if (request.protocol() == MeterProtocol.SIMULATOR && !simulatorEnabled) {
+            throw BusinessException.badRequest("El simulador está desactivado: conecta un medidor real.");
         }
         String port = request.protocol() == MeterProtocol.SIMULATOR ? SimulatedPhMeter.PORT : request.port();
         if (request.protocol() != MeterProtocol.SIMULATOR && meterFactory.detectPorts().stream()
@@ -162,6 +169,27 @@ public class DeviceService {
         NewReading withNote = new NewReading(reading.reading().ph(), reading.reading().temperatureC(),
             reading.reading().measuredAt(), reading.reading().source(), reading.reading().deviceId(), note);
         return measurementService.toResponse(userId, measurementService.record(userId, withNote));
+    }
+
+    /**
+     * Records a reading of a meter that the browser reads on the user's own computer (Web Serial). The cloud server
+     * cannot open a USB port of that computer, so the page reads the meter and sends each value here. It goes through
+     * the same validation chain and is stored with source REAL and the meter registered in the user's devices.
+     */
+    @Transactional
+    public MeasurementResponse recordBrowserReading(Long userId, com.aquasense.device.dto.BrowserReadingRequest request) {
+        if (request.protocol() == MeterProtocol.SIMULATOR) {
+            throw BusinessException.badRequest("El simulador no es un medidor real.");
+        }
+        String name = request.deviceName().trim();
+        String port = "BROWSER:" + name;
+        Device device = repository.findByOwnerIdAndPort(userId, port)
+            .orElseGet(() -> repository.save(new Device(userId, name, request.protocol(), port, false)));
+        device.markConnected(name, request.protocol());
+        String note = "Medidor conectado a este equipo (" + request.protocol().label() + ")"
+            + (request.note() == null || request.note().isBlank() ? "" : ". " + request.note().trim());
+        return measurementService.toResponse(userId, measurementService.record(userId, new NewReading(
+            Math.round(request.ph() * 100) / 100.0, request.temperatureC(), Instant.now(), MeasurementSource.REAL, device.getId(), note)));
     }
 
     public String calibrate(Long userId, CalibrateRequest request) {

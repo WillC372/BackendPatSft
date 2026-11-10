@@ -53,6 +53,10 @@ public record AppProperties(Security security, Cors cors, Mail mail, Ai ai, Devi
         }
     }
 
-    public record Device(long sampleIntervalMs, int measureSamples) {
+    /**
+     * {@code simulatorEnabled}: offers the simulated meter. Off by default so a deployed app never shows fake readings;
+     * the automated tests turn it on.
+     */
+    public record Device(long sampleIntervalMs, int measureSamples, boolean simulatorEnabled) {
     }
 }
