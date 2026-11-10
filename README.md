@@ -7,7 +7,7 @@ API REST de **AquaSense AI**, un sistema de monitoreo de pH del agua. El backend
 ## Responsabilidades del servidor
 
 - Registrar usuarios, iniciar y cerrar sesión, recuperar contraseñas (JWT + Argon2id).
-- Guardar y consultar mediciones con su origen: `REAL` (medidor), `MANUAL` o `SIMULATED` (simulador).
+- Guardar y consultar mediciones con su origen: `REAL` (medidor), `MANUAL` o `PHOTO` (foto o cámara leída por IA). El origen `SIMULATED` solo existe en las pruebas automáticas.
 - Validar cada lectura (cadena de validación) y clasificarla según el perfil de agua activo.
 - Hablar con el medidor por puerto serie: búsqueda, conexión, medición estabilizada, calibración y transmisión en vivo (Server-Sent Events).
 - Detectar anomalías, analizar tendencias, predecir y recomendar (AquaSense Intelligence).
@@ -224,13 +224,19 @@ La recuperación de contraseña envía un correo con un botón y un enlace de un
 
 ## Pendientes
 
-Las pruebas físicas y todo lo relacionado con GitHub y el despliegue están aplazados. Los detalles están en [`docs/PendingWork.md`](docs/PendingWork.md). La última revisión general del sistema está en [`docs/SystemReview.md`](docs/SystemReview.md).
+Las pruebas físicas con un medidor real están pendientes. Los detalles están en [`docs/PendingWork.md`](docs/PendingWork.md). La última revisión general del sistema está en [`docs/SystemReview.md`](docs/SystemReview.md).
 
 ## Integración con dispositivos
 
-La capa `device` define la interfaz `PhMeter` y tres adaptadores: `SimulatedPhMeter`, `AtlasEzoPhAdapter` (Atlas Scientific EZO-pH por UART) y `AquaSenseFirmwareAdapter` (el firmware ESP32 incluido). Los medidores Bluetooth clásicos (SPP) aparecen en el sistema operativo como puerto serie y se usan igual que los USB.
+Un medidor se conecta de tres formas:
 
-**Estado:** los adaptadores están probados con un enlace serie falso; **no se han probado con un medidor físico**. El simulador marca todas sus lecturas como `SIMULATED`. Ver [`docs/Hardware.md`](docs/Hardware.md).
+- **Al computador del usuario, desde la app publicada (Web Serial).** En Chrome o Edge, la página abre el puerto USB del medidor (o un Bluetooth emparejado como puerto serie), lee y calibra, y envía cada valor a `POST /devices/browser-readings`, que lo guarda como medición `REAL`. Es la forma de usar un medidor con el backend en la nube, que no puede ver los USB del usuario.
+- **Al servidor**, cuando AquaSense corre en el mismo computador del medidor: interfaz `PhMeter` con los adaptadores `AquaSenseFirmwareAdapter` (firmware ESP32 incluido), `AtlasEzoPhAdapter` (Atlas Scientific EZO-pH por UART) y `TextMeterAdapter` (medidores de laboratorio que envían el valor como texto por USB o RS-232).
+- **Por cámara**, para medidores sin cable de datos (ver `docs/Hardware.md`).
+
+El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENABLED=false` por defecto): la app publicada no muestra lecturas falsas.
+
+**Estado:** los protocolos están probados con un puerto falso en las pruebas automáticas y en el navegador; **no se han probado con un medidor físico**. Ver [`docs/Hardware.md`](docs/Hardware.md).
 
 ## Pruebas
 
@@ -238,7 +244,7 @@ La capa `device` define la interfaz `PhMeter` y tres adaptadores: `SimulatedPhMe
 mvn test
 ```
 
-130 pruebas automatizadas: patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados, y un flujo completo de la API (registro, aislamiento entre usuarios, simulador, IA sin clave, informes, cierre de sesión, roles). Se ejecutan con H2 en modo PostgreSQL; para correrlas contra PostgreSQL real:
+141 pruebas automatizadas: patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados, y un flujo completo de la API (registro, aislamiento entre usuarios, simulador, IA sin clave, informes, cierre de sesión, roles). Se ejecutan con H2 en modo PostgreSQL; para correrlas contra PostgreSQL real:
 
 ```bash
 mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test \

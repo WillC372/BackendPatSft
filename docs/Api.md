@@ -27,10 +27,11 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | GET | `/measurements/export?days=` | CSV |
 | POST | `/vision/ph-reading` | Multipart `file` (JPEG/PNG, 10 MB) y `kind` (`TEST_STRIP` o `METER_DISPLAY`). Devuelve la lectura estimada, el margen, las opiniones y un `pendingId` |
 | POST | `/vision/ph-reading/{pendingId}/save` | `{ ph, note }`: guarda el valor confirmado o corregido con origen `PHOTO` |
-| GET | `/devices/scan` | Simulador y puertos serie detectados |
+| GET | `/devices/scan` | Puertos serie del servidor (vacío en la nube; el simulador solo aparece con `SIMULATOR_ENABLED=true`) |
 | GET | `/devices` | Dispositivos registrados |
 | GET | `/devices/status` | Estado del medidor |
-| POST | `/devices/connect` | `{ protocol: SIMULATOR \| AQUASENSE_ESP32 \| ATLAS_EZO, port, name }` |
+| POST | `/devices/connect` | `{ protocol: AQUASENSE_ESP32 \| ATLAS_EZO \| TEXT_METER, port, name }` (medidor conectado al servidor) |
+| POST | `/devices/browser-readings` | `{ ph, temperatureC?, protocol, deviceName, note? }`. Medición real de un medidor conectado al equipo del usuario y leído por el navegador (Web Serial); se guarda con origen `REAL` (201) |
 | POST | `/devices/disconnect` | Desconectar |
 | POST | `/devices/measure` | Medición estabilizada; devuelve `pendingId` si no hay guardado automático |
 | POST | `/devices/readings/{pendingId}/save` | Guardar la lectura pendiente |
@@ -46,7 +47,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | GET | `/intelligence/recommendations` | Recomendaciones según el perfil, con `sources` (citas literales) y `coverageNote` |
 | POST | `/intelligence/scenario` | `{ hypotheticalPh }` |
 | POST | `/intelligence/conclusion?days=` | Conclusión (IA o reglas) |
-| POST | `/intelligence/chat` | `{ question, conversationId? }`. Requiere un proveedor de IA; devuelve `citations` verificadas, `conversationId`, `memoryTurns` y `omittedTurns` |
+| POST | `/intelligence/chat` | `{ question, conversationId? }`. Responde cualquier pregunta sobre agua y pH (conocimiento general, normas de todos los usos y los datos del usuario); a otros temas responde con una frase fija. Requiere un proveedor de IA; devuelve `citations` verificadas, `conversationId`, `memoryTurns` y `omittedTurns` |
 | GET · DELETE | `/intelligence/chat/conversations` · `/intelligence/chat/conversations/{id}` | Conversaciones guardadas (lista, detalle con citas, borrar una o todas) |
 | POST | `/intelligence/scenario/explain` | `{ hypotheticalPh }`. Explicación del escenario (IA validada o reglas) |
 | GET | `/intelligence/deep/forecast?includeSimulated=` | Red neuronal LSTM: datos, arquitectura, curva de aprendizaje, comparación con referencias, predicción a 12 h con intervalo y alerta anticipada |
