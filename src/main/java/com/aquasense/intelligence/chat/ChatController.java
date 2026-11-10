@@ -43,7 +43,8 @@ public class ChatController {
     public org.springframework.web.servlet.mvc.method.annotation.SseEmitter stream(@Valid @RequestBody ChatRequest request) {
         Long userId = CurrentUser.id();
         var emitter = new org.springframework.web.servlet.mvc.method.annotation.SseEmitter(120_000L);
-        STREAMS.execute(() -> {
+        // The worker thread keeps the user's security context, so the question is stored in the user's current session.
+        STREAMS.execute(new org.springframework.security.concurrent.DelegatingSecurityContextRunnable(() -> {
             try {
                 ChatResponse response = service.ask(userId, request.question(), request.conversationId(), delta -> {
                     try {
@@ -70,7 +71,7 @@ public class ChatController {
                     emitter.completeWithError(io);
                 }
             }
-        });
+        }));
         return emitter;
     }
 

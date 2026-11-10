@@ -36,9 +36,11 @@ public class MeasurementController {
     private static final int MAX_RANGE_DAYS = 366;
 
     private final MeasurementService service;
+    private final com.aquasense.audit.AuditService audit;
 
-    public MeasurementController(MeasurementService service) {
+    public MeasurementController(MeasurementService service, com.aquasense.audit.AuditService audit) {
         this.service = service;
+        this.audit = audit;
     }
 
     @GetMapping
@@ -102,6 +104,7 @@ public class MeasurementController {
                 .append(m.getSource()).append(',').append(m.getNature()).append(',').append(m.getStatus()).append(',')
                 .append(m.getValidationStatus()).append(',').append(csvText(m.getNote())).append('\n');
         }
+        audit.record(userId, "MEASUREMENTS_EXPORTED", "CSV de los últimos " + Math.min(Math.max(days, 1), MAX_RANGE_DAYS) + " días");
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aquasense-mediciones.csv\"")
             .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))

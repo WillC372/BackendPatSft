@@ -27,8 +27,11 @@ public class ChatService {
     private final ChatMessageRepository messages;
     private final GuidelineRetriever guidelines;
 
+    private final com.aquasense.audit.AuditService audit;
+
     public ChatService(IntelligenceFacade facade, ChatConversationRepository conversations, ChatMessageRepository messages,
-                       GuidelineRetriever guidelines) {
+                       GuidelineRetriever guidelines, com.aquasense.audit.AuditService audit) {
+        this.audit = audit;
         this.facade = facade;
         this.conversations = conversations;
         this.messages = messages;
@@ -59,6 +62,7 @@ public class ChatService {
         messages.save(new ChatMessage(conversation.getId(), ChatMessage.Role.USER, text, null, List.of()));
         messages.save(new ChatMessage(conversation.getId(), ChatMessage.Role.ASSISTANT, answer.text(), answer.model(),
             answer.citations().stream().map(Citation::id).toList()));
+        audit.record(userId, "CHAT_QUESTION", text.length() > 200 ? text.substring(0, 197) + "..." : text);
         return new ChatResponse(answer.text(), answer.model(), answer.citations(), answer.removedReferences(),
             conversation.getId(), conversation.getTitle(), window.turns().size(), window.omitted());
     }

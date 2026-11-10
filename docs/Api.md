@@ -6,13 +6,16 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 |---|---|---|
 | POST | `/auth/register` | Crear cuenta (pública) |
 | POST | `/auth/login` | Iniciar sesión; `rememberMe` extiende la sesión a 30 días (pública) |
-| POST | `/auth/logout` | Revocar todos los tokens del usuario |
+| POST | `/auth/logout` | Cierra la sesión actual: su token deja de servir y la sesión queda guardada en el historial. Cada token lleva su sesión (`sid`) |
 | POST | `/auth/forgot-password` | Enviar enlace de restablecimiento (pública; no revela si el correo existe) |
 | POST | `/auth/reset-password` | Cambiar contraseña con el token (pública) |
 | GET | `/users/me` | Datos de la cuenta |
 | DELETE | `/users/me` | `{ password }`. Elimina la propia cuenta y todos sus datos (204); 400 si la contraseña no coincide, 409 si es el último administrador activo o tiene pagos reales |
 | GET / PUT | `/users/me/settings` | Tema, notificaciones, guardado automático, perfil activo |
 | GET | `/users/me/activity` | Historial de operaciones |
+| GET | `/users/me/sessions?page=&size=` | Historial de sesiones: una entrada por cada inicio de sesión, con inicio, fin, duración, navegador ("Chrome en Windows"), estado (`OPEN`, `ENDED`, `EXPIRED`) y cuántas veces se hizo cada acción en ella |
+| GET | `/users/me/sessions/{id}` | Lo que se hizo en esa sesión, en orden, desde el inicio hasta el cierre |
+| POST | `/users/me/sessions/close-others` | Cierra las sesiones abiertas en otros navegadores o equipos; la actual sigue abierta |
 | GET | `/dashboard` | Resumen para la pantalla de inicio |
 | GET / POST | `/profiles` | Listar perfiles visibles / crear perfil personalizado |
 | GET | `/profiles/active` | Perfil activo |
@@ -71,6 +74,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | POST | `/payments/payu/confirmation` | Confirmación de PayU (pública, firma validada, x-www-form-urlencoded) |
 | GET | `/admin/summary` | Cifras del panel: usuarios, activos, Premium (pagado y asignado), administradores, cuentas desactivadas, mediciones y pagos (reales y de prueba por separado) (rol `ADMIN`) |
 | GET | `/admin/users?q=&role=&plan=&status=&page=&size=` | Lista paginada (máximo 100 por página). `q` busca en nombre y correo; `status`: `ACTIVE` o `DISABLED` (rol `ADMIN`) |
+| GET | `/admin/users/{id}/sessions` · `/admin/users/{id}/sessions/{sessionId}` | Historial de sesiones de una cuenta y el detalle de cada sesión (rol `ADMIN`) |
 | GET | `/admin/users/{id}` | Cuenta con estadísticas, pagos, actividad reciente y `guards`: el motivo por el que no se puede cambiar su rol o estado (rol `ADMIN`) |
 | PUT | `/admin/users/{id}/plan` | `{ plan, days? }`. Premium con vencimiento en `days` días (1 a 730) o sin vencimiento; `FREE` lo quita (rol `ADMIN`) |
 | PUT | `/admin/users/{id}/role` | `{ role }`. Cierra las sesiones del usuario. 409 si es la propia cuenta, el administrador de `ADMIN_EMAIL`, el último administrador activo o una cuenta desactivada que se quiere hacer administrador (rol `ADMIN`) |
