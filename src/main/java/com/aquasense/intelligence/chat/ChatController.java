@@ -30,6 +30,50 @@ public class ChatController {
         return service.ask(CurrentUser.id(), request.question(), request.conversationId());
     }
 
+    /** Bounded pool for streamed answers (Bulkhead): long answers cannot take the threads that serve the API. */
+    private static final java.util.concurrent.ExecutorService STREAMS = java.util.concurrent.Executors.newFixedThreadPool(8,
+        Thread.ofPlatform().name("chat-stream-", 0).daemon(true).factory());
+
+    /**
+     * Same as {@code POST /chat} but answers with Server-Sent Events: {@code delta} events with fragments of the text as
+     * the model writes it, then {@code done} with the complete response (verified citations, conversation) or
+     * {@code error}. The user sees the answer appear in about a second instead of waiting for all of it.
+     */
+    @PostMapping(value = "/stream", produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
+    public org.springframework.web.servlet.mvc.method.annotation.SseEmitter stream(@Valid @RequestBody ChatRequest request) {
+        Long userId = CurrentUser.id();
+        var emitter = new org.springframework.web.servlet.mvc.method.annotation.SseEmitter(120_000L);
+        STREAMS.execute(() -> {
+            try {
+                ChatResponse response = service.ask(userId, request.question(), request.conversationId(), delta -> {
+                    try {
+                        emitter.send(org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event().name("delta")
+                            .data(Map.of("t", delta), org.springframework.http.MediaType.APPLICATION_JSON));
+                    } catch (java.io.IOException ex) {
+                        throw new java.io.UncheckedIOException(ex);
+                    }
+                });
+                emitter.send(org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event().name("done")
+                    .data(response, org.springframework.http.MediaType.APPLICATION_JSON));
+                emitter.complete();
+            } catch (java.io.UncheckedIOException | java.io.IOException ex) {
+                emitter.completeWithError(ex);
+            } catch (RuntimeException ex) {
+                int status = ex instanceof com.aquasense.common.BusinessException b ? b.getStatus().value()
+                    : ex instanceof com.aquasense.intelligence.ai.AiUnavailableException ? 503 : 500;
+                String message = status == 500 ? "Ocurrió un error inesperado. Intenta de nuevo." : ex.getMessage();
+                try {
+                    emitter.send(org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event().name("error")
+                        .data(Map.of("status", status, "message", message), org.springframework.http.MediaType.APPLICATION_JSON));
+                    emitter.complete();
+                } catch (java.io.IOException io) {
+                    emitter.completeWithError(io);
+                }
+            }
+        });
+        return emitter;
+    }
+
     @GetMapping("/conversations")
     public List<ChatService.ConversationSummary> list() {
         return service.list(CurrentUser.id());

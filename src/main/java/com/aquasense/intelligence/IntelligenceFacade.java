@@ -250,14 +250,22 @@ public class IntelligenceFacade {
     @Transactional
     public ChatAnswer chat(Long userId, String question, List<AiPrompt.Turn> history, java.util.Set<String> previouslyCited,
                            int omittedTurns) {
+        return chat(userId, question, history, previouslyCited, omittedTurns, null);
+    }
+
+    /** Same as the other overload; with {@code onDelta} the answer is streamed fragment by fragment as it is generated. */
+    @Transactional
+    public ChatAnswer chat(Long userId, String question, List<AiPrompt.Turn> history, java.util.Set<String> previouslyCited,
+                           int omittedTurns, java.util.function.Consumer<String> onDelta) {
         WaterProfile profile = profileService.activeProfile(userId);
         String facts = factsFor(userId, Math.min(7, maxDays(userId)));
         List<Citation> context = chatContext(userId, question, profile);
         String memoryNote = omittedTurns > 0
             ? "(The conversation has " + omittedTurns + " earlier messages that are not included because of length.)\n" : "";
-        AiAnswer answer = aiProvider.complete(new AiPrompt(userId, "CHAT", CHAT_PROMPT + CHAT_CITATION_RULES + CHAT_MEMORY_RULES,
+        AiPrompt prompt = new AiPrompt(userId, "CHAT", CHAT_PROMPT + CHAT_CITATION_RULES + CHAT_MEMORY_RULES,
             memoryNote + "Current user data (recomputed now):\n" + facts + "\n" + guidelineContext(context, profile)
-                + "\nUser question:\n" + question.trim()).withHistory(history));
+                + "\nUser question:\n" + question.trim()).withHistory(history);
+        AiAnswer answer = onDelta == null ? aiProvider.complete(prompt) : aiProvider.stream(prompt, onDelta);
         java.util.Set<String> allowed = new java.util.HashSet<>(previouslyCited);
         context.forEach(c -> allowed.add(c.id()));
         CitationReferences.Result refs = CitationReferences.filter(answer.text(), allowed);

@@ -197,6 +197,14 @@ class ApiFlowIntegrationTest {
         mvc.perform(post("/api/v1/intelligence/chat").header("Authorization", bearer(token))
                 .contentType(MediaType.APPLICATION_JSON).content("{\"question\":\"Como está mi agua?\"}"))
             .andExpect(status().isServiceUnavailable());
+        var streamed = mvc.perform(post("/api/v1/intelligence/chat/stream").header("Authorization", bearer(token))
+                .contentType(MediaType.APPLICATION_JSON).content("{\"question\":\"Como está mi agua?\"}"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.request().asyncStarted()).andReturn();
+        for (int i = 0; i < 100 && !streamed.getResponse().getContentAsString().contains("event:error"); i++) {
+            Thread.sleep(100);
+        }
+        assertThat(streamed.getResponse().getContentAsString())
+            .contains("event:error").contains("\"status\":503");
         mvc.perform(get("/api/v1/intelligence/ml/insights").header("Authorization", bearer(token)))
             .andExpect(jsonPath("$.trained").value(false)).andExpect(jsonPath("$.reason").exists());
         mvc.perform(get("/api/v1/intelligence/ai-status").header("Authorization", bearer(token)))

@@ -37,6 +37,12 @@ public class ChatService {
 
     @Transactional
     public ChatResponse ask(Long userId, String question, Long conversationId) {
+        return ask(userId, question, conversationId, null);
+    }
+
+    /** With {@code onDelta}, the answer reaches the user fragment by fragment; it is stored complete at the end. */
+    @Transactional
+    public ChatResponse ask(Long userId, String question, Long conversationId, java.util.function.Consumer<String> onDelta) {
         String text = question.trim();
         ChatConversation conversation = conversationId == null ? null : owned(userId, conversationId);
         List<ChatMessage> previous = conversation == null ? List.of()
@@ -44,7 +50,7 @@ public class ChatService {
         ChatMemory.Window window = ChatMemory.select(previous);
         Set<String> cited = new HashSet<>();
         previous.forEach(m -> cited.addAll(m.citationIds()));
-        IntelligenceFacade.ChatAnswer answer = facade.chat(userId, text, window.turns(), cited, window.omitted());
+        IntelligenceFacade.ChatAnswer answer = facade.chat(userId, text, window.turns(), cited, window.omitted(), onDelta);
         if (conversation == null) {
             conversation = conversations.save(new ChatConversation(userId, title(text)));
             prune(userId);
