@@ -38,7 +38,7 @@ public class ReferenceDataService {
      * {@code below}, {@code within}, {@code above}: stations under 6.5, between 6.5 and 8.5 and over 8.5 (the range
      * of the U.S. EPA secondary drinking water standard, used here only as a reference band).
      */
-    public record Summary(String source, String sourceUrl, Instant lastImportAt, boolean lastImportOk, String lastImportMessage,
+    public record Summary(String source, String sourceUrl, boolean importing, Instant lastImportAt, boolean lastImportOk, String lastImportMessage,
                           Instant dataUpdatedAt, int stationsReporting, BigDecimal medianPh, BigDecimal minPh, BigDecimal maxPh,
                           long below, long within, long above, List<Station> featured, List<Station> lowest, List<Station> highest) {
     }
@@ -53,7 +53,9 @@ public class ReferenceDataService {
     public Summary summary() {
         List<ReferenceStation> recent = stations.findByLastTimeAfter(Instant.now().minus(ReferenceDataImporter.LATEST_WINDOW))
             .stream().filter(s -> s.getLastPh() != null).sorted(Comparator.comparing(ReferenceStation::getLastPh)).toList();
-        var last = imports.findTopByOrderByStartedAtDesc().orElse(null);
+        var last = imports.findTopByFinishedAtIsNotNullOrderByStartedAtDesc().orElse(null);
+        boolean importing = imports.findTopByOrderByStartedAtDesc()
+            .filter(i -> i.getFinishedAt() == null && i.getStartedAt().isAfter(Instant.now().minus(Duration.ofMinutes(15)))).isPresent();
         var lastOk = imports.findTopBySuccessTrueOrderByStartedAtDesc().orElse(null);
         BigDecimal median = null;
         if (!recent.isEmpty()) {
@@ -64,7 +66,7 @@ public class ReferenceDataService {
         long below = recent.stream().filter(s -> s.getLastPh().compareTo(LOW) < 0).count();
         long above = recent.stream().filter(s -> s.getLastPh().compareTo(HIGH) > 0).count();
         List<Station> featured = stations.findByFeaturedTrueOrderByNameAsc().stream().map(ReferenceDataService::view).toList();
-        return new Summary(SOURCE, SOURCE_URL, last == null ? null : last.getStartedAt(), last != null && last.isSuccess(),
+        return new Summary(SOURCE, SOURCE_URL, importing, last == null ? null : last.getStartedAt(), last != null && last.isSuccess(),
             last == null ? null : !last.isSuccess()
                 ? "La última actualización falló (" + last.getMessage() + "); se muestran los datos anteriores."
                 : last.getMessage() == null ? null : "Algunas estaciones destacadas no se pudieron actualizar en la última ronda; se muestran sus datos anteriores.",

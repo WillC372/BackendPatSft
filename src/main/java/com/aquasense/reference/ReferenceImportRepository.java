@@ -7,5 +7,8 @@ public interface ReferenceImportRepository extends JpaRepository<ReferenceImport
 
     Optional<ReferenceImport> findTopByOrderByStartedAtDesc();
 
+    /** Last import that already finished (an import in progress has no result yet). */
+    Optional<ReferenceImport> findTopByFinishedAtIsNotNullOrderByStartedAtDesc();
+
     Optional<ReferenceImport> findTopBySuccessTrueOrderByStartedAtDesc();
 }
