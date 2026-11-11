@@ -114,6 +114,7 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
         StringBuilder text = new StringBuilder();
         long[] tokens = new long[2];
         String[] model = {config.model()};
+        String finish = null;
         // The HTTP client has no read timeout once the headers arrived: a watchdog closes the stream if no text arrives
         // in time (the next model is then tried) or if an answer that started stops sending anything.
         StreamWatchdog watchdog = new StreamWatchdog(response.body(), started, streamFirstResponse, streamStall);
@@ -133,6 +134,10 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
                     node = mapper.readTree(data);
                 } catch (IOException ex) {
                     throw new AiUnavailableException(config.label() + ": respuesta con formato inesperado.", ex);
+                }
+                String reason = node.path("choices").path(0).path("finish_reason").asText(null);
+                if (reason != null && !reason.isBlank()) {
+                    finish = reason;
                 }
                 String delta = node.path("choices").path(0).path("delta").path("content").asText("");
                 if (!delta.isEmpty()) {
@@ -157,6 +162,9 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
         }
         if (watchdog.fired() != null) {
             throw new AiUnavailableException(config.label() + ": " + watchdog.fired());
+        }
+        if (cutByModel(finish)) {
+            throw new AiUnavailableException(config.label() + ": el modelo cortó su respuesta (" + finish + ").");
         }
         if (text.toString().isBlank()) {
             throw new AiUnavailableException(config.label() + ": respuesta vacía.");
@@ -351,9 +359,27 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
         }
     }
 
+    /**
+     * Endings that mean the model cut its own answer: Gemini stops in the middle when its recitation or safety filter
+     * triggers (for example while quoting a guideline) and reports it as content_filter. The text is incomplete, so the
+     * next model is asked instead of keeping half an answer.
+     */
+    static boolean cutByModel(String finishReason) {
+        if (finishReason == null) {
+            return false;
+        }
+        String reason = finishReason.toLowerCase(java.util.Locale.ROOT);
+        return reason.equals("content_filter") || reason.contains("recitation") || reason.contains("safety")
+            || reason.contains("prohibited") || reason.contains("blocklist") || reason.contains("spii");
+    }
+
     private AiAnswer parse(String raw) {
         try {
             JsonNode root = mapper.readTree(raw);
+            String finish = root.path("choices").path(0).path("finish_reason").asText(null);
+            if (cutByModel(finish)) {
+                throw new AiUnavailableException(config.label() + ": el modelo cortó su respuesta (" + finish + ").");
+            }
             JsonNode message = root.path("choices").path(0).path("message");
             String text = message.path("content").asText("").trim();
             if (text.isEmpty()) {

@@ -115,6 +115,27 @@ class OpenAiCompatibleProviderTest {
     }
 
     @Test
+    void anAnswerTheModelCutsIsNotKeptAsComplete() {
+        server.reply(200, String.join("\n",
+            "data: {\"choices\":[{\"delta\":{\"content\":\"El pH debe estar entre 7.0 y 7.8 [\"}}]}", "",
+            "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"content_filter\"}]}", "", "data: [DONE]", ""));
+        assertThatThrownBy(() -> provider.stream(new AiPrompt(1L, "CHAT", "sistema", "pregunta"), d -> { }))
+            .isInstanceOf(AiUnavailableException.class).hasMessageContaining("cortó su respuesta");
+        server.reply(200, "{\"choices\":[{\"message\":{\"content\":\"El pH debe estar entre 7.0 y 7.8 [\"},"
+            + "\"finish_reason\":\"content_filter\"}]}");
+        assertThatThrownBy(() -> provider.complete(new AiPrompt(1L, "CHAT", "sistema", "pregunta")))
+            .isInstanceOf(AiUnavailableException.class).hasMessageContaining("content_filter");
+    }
+
+    @Test
+    void normalEndingsKeepTheAnswer() throws Exception {
+        server.reply(200, String.join("\n",
+            "data: {\"choices\":[{\"delta\":{\"content\":\"Completo.\"}}]}", "",
+            "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}", "", "data: [DONE]", ""));
+        assertThat(provider.stream(new AiPrompt(1L, "CHAT", "sistema", "pregunta"), d -> { }).text()).isEqualTo("Completo.");
+    }
+
+    @Test
     void failedStreamsReportTheProviderAsUnavailable() {
         server.reply(429, "{\"error\":\"rate\"}");
         assertThatThrownBy(() -> provider.stream(new AiPrompt(1L, "CHAT", "sistema", "pregunta"), d -> { }))
