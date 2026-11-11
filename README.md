@@ -298,7 +298,7 @@ El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENAB
 mvn test
 ```
 
-156 pruebas automatizadas. Cubren:
+158 pruebas automatizadas. Cubren:
 
 - Patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados.
 - El flujo completo de la API: registro, aislamiento entre usuarios, simulador, IA sin clave, informes, cierre de sesión y roles.
@@ -313,7 +313,7 @@ mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test
   -Dspring.datasource.username=aquasense -Dspring.datasource.password=TU_CLAVE
 ```
 
-Último resultado (11 nov 2026): 156/156 aprobadas. Incluyen el proveedor de IA contra un servidor HTTP local que imita la API, la cadena de respaldo, el validador de diagnósticos y el flujo completo con un proveedor saturado y otro que responde.
+Último resultado (11 nov 2026): 158/158 aprobadas. Incluyen el proveedor de IA contra un servidor HTTP local que imita la API, la cadena de respaldo, el validador de diagnósticos y el flujo completo con un proveedor saturado y otro que responde.
 
 ## Despliegue
 
