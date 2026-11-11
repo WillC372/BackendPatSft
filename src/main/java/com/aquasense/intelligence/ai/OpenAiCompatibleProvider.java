@@ -92,10 +92,11 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
         } catch (IOException ex) {
             throw new IllegalStateException(ex);
         }
-        HttpResponse<java.util.stream.Stream<String>> response;
+        long started = System.nanoTime();
+        HttpResponse<java.io.InputStream> response;
         try {
             Duration wait = streamFirstResponse.compareTo(timeout()) < 0 ? streamFirstResponse : timeout();
-            response = http.send(request(json, wait), HttpResponse.BodyHandlers.ofLines());
+            response = http.send(request(json, wait), HttpResponse.BodyHandlers.ofInputStream());
         } catch (java.net.http.HttpTimeoutException ex) {
             throw new AiUnavailableException(config.label() + ": no empezó a responder en " + wait(streamFirstResponse) + " s.", ex);
         } catch (IOException ex) {
@@ -106,41 +107,57 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
         }
         int status = response.statusCode();
         if (status >= 400) {
-            response.body().close();
+            closeQuietly(response.body());
             throw new AiUnavailableException(config.label() + (status == 429 ? ": límite de uso del plan gratuito alcanzado."
                 : status >= 500 ? ": servicio saturado o no disponible (" + status + ")." : ": solicitud rechazada (" + status + ")."));
         }
         StringBuilder text = new StringBuilder();
         long[] tokens = new long[2];
         String[] model = {config.model()};
-        try (java.util.stream.Stream<String> lines = response.body()) {
-            lines.forEach(line -> {
+        // The HTTP client has no read timeout once the headers arrived: a watchdog closes the stream if no text arrives
+        // in time (the next model is then tried) or if an answer that started stops sending anything.
+        StreamWatchdog watchdog = new StreamWatchdog(response.body(), started, streamFirstResponse, streamStall);
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                new java.io.InputStreamReader(response.body(), java.nio.charset.StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                watchdog.progress();
                 if (!line.startsWith("data:")) {
-                    return;
+                    continue;
                 }
                 String data = line.substring(5).trim();
                 if (data.isEmpty() || "[DONE]".equals(data)) {
-                    return;
+                    continue;
                 }
+                JsonNode node;
                 try {
-                    JsonNode node = mapper.readTree(data);
-                    String delta = node.path("choices").path(0).path("delta").path("content").asText("");
-                    if (!delta.isEmpty()) {
-                        text.append(delta);
-                        onDelta.accept(delta);
-                    }
-                    JsonNode usage = node.path("usage");
-                    if (usage.isObject()) {
-                        tokens[0] = usage.path("prompt_tokens").asLong(tokens[0]);
-                        tokens[1] = usage.path("completion_tokens").asLong(tokens[1]);
-                    }
-                    model[0] = node.path("model").asText(model[0]);
+                    node = mapper.readTree(data);
                 } catch (IOException ex) {
-                    throw new java.io.UncheckedIOException(ex);
+                    throw new AiUnavailableException(config.label() + ": respuesta con formato inesperado.", ex);
                 }
-            });
-        } catch (java.io.UncheckedIOException ex) {
-            throw new AiUnavailableException(config.label() + ": respuesta con formato inesperado.", ex);
+                String delta = node.path("choices").path(0).path("delta").path("content").asText("");
+                if (!delta.isEmpty()) {
+                    watchdog.text();
+                    text.append(delta);
+                    onDelta.accept(delta);
+                }
+                JsonNode usage = node.path("usage");
+                if (usage.isObject()) {
+                    tokens[0] = usage.path("prompt_tokens").asLong(tokens[0]);
+                    tokens[1] = usage.path("completion_tokens").asLong(tokens[1]);
+                }
+                model[0] = node.path("model").asText(model[0]);
+            }
+        } catch (IOException ex) {
+            if (watchdog.fired() != null) {
+                throw new AiUnavailableException(config.label() + ": " + watchdog.fired(), ex);
+            }
+            throw new AiUnavailableException(config.label() + ": se cortó la conexión (" + ex.getClass().getSimpleName() + ").", ex);
+        } finally {
+            watchdog.stop();
+        }
+        if (watchdog.fired() != null) {
+            throw new AiUnavailableException(config.label() + ": " + watchdog.fired());
         }
         if (text.toString().isBlank()) {
             throw new AiUnavailableException(config.label() + ": respuesta vacía.");
@@ -227,12 +244,28 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
      * the user does not wait for the full timeout of a slow model; an answer that already started is not cut.
      */
     static final Duration STREAM_FIRST_RESPONSE = Duration.ofSeconds(8);
+    /** Longest silence allowed in an answer that already started: after it, the answer is cut and reported. */
+    static final Duration STREAM_STALL = Duration.ofSeconds(20);
     private Duration streamFirstResponse = STREAM_FIRST_RESPONSE;
+    private Duration streamStall = STREAM_STALL;
 
-    /** Tests only: a shorter wait for the start of a streamed answer. */
+    /** Tests only: shorter waits for the start of a streamed answer and for a silence in the middle of it. */
     OpenAiCompatibleProvider withStreamFirstResponse(Duration wait) {
         this.streamFirstResponse = wait;
         return this;
+    }
+
+    OpenAiCompatibleProvider withStreamStall(Duration stall) {
+        this.streamStall = stall;
+        return this;
+    }
+
+    private static void closeQuietly(java.io.Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (IOException ignored) {
+            // Already closed.
+        }
     }
 
     private static long wait(Duration d) {

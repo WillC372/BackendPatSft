@@ -83,6 +83,37 @@ class OpenAiCompatibleProviderTest {
         assertThat((System.nanoTime() - start) / 1_000_000).isLessThan(1400);
     }
 
+    private void shortWaits(java.time.Duration first, java.time.Duration stall) throws Exception {
+        for (String name : new String[] {"withStreamFirstResponse", "withStreamStall"}) {
+            java.lang.reflect.Method m = OpenAiCompatibleProvider.class.getDeclaredMethod(name, java.time.Duration.class);
+            m.setAccessible(true);
+            m.invoke(provider, name.endsWith("Stall") ? stall : first);
+        }
+    }
+
+    @Test
+    void aModelThatSendsHeadersButNoTextIsAbandoned() throws Exception {
+        shortWaits(java.time.Duration.ofMillis(400), java.time.Duration.ofSeconds(5));
+        server.stallAfter(": keep-alive\n\n", 3000).reply(200, "data: {\"choices\":[{\"delta\":{\"content\":\"tarde\"}}]}\n\n");
+        long start = System.nanoTime();
+        assertThatThrownBy(() -> provider.stream(new AiPrompt(1L, "CHAT", "sistema", "pregunta"), d -> { }))
+            .isInstanceOf(AiUnavailableException.class).hasMessageContaining("no empezó a escribir");
+        assertThat((System.nanoTime() - start) / 1_000_000).isLessThan(2000);
+    }
+
+    @Test
+    void anAnswerThatStopsInTheMiddleIsCutAndReported() throws Exception {
+        shortWaits(java.time.Duration.ofSeconds(5), java.time.Duration.ofMillis(400));
+        server.stallAfter("data: {\"choices\":[{\"delta\":{\"content\":\"El pH \"}}]}\n\n", 3000)
+            .reply(200, "data: {\"choices\":[{\"delta\":{\"content\":\"es 7.\"}}]}\n\n");
+        java.util.List<String> deltas = new java.util.ArrayList<>();
+        long start = System.nanoTime();
+        assertThatThrownBy(() -> provider.stream(new AiPrompt(1L, "CHAT", "sistema", "pregunta"), deltas::add))
+            .isInstanceOf(AiUnavailableException.class).hasMessageContaining("dejó de enviar");
+        assertThat(deltas).containsExactly("El pH ");
+        assertThat((System.nanoTime() - start) / 1_000_000).isLessThan(2000);
+    }
+
     @Test
     void failedStreamsReportTheProviderAsUnavailable() {
         server.reply(429, "{\"error\":\"rate\"}");

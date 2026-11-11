@@ -24,6 +24,8 @@ public class FakeAiServer implements AutoCloseable {
     private final List<String> authorizations = new ArrayList<>();
     private final List<String> userAgents = new ArrayList<>();
     private volatile long delayMs;
+    private volatile String beforeStall;
+    private volatile long stallMs;
 
     public FakeAiServer() throws IOException {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -43,6 +45,22 @@ public class FakeAiServer implements AutoCloseable {
             }
             if (!wait.isEmpty()) {
                 exchange.getResponseHeaders().add("Retry-After", wait);
+            }
+            if (stallMs > 0) {
+                // Headers and the first part right away, then silence, like a model that hangs while streaming.
+                exchange.getResponseHeaders().add("Content-Type", "text/event-stream");
+                exchange.sendResponseHeaders(status, 0);
+                try (OutputStream out = exchange.getResponseBody()) {
+                    out.write(beforeStall.getBytes(StandardCharsets.UTF_8));
+                    out.flush();
+                    Thread.sleep(stallMs);
+                    out.write(body.getBytes(StandardCharsets.UTF_8));
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                } catch (IOException ex) {
+                    // The client closed the connection: expected when it stops waiting.
+                }
+                return;
             }
             byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().add("Content-Type", "application/json");
@@ -69,6 +87,13 @@ public class FakeAiServer implements AutoCloseable {
         String escaped = content.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
         return reply(200, "{\"model\":\"" + model + "\",\"choices\":[{\"message\":{\"role\":\"assistant\",\"content\":\""
             + escaped + "\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":120,\"completion_tokens\":80}}");
+    }
+
+    /** Sends the headers and {@code first} at once, then goes silent for {@code millis} before the rest. */
+    public FakeAiServer stallAfter(String first, long millis) {
+        this.beforeStall = first;
+        this.stallMs = millis;
+        return this;
     }
 
     /** Waits this long before answering, like a model that is slow to start. */
