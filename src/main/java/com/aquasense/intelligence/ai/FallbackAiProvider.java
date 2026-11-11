@@ -84,7 +84,9 @@ public class FallbackAiProvider implements AiTextProvider {
     @Override
     public AiAnswer stream(AiPrompt prompt, java.util.function.Consumer<String> onDelta) {
         List<String> failures = new ArrayList<>();
-        for (AiTextProvider provider : candidates(prompt)) {
+        List<AiTextProvider> candidates = candidates(prompt);
+        for (int i = 0; i < candidates.size(); i++) {
+            AiTextProvider provider = candidates.get(i);
             long start = System.currentTimeMillis();
             boolean[] sent = {false};
             try {
@@ -96,7 +98,11 @@ public class FallbackAiProvider implements AiTextProvider {
                 LOG.warn("AI provider {} ({}) failed while streaming: {}", provider.providerName(), provider.modelName(), ex.getMessage());
                 notifyFailure(prompt, provider, start, ex.getMessage());
                 if (sent[0]) {
-                    throw new AiUnavailableException("La respuesta se interrumpió: " + ex.getMessage(), ex);
+                    if (i == candidates.size() - 1) {
+                        throw new AiUnavailableException("La respuesta se interrumpió: " + ex.getMessage(), ex);
+                    }
+                    // The model stopped half way: the next one writes the whole answer again.
+                    onDelta.accept(RESTART);
                 }
                 failures.add(ex.getMessage());
             }

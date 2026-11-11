@@ -48,6 +48,13 @@ public class ChatController {
             try {
                 ChatResponse response = service.ask(userId, request.question(), request.conversationId(), delta -> {
                     try {
+                        if (delta == com.aquasense.intelligence.ai.AiTextProvider.RESTART) {
+                            // The model stopped half way and another one starts over: the page clears the text.
+                            emitter.send(org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event().name("restart")
+                                .data(Map.of("reason", "El primer modelo se detuvo; otro escribe la respuesta."),
+                                    org.springframework.http.MediaType.APPLICATION_JSON));
+                            return;
+                        }
                         emitter.send(org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event().name("delta")
                             .data(Map.of("t", delta), org.springframework.http.MediaType.APPLICATION_JSON));
                     } catch (java.io.IOException ex) {

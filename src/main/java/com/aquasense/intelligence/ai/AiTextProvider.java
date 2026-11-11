@@ -5,6 +5,13 @@ package com.aquasense.intelligence.ai;
  */
 public interface AiTextProvider {
 
+    /**
+     * Sent to {@code onDelta} instead of text when a model stopped in the middle of an answer and the next model starts
+     * again from the beginning: the receiver discards what it showed so far. Compared by identity.
+     */
+    String RESTART = new String("\u0000restart");
+
+
     boolean isAvailable();
 
     String providerName();

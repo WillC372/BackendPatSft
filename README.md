@@ -185,7 +185,7 @@ Primero calcula con estadística y reglas de dominio; la IA generativa solo reda
 - no envía la respuesta HTTP en 8 s, o
 - no escribe texto en 12 s.
 
-Una respuesta que ya empezó se corta si pasan 20 s sin recibir nada. Un vigilante (`StreamWatchdog`) cierra la conexión porque el cliente HTTP de Java no tiene límite de lectura. Medido en producción: el texto empieza a aparecer en 1 a 3 s en la mayoría de las preguntas.
+Si una respuesta ya empezada pasa 6 s sin texto nuevo, el servidor envía el evento `restart` y el siguiente modelo la escribe completa. En producción, las pausas normales duran menos de 1,2 s y Gemini Flash-Lite a veces se congela 14 s o más. Un vigilante (`StreamWatchdog`) cierra la conexión porque el cliente HTTP de Java no tiene límite de lectura; las líneas sin texto (mensajes para mantener viva la conexión) no cuentan. Medido en producción: el texto empieza a aparecer en 1 a 3 s en la mayoría de las preguntas.
 
 **Proveedores y respaldo.** `FallbackAiProvider` (Chain of Responsibility) intenta en orden Gemini 3.5 Flash, Gemini 3.5 Flash-Lite, Groq gpt-oss-120b y Claude. Pasa al siguiente si uno está saturado (503), sin cuota (429), rechaza la solicitud o devuelve un JSON inválido. Por delante está `AiProviderProxy`, que controla la cuota diaria por plan, la caché y el registro del consumo en `ai_usage`. Solo se envían valores de pH, fechas y datos del perfil; nunca nombres ni correos. Para fotos solo participan los proveedores con visión (`vision: true`): Gemini Flash, Gemini Flash-Lite y Groq Qwen 3.8. Gemini y Groq se usan con su endpoint compatible con OpenAI (`Authorization: Bearer`), por eso una sola clase (`OpenAiCompatibleProvider`) sirve para ambos.
 
@@ -298,13 +298,13 @@ El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENAB
 mvn test
 ```
 
-151 pruebas automatizadas. Cubren:
+153 pruebas automatizadas. Cubren:
 
 - Patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados.
 - El flujo completo de la API: registro, aislamiento entre usuarios, simulador, IA sin clave, informes, cierre de sesión y roles.
 - El historial de sesiones y las cuentas de demostración con sus límites.
 - La importación de datos oficiales con respuestas grabadas del USGS.
-- Las respuestas en vivo: fragmentos, un modelo que tarda en empezar, uno que se queda callado y uno que se detiene a mitad.
+- Las respuestas en vivo: fragmentos, un modelo que tarda en empezar, uno que se queda callado y uno que se detiene a mitad (el siguiente modelo la escribe de nuevo).
 
 Se ejecutan con H2 en modo PostgreSQL; para correrlas contra PostgreSQL real:
 
@@ -313,7 +313,7 @@ mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test
   -Dspring.datasource.username=aquasense -Dspring.datasource.password=TU_CLAVE
 ```
 
-Último resultado (11 nov 2026): 151/151 aprobadas. Incluyen el proveedor de IA contra un servidor HTTP local que imita la API, la cadena de respaldo, el validador de diagnósticos y el flujo completo con un proveedor saturado y otro que responde.
+Último resultado (11 nov 2026): 153/153 aprobadas. Incluyen el proveedor de IA contra un servidor HTTP local que imita la API, la cadena de respaldo, el validador de diagnósticos y el flujo completo con un proveedor saturado y otro que responde.
 
 ## Despliegue
 

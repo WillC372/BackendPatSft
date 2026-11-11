@@ -57,4 +57,38 @@ class FallbackAiProviderTest {
         assertThatThrownBy(() -> chain.complete(jsonPrompt)).isInstanceOf(AiUnavailableException.class)
             .hasMessageContaining("Gemini saturado").hasMessageContaining("Groq saturado");
     }
+
+    /** Streams "first part" and then fails, like a model that freezes in the middle of an answer. */
+    private AiTextProvider freezesHalfWay(String name) {
+        return new AiTextProvider() {
+            public boolean isAvailable() { return true; }
+            public String providerName() { return name; }
+            public String modelName() { return name + "-model"; }
+            public AiAnswer complete(AiPrompt prompt) { throw new UnsupportedOperationException(); }
+            public AiAnswer stream(AiPrompt prompt, java.util.function.Consumer<String> onDelta) {
+                calls.add(name);
+                onDelta.accept("primera parte");
+                throw new AiUnavailableException(name + ": dejó de enviar la respuesta a mitad de camino.");
+            }
+        };
+    }
+
+    @Test
+    void aModelThatFreezesHalfWayIsReplacedAndTheReceiverStartsOver() {
+        var chain = new FallbackAiProvider(List.of(freezesHalfWay("Gemini"), provider("Groq", true, "respuesta completa")), new ObjectMapper());
+        List<String> received = new ArrayList<>();
+        AiAnswer answer = chain.stream(new AiPrompt(1L, "CHAT", "s", "u"), received::add);
+        assertThat(answer.text()).isEqualTo("respuesta completa");
+        assertThat(received).hasSize(3);
+        assertThat(received.get(0)).isEqualTo("primera parte");
+        assertThat(received.get(1)).isSameAs(AiTextProvider.RESTART);
+        assertThat(received.get(2)).isEqualTo("respuesta completa");
+    }
+
+    @Test
+    void whenTheLastModelFreezesHalfWayTheAnswerIsReportedAsInterrupted() {
+        var chain = new FallbackAiProvider(List.of(freezesHalfWay("Groq")), new ObjectMapper());
+        assertThatThrownBy(() -> chain.stream(new AiPrompt(1L, "CHAT", "s", "u"), d -> { }))
+            .isInstanceOf(AiUnavailableException.class).hasMessageContaining("se interrumpió");
+    }
 }

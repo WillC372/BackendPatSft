@@ -121,7 +121,6 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
                 new java.io.InputStreamReader(response.body(), java.nio.charset.StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                watchdog.progress();
                 if (!line.startsWith("data:")) {
                     continue;
                 }
@@ -244,8 +243,11 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
      * the user does not wait for the full timeout of a slow model; an answer that already started is not cut.
      */
     static final Duration STREAM_FIRST_RESPONSE = Duration.ofSeconds(8);
-    /** Longest silence allowed in an answer that already started: after it, the answer is cut and reported. */
-    static final Duration STREAM_STALL = Duration.ofSeconds(20);
+    /**
+     * Longest pause in the text of an answer that already started. Measured in production, normal pauses stay under
+     * 1.2 s while a frozen model pauses 14 s or more; after this, the next model writes the answer again.
+     */
+    static final Duration STREAM_STALL = Duration.ofSeconds(6);
     private Duration streamFirstResponse = STREAM_FIRST_RESPONSE;
     private Duration streamStall = STREAM_STALL;
 

@@ -14,7 +14,8 @@ import java.util.concurrent.TimeUnit;
  * closes the stream, which ends the blocked read, when:
  * <ul>
  *   <li>no text has arrived one and a half times the first-response wait after the request started, or</li>
- *   <li>an answer that started has sent nothing for {@code stall}.</li>
+ *   <li>an answer that started has sent no text for {@code stall} (lines without text, such as keep-alives, do not
+ *       count).</li>
  * </ul>
  * {@link #fired()} then says why, so the caller can try the next model or tell the user.
  */
@@ -27,7 +28,7 @@ final class StreamWatchdog {
     private final long firstTextDeadline;
     private final long stallNanos;
     private final ScheduledFuture<?> check;
-    private volatile long lastProgress = System.nanoTime();
+    private volatile long lastText = System.nanoTime();
     private volatile boolean textArrived;
     private volatile String fired;
 
@@ -39,15 +40,10 @@ final class StreamWatchdog {
         this.check = CLOCK.scheduleAtFixedRate(this::check, period, period, TimeUnit.MILLISECONDS);
     }
 
-    /** Something (any line) arrived. */
-    void progress() {
-        lastProgress = System.nanoTime();
-    }
-
     /** Answer text arrived. */
     void text() {
+        lastText = System.nanoTime();
         textArrived = true;
-        progress();
     }
 
     /** Why the stream was closed, or {@code null} if it was not. */
@@ -64,7 +60,7 @@ final class StreamWatchdog {
         String reason = null;
         if (!textArrived && now > firstTextDeadline) {
             reason = "no empezó a escribir la respuesta a tiempo.";
-        } else if (textArrived && now - lastProgress > stallNanos) {
+        } else if (textArrived && now - lastText > stallNanos) {
             reason = "dejó de enviar la respuesta a mitad de camino.";
         }
         if (reason != null && fired == null) {
