@@ -7,11 +7,14 @@ API REST de **AquaSense AI**, un sistema de monitoreo de pH del agua. El backend
 ## Responsabilidades del servidor
 
 - Registrar usuarios, iniciar y cerrar sesión, recuperar contraseñas (JWT + Argon2id).
+- Guardar el **historial de sesiones**: cada inicio de sesión abre una sesión que agrupa todo lo que el usuario hace hasta cerrarla.
+- Mantener las **cuentas de demostración** de los botones del inicio de sesión, una por rol (Usuario, Usuario Premium, Administrador).
+- Importar **datos oficiales de pH** del Servicio Geológico de EE. UU. (USGS) cada 3 horas y guardarlos aparte de las mediciones de los usuarios.
 - Guardar y consultar mediciones con su origen: `REAL` (medidor), `MANUAL` o `PHOTO` (foto o cámara leída por IA). El origen `SIMULATED` solo existe en las pruebas automáticas.
 - Validar cada lectura (cadena de validación) y clasificarla según el perfil de agua activo.
 - Hablar con el medidor por puerto serie: búsqueda, conexión, medición estabilizada, calibración y transmisión en vivo (Server-Sent Events).
 - Detectar anomalías, analizar tendencias, predecir y recomendar (AquaSense Intelligence).
-- Llamar a la IA generativa (Claude, de Anthropic) solo desde el servidor, con cuotas por plan y caché.
+- Llamar a la IA generativa (Gemini y Groq; Claude como opción de pago) solo desde el servidor, con cuotas por plan y caché. El chat responde **en vivo** (Server-Sent Events).
 - Generar informes del periodo en PDF (con gráficas y fuentes normativas) o texto, y exportar mediciones a CSV.
 
 ## Arquitectura
@@ -24,8 +27,8 @@ src/main/java/com/aquasense/
 ├── config/         Seguridad, CORS, OpenAPI y propiedades tipadas
 ├── security/       JWT, filtro de autenticación, limitador de intentos
 ├── common/         Errores de negocio y manejo centralizado de excepciones
-├── audit/          Historial de operaciones
-├── user/           Usuarios, autenticación, recuperación de contraseña, preferencias
+├── audit/          Historial de operaciones, cada una ligada a la sesión en que se hizo
+├── user/           Usuarios, autenticación, sesiones (historial), cuentas de demostración, recuperación, preferencias
 ├── admin/          Administración de usuarios y planes: búsqueda, plan, rol, desactivación, pagos y auditoría
 ├── profile/        Perfiles de agua, rangos y clasificador de pH
 ├── measurement/    Mediciones, cadena de validación, filtros (Specification), iterador y observadores
@@ -36,10 +39,12 @@ src/main/java/com/aquasense/
 │   └── ml/         Isolation Forest propio, variables, escalado robusto, modelo por usuario y regla de anomalías
 ├── vision/         Lectura de pH desde fotos: saneo de imagen, validación, segunda opinión
 ├── report/         Informes (Builder), exportación a texto y a PDF (report/pdf: PDFBox y gráficas Java2D)
+├── reference/      Datos oficiales del USGS: cliente de su API (Adapter), importador programado y consulta
 └── dashboard/      Consulta agregada para la pantalla de inicio
 src/main/resources/
 ├── application.yml
-└── db/migration/   Migraciones Flyway (V1 esquema, V2 perfiles del sistema)
+└── db/migration/   Migraciones Flyway V1 a V13 (V11 historial de sesiones, V12 cuentas de demostración,
+                    V13 datos oficiales)
 hardware/Esp32PhSensor/    Firmware de referencia para ESP32 (no probado con hardware)
 docs/                        Documentación técnica
 ```
@@ -125,6 +130,10 @@ docker compose --env-file .env up --build
 | `GROQ_API_KEY`, `GROQ_MODEL`, `GROQ_VISION_MODEL` | No | Groq, respaldo (texto `openai/gpt-oss-120b`; visión `qwen/qwen3.8-27b`) |
 | `RATE_LIMIT_PER_MINUTE` | No | Intentos por minuto en registro, inicio de sesión y recuperación (10) |
 | `ANTHROPIC_API_KEY`, `AI_MODEL`, `AI_EFFORT` | No | Claude, opción de pago (`claude-opus-5-5`) |
+| `DEMO_ACCOUNTS_ENABLED`, `DEMO_ACCOUNTS_PASSWORD` | No | Cuentas de demostración del inicio de sesión (`true` y `AquaSense-Demo-2026`). La contraseña es pública a propósito: solo abre esas cuentas limitadas |
+| `REFERENCE_DATA_ENABLED`, `REFERENCE_STATIONS` | No | Importación de datos oficiales del USGS (`true`) y estaciones destacadas, separadas por comas |
+| `USGS_API_KEY` | No | Clave gratuita de api.data.gov: sube el límite de solicitudes al USGS (los datos son públicos sin ella) |
+| `SIMULATOR_ENABLED` | No | Simulador de medidor (`false`); solo lo encienden las pruebas automáticas |
 | `AI_DAILY_QUOTA_FREE`, `AI_DAILY_QUOTA_PREMIUM` | No | Consultas de IA por usuario y día (20 y 200) |
 
 Sin ninguna clave de IA, el diagnóstico y la conclusión se calculan con reglas y el chat responde "no disponible".
@@ -135,13 +144,13 @@ Sin ninguna clave de IA, el diagnóstico y la conclusión se calculan con reglas
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - Resumen de endpoints: [`docs/Api.md`](docs/Api.md)
 
-Todas las rutas están versionadas bajo `/api/v1`. Grupos: `auth`, `users/me`, `profiles`, `measurements`, `devices`, `alerts`, `intelligence`, `reports`, `dashboard`, `payments` y `admin`.
+Todas las rutas están versionadas bajo `/api/v1`. Grupos: `auth`, `users/me` (incluye `users/me/sessions`), `profiles`, `measurements`, `devices`, `alerts`, `intelligence`, `reports`, `reference`, `dashboard`, `payments` y `admin`.
 
 ## Autenticación y autorización
 
 - `POST /api/v1/auth/login` devuelve un JWT. Se envía en `Authorization: Bearer <token>`.
 - Duración: 8 horas, o 30 días con "Recordarme".
-- Cerrar sesión incrementa la versión de token del usuario y revoca todos sus tokens.
+- Cada token lleva su sesión (`sid`). Cerrar sesión termina esa sesión: su token deja de servir y la sesión queda en el historial. "Cerrar mis otras sesiones" (`POST /users/me/sessions/close-others`) cierra las de otros equipos. Cambiar la contraseña, el rol o desactivar la cuenta cierra todas.
 - Contraseñas con Argon2id; tokens de recuperación de un solo uso, guardados como hash SHA-256 y con vencimiento de 30 minutos.
 - Cada consulta filtra por el usuario autenticado; un usuario no puede leer ni borrar datos de otro (lo verifican las pruebas de integración).
 - `/api/v1/admin/**` requiere el rol `ADMIN`. Los planes gratuito y Premium se aplican en el servidor: días de análisis histórico, horizonte de predicción y cuota diaria de IA.
@@ -171,11 +180,56 @@ Primero calcula con estadística y reglas de dominio; la IA generativa solo reda
 
 | **Red neuronal LSTM (capa 7)** | Predice el pH de las próximas 12 horas con una LSTM de una capa (16 unidades ocultas, 1612 parámetros) implementada en Java en el paquete `intelligence/deep`, sin dependencias. Se descartó DJL porque descarga motores nativos de PyTorch desde servidores externos y agrega cientos de MB. Las mediciones se convierten en una serie horaria (huecos de hasta 6 h interpolados) y en ventanas de 24 h de entrada. Los datos se dividen en orden cronológico: 70 % entrenamiento, 15 % validación con detención temprana y 15 % prueba, con 12 h de separación entre partes. En la prueba se compara con tres referencias: persistencia, tendencia lineal y estacional diaria. **La red solo se usa si reduce el error al menos un 5 %**; si no, se usa la mejor referencia y se dice. El intervalo es el percentil 90 del error en la prueba. Genera una alerta anticipada si se prevé salir del rango ideal, y la usan el agente (`get_neural_forecast`) y el diagnóstico. El gradiente se verifica numéricamente en las pruebas. Requiere unos 8 días de mediciones frecuentes; sin ellas no entrena y lo explica |
 
+**Respuestas en vivo.** `POST /intelligence/chat/stream` responde con Server-Sent Events: fragmentos (`delta`) a medida que el modelo escribe, y al final la respuesta completa con citas verificadas (`done`) o un error. Para el chat se prueban primero los modelos rápidos: Gemini Flash-Lite y Groq gpt-oss-120b con razonamiento bajo. Un modelo se salta y se usa el siguiente si:
+
+- no envía la respuesta HTTP en 8 s, o
+- no escribe texto en 12 s.
+
+Una respuesta que ya empezó se corta si pasan 20 s sin recibir nada. Un vigilante (`StreamWatchdog`) cierra la conexión porque el cliente HTTP de Java no tiene límite de lectura. Medido en producción: el texto empieza a aparecer en 1 a 3 s en la mayoría de las preguntas.
+
 **Proveedores y respaldo.** `FallbackAiProvider` (Chain of Responsibility) intenta en orden Gemini 3.5 Flash, Gemini 3.5 Flash-Lite, Groq gpt-oss-120b y Claude. Pasa al siguiente si uno está saturado (503), sin cuota (429), rechaza la solicitud o devuelve un JSON inválido. Por delante está `AiProviderProxy`, que controla la cuota diaria por plan, la caché y el registro del consumo en `ai_usage`. Solo se envían valores de pH, fechas y datos del perfil; nunca nombres ni correos. Para fotos solo participan los proveedores con visión (`vision: true`): Gemini Flash, Gemini Flash-Lite y Groq Qwen 3.8. Gemini y Groq se usan con su endpoint compatible con OpenAI (`Authorization: Bearer`), por eso una sola clase (`OpenAiCompatibleProvider`) sirve para ambos.
 
 **Retry.** Si un proveedor responde 429 o 503 indicando una espera de 20 segundos o menos (`Retry-After` o `x-ratelimit-reset-*` de Groq), se espera y se reintenta una vez. Si la espera es larga, por ejemplo con la cuota diaria agotada, se pasa de inmediato al siguiente proveedor.
 
 **Verificado con llamadas reales (7 nov 2026).** Gemini 3.5 Flash generó un diagnóstico validado en unos 16 s. Con los modelos de Gemini forzados a fallar, la cadena respondió con Groq gpt-oss-120b. El chat respondió con Gemini usando las mediciones reales. Con imágenes sintéticas de prueba, la lectura por foto leyó una tira como 6.1 (Gemini 6.0 y Groq Qwen 6.2, coincidentes) y una pantalla como 7.42 a 24.6 °C, y rechazó una imagen sin relación con el agua. El agente de informes, con la cuota diaria de Gemini Flash agotada, reinició la investigación con Gemini Flash-Lite. Hizo entre 5 y 7 consultas según el objetivo, terminó en 4 a 7 segundos y todas sus cifras se verificaron (22/22 y 17/17). **Falta probarla con fotos reales de tiras**: la precisión con iluminación y cámaras reales no está medida. Los planes gratuitos tienen límites que cambian y que se consultan en AI Studio y en la consola de Groq.
+
+## Historial de sesiones
+
+Cada inicio de sesión (o registro) crea una fila en `user_sessions` con inicio, última actividad, vencimiento, si se pidió "Recordarme" y el navegador resumido ("Chrome en Windows"; no se guardan la IP ni el User-Agent completo). Cada acción del usuario (`audit_log`) se guarda con la sesión en que la hizo: mediciones, preguntas al asistente, descargas, cambios de perfil o de configuración, pagos. Al cerrar sesión, la sesión termina y su token deja de valer; al volver a entrar empieza otra. Las que vencen sin cerrar quedan como "Venció sin cerrar sesión".
+
+- `GET /users/me/sessions`: lista con duración, estado y cuántas veces se hizo cada acción.
+- `GET /users/me/sessions/{id}`: el detalle en orden.
+- El administrador consulta las de cualquier cuenta (`/admin/users/{id}/sessions`).
+
+## Cuentas de demostración
+
+`DemoAccounts` crea al arrancar tres cuentas reales, una por rol del caso de estudio:
+
+| Botón | Correo | Rol y plan |
+|---|---|---|
+| Usuario | `usuario@demo.aquasense` | Usuario, plan gratuito |
+| Usuario Premium | `premium@demo.aquasense` | Usuario, Premium sin vencimiento |
+| Administrador | `admin@demo.aquasense` | Administrador de solo lectura |
+
+`GET /auth/demo-accounts` las entrega al frontend con la contraseña (pública a propósito). Como cualquiera puede usarlas, tienen límites que aplica el servidor:
+
+- No se pueden eliminar, recuperar la contraseña ni pagar.
+- Los administradores reales no pueden cambiarlas, para que los botones sigan funcionando.
+- El administrador de demostración no puede cambiar planes, roles ni estados, borrar cuentas ni enviar correos.
+- Ese administrador ve enmascarados el nombre y el correo de las cuentas reales y no puede abrir su detalle ni sus sesiones.
+- El "último administrador activo" se cuenta sin él.
+
+## Datos oficiales (USGS)
+
+`ReferenceDataImporter` descarga de la API pública **Water Data OGC** del USGS (`api.waterdata.usgs.gov/ogcapi/v0`, parámetro `00400`, pH):
+
+- Al arrancar y cada 3 horas, el último valor de cada estación que reportó pH en las últimas 24 horas (unas 470 estaciones de ríos y arroyos).
+- La serie de ocho estaciones destacadas en distintos estados.
+- El nombre de las estaciones con el pH más bajo y más alto.
+
+Las lecturas se guardan 30 días en `reference_stations` y `reference_readings`, aparte de las mediciones de los usuarios. Se conserva el estado de revisión del USGS (los valores recientes son provisionales). Cada importación queda en `reference_imports`.
+
+Si el USGS rechaza una solicitud por su límite (429) o falla un momento, se espera y se repite. Si una estación no se puede actualizar, las demás sí. `GET /reference/summary` y `GET /reference/stations/{id}/readings` alimentan la pantalla "Datos oficiales". Las pruebas usan respuestas grabadas de la API real.
 
 ## Administración
 
@@ -244,14 +298,22 @@ El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENAB
 mvn test
 ```
 
-140 pruebas automatizadas: patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados, y un flujo completo de la API (registro, aislamiento entre usuarios, simulador, IA sin clave, informes, cierre de sesión, roles). Se ejecutan con H2 en modo PostgreSQL; para correrlas contra PostgreSQL real:
+151 pruebas automatizadas. Cubren:
+
+- Patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados.
+- El flujo completo de la API: registro, aislamiento entre usuarios, simulador, IA sin clave, informes, cierre de sesión y roles.
+- El historial de sesiones y las cuentas de demostración con sus límites.
+- La importación de datos oficiales con respuestas grabadas del USGS.
+- Las respuestas en vivo: fragmentos, un modelo que tarda en empezar, uno que se queda callado y uno que se detiene a mitad.
+
+Se ejecutan con H2 en modo PostgreSQL; para correrlas contra PostgreSQL real:
 
 ```bash
 mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test \
   -Dspring.datasource.username=aquasense -Dspring.datasource.password=TU_CLAVE
 ```
 
-Último resultado (8 nov 2026): 130/130 aprobadas. Incluyen el proveedor de IA contra un servidor HTTP local que imita la API, la cadena de respaldo, el validador de diagnósticos y el flujo completo con un proveedor saturado y otro que responde.
+Último resultado (11 nov 2026): 151/151 aprobadas. Incluyen el proveedor de IA contra un servidor HTTP local que imita la API, la cadena de respaldo, el validador de diagnósticos y el flujo completo con un proveedor saturado y otro que responde.
 
 ## Despliegue
 
@@ -279,6 +341,8 @@ Un backend en la nube no puede leer un medidor conectado a tu computador. Para l
 | El frontend muestra "No se pudo conectar con el servidor" | Backend apagado, o el origen del frontend no está en `CORS_ORIGINS` |
 | No aparece el puerto del medidor | Revisa el cable y el controlador USB. En Linux agrega tu usuario al grupo `dialout`. Para Bluetooth, empareja primero desde el sistema |
 | "IA no configurada" | Faltan `GEMINI_API_KEY` y `GROQ_API_KEY`; el resto del análisis funciona sin ellas |
+| Tras actualizar el servidor, todos deben volver a iniciar sesión | Los tokens emitidos antes del historial de sesiones no llevan sesión (`sid`) y ya no valen; ocurre una sola vez |
+| "Datos oficiales" dice que la última actualización falló | El USGS no respondió o limitó las solicitudes; se muestran los datos anteriores y se reintenta en 3 horas. `USGS_API_KEY` sube el límite |
 | Groq responde 403 "error code: 1010" | Cloudflare bloquea clientes sin User-Agent reconocible; el backend ya envía `AquaSense-AI/1.0` |
 | El diagnóstico sale "con reglas" | Todos los proveedores fallaron o la respuesta no pasó la validación; el motivo aparece en la nota del diagnóstico |
 | "La recuperación de contraseña no está disponible" | No hay canal de correo: define `MAILJET_API_KEY`, `MAILJET_SECRET_KEY` y `MAIL_FROM` (o Brevo o SMTP). Solo en desarrollo puedes usar `MAIL_LOG_RESET_LINKS=true` y copiar el enlace del log |
