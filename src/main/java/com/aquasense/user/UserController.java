@@ -1,6 +1,5 @@
 package com.aquasense.user;
 
-import com.aquasense.audit.AuditEntry;
 import com.aquasense.audit.AuditService;
 import com.aquasense.common.BusinessException;
 import com.aquasense.profile.ProfileService;
@@ -8,6 +7,7 @@ import com.aquasense.security.CurrentUser;
 import com.aquasense.user.dto.SettingsDto;
 import com.aquasense.user.dto.UserResponse;
 import jakarta.validation.Valid;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.ResponseEntity;
@@ -63,9 +63,16 @@ public class UserController {
         return SettingsDto.from(settings);
     }
 
+    /** {@code label}: readable name of the action, as the session history shows it. */
+    public record ActivityItem(Long id, String action, String label, String detail, Instant createdAt, Long sessionId) {
+    }
+
     @GetMapping("/activity")
-    public List<AuditEntry> activity() {
-        return auditService.latest(CurrentUser.id(), 50);
+    public List<ActivityItem> activity() {
+        return auditService.latest(CurrentUser.id(), 50).stream()
+            .map(e -> new ActivityItem(e.getId(), e.getAction(), com.aquasense.audit.ActionLabels.of(e.getAction()), e.getDetail(),
+                e.getCreatedAt(), e.getSessionId()))
+            .toList();
     }
 
     private UserSettings settingsFor(Long userId) {

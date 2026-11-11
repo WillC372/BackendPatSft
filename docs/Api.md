@@ -13,7 +13,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | GET | `/users/me` | Datos de la cuenta |
 | DELETE | `/users/me` | `{ password }`. Elimina la propia cuenta y todos sus datos (204); 400 si la contraseña no coincide, 409 si es el último administrador activo o tiene pagos reales |
 | GET / PUT | `/users/me/settings` | Tema, notificaciones, guardado automático, perfil activo |
-| GET | `/users/me/activity` | Historial de operaciones |
+| GET | `/users/me/activity` | Últimas 50 operaciones, con su nombre legible (`label`) y la sesión en que se hicieron (`sessionId`) |
 | GET | `/users/me/sessions?page=&size=` | Historial de sesiones: una entrada por cada inicio de sesión, con inicio, fin, duración, navegador ("Chrome en Windows"), estado (`OPEN`, `ENDED`, `EXPIRED`) y cuántas veces se hizo cada acción en ella |
 | GET | `/users/me/sessions/{id}` | Lo que se hizo en esa sesión, en orden, desde el inicio hasta el cierre |
 | POST | `/users/me/sessions/close-others` | Cierra las sesiones abiertas en otros navegadores o equipos; la actual sigue abierta |

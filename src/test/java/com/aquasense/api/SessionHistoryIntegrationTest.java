@@ -65,6 +65,12 @@ class SessionHistoryIntegrationTest {
         assertThat(detail.path("actions").findValuesAsText("action"))
             .containsExactly("USER_REGISTERED", "MEASUREMENT_SAVED", "MEASUREMENT_SAVED", "USER_LOGOUT");
 
+        JsonNode activity = json(mvc.perform(get("/api/v1/users/me/activity").header("Authorization", "Bearer " + second))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(activity.get(0).path("action").asText()).isEqualTo("MEASUREMENT_SAVED");
+        assertThat(activity.get(0).path("label").asText()).isEqualTo("Guardó una medición");
+        assertThat(activity.get(0).path("sessionId").asLong()).isEqualTo(current.path("id").asLong());
+
         // Another user cannot read this history.
         String other = token(mvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"fullName\":\"Otra\",\"email\":\"otra-" + UUID.randomUUID() + "@aquasense.test\",\"password\":\"" + PASSWORD + "\"}"))
