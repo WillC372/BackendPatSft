@@ -94,7 +94,10 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
         }
         HttpResponse<java.util.stream.Stream<String>> response;
         try {
-            response = http.send(request(json), HttpResponse.BodyHandlers.ofLines());
+            Duration wait = streamFirstResponse.compareTo(timeout()) < 0 ? streamFirstResponse : timeout();
+            response = http.send(request(json, wait), HttpResponse.BodyHandlers.ofLines());
+        } catch (java.net.http.HttpTimeoutException ex) {
+            throw new AiUnavailableException(config.label() + ": no empezó a responder en " + wait(streamFirstResponse) + " s.", ex);
         } catch (IOException ex) {
             throw new AiUnavailableException(config.label() + ": no se pudo conectar (" + ex.getClass().getSimpleName() + ").", ex);
         } catch (InterruptedException ex) {
@@ -219,9 +222,34 @@ public class OpenAiCompatibleProvider implements AiTextProvider {
         }
     }
 
+    /**
+     * Longest wait for a streamed answer to start. A model that takes longer is skipped and the next one is tried, so
+     * the user does not wait for the full timeout of a slow model; an answer that already started is not cut.
+     */
+    static final Duration STREAM_FIRST_RESPONSE = Duration.ofSeconds(8);
+    private Duration streamFirstResponse = STREAM_FIRST_RESPONSE;
+
+    /** Tests only: a shorter wait for the start of a streamed answer. */
+    OpenAiCompatibleProvider withStreamFirstResponse(Duration wait) {
+        this.streamFirstResponse = wait;
+        return this;
+    }
+
+    private static long wait(Duration d) {
+        return Math.max(1, d.toSeconds());
+    }
+
+    private Duration timeout() {
+        return Duration.ofSeconds(config.timeoutSeconds() > 0 ? config.timeoutSeconds() : 45);
+    }
+
     private HttpRequest request(String json) {
+        return request(json, timeout());
+    }
+
+    private HttpRequest request(String json, Duration timeout) {
         return HttpRequest.newBuilder(URI.create(config.baseUrl().replaceAll("/$", "") + "/chat/completions"))
-            .timeout(Duration.ofSeconds(config.timeoutSeconds() > 0 ? config.timeoutSeconds() : 45))
+            .timeout(timeout)
             .header("Authorization", "Bearer " + config.apiKey())
             .header("Content-Type", "application/json")
             .header("User-Agent", USER_AGENT)

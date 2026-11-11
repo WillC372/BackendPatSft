@@ -23,6 +23,7 @@ public class FakeAiServer implements AutoCloseable {
     private final List<String> requests = new ArrayList<>();
     private final List<String> authorizations = new ArrayList<>();
     private final List<String> userAgents = new ArrayList<>();
+    private volatile long delayMs;
 
     public FakeAiServer() throws IOException {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -33,6 +34,13 @@ public class FakeAiServer implements AutoCloseable {
             int status = statuses.isEmpty() ? 200 : statuses.pollFirst()[0];
             String body = bodies.isEmpty() ? "{}" : bodies.pollFirst();
             String wait = retryAfter.isEmpty() ? "" : retryAfter.pollFirst();
+            if (delayMs > 0) {
+                try {
+                    Thread.sleep(delayMs);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
             if (!wait.isEmpty()) {
                 exchange.getResponseHeaders().add("Retry-After", wait);
             }
@@ -61,6 +69,12 @@ public class FakeAiServer implements AutoCloseable {
         String escaped = content.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
         return reply(200, "{\"model\":\"" + model + "\",\"choices\":[{\"message\":{\"role\":\"assistant\",\"content\":\""
             + escaped + "\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":120,\"completion_tokens\":80}}");
+    }
+
+    /** Waits this long before answering, like a model that is slow to start. */
+    public FakeAiServer delay(long millis) {
+        this.delayMs = millis;
+        return this;
     }
 
     public String baseUrl() {

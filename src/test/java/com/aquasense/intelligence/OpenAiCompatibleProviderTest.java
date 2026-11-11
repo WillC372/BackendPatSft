@@ -72,6 +72,18 @@ class OpenAiCompatibleProviderTest {
     }
 
     @Test
+    void aStreamThatDoesNotStartInTimeIsAbandonedSoTheNextModelCanAnswer() throws Exception {
+        java.lang.reflect.Method shorter = OpenAiCompatibleProvider.class.getDeclaredMethod("withStreamFirstResponse", java.time.Duration.class);
+        shorter.setAccessible(true);
+        shorter.invoke(provider, java.time.Duration.ofMillis(300));
+        server.delay(1500).reply(200, "data: {\"choices\":[{\"delta\":{\"content\":\"tarde\"}}]}\n\ndata: [DONE]\n\n");
+        long start = System.nanoTime();
+        assertThatThrownBy(() -> provider.stream(new AiPrompt(1L, "CHAT", "sistema", "pregunta"), d -> { }))
+            .isInstanceOf(AiUnavailableException.class).hasMessageContaining("no empezó a responder");
+        assertThat((System.nanoTime() - start) / 1_000_000).isLessThan(1400);
+    }
+
+    @Test
     void failedStreamsReportTheProviderAsUnavailable() {
         server.reply(429, "{\"error\":\"rate\"}");
         assertThatThrownBy(() -> provider.stream(new AiPrompt(1L, "CHAT", "sistema", "pregunta"), d -> { }))
