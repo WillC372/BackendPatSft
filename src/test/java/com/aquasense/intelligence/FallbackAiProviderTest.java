@@ -91,4 +91,25 @@ class FallbackAiProviderTest {
         assertThatThrownBy(() -> chain.stream(new AiPrompt(1L, "CHAT", "s", "u"), d -> { }))
             .isInstanceOf(AiUnavailableException.class).hasMessageContaining("se interrumpió");
     }
+
+    @Test
+    void aModelThatFailsWhileStreamingIsTriedLastForTenMinutes() throws Exception {
+        var chain = new FallbackAiProvider(List.of(provider("Gemini", true, null), provider("Groq", true, "hola")), new ObjectMapper());
+        java.time.Instant[] now = {java.time.Instant.parse("2026-11-11T15:00:00Z")};
+        java.lang.reflect.Method clock = FallbackAiProvider.class.getDeclaredMethod("useClock", java.util.function.Supplier.class);
+        clock.setAccessible(true);
+        clock.invoke(chain, (java.util.function.Supplier<java.time.Instant>) () -> now[0]);
+        AiPrompt chat = new AiPrompt(1L, "CHAT", "s", "u");
+
+        chain.stream(chat, d -> { });
+        assertThat(calls).containsExactly("Gemini", "Groq");
+        calls.clear();
+        chain.stream(chat, d -> { });
+        assertThat(calls).containsExactly("Groq");
+
+        calls.clear();
+        now[0] = now[0].plus(java.time.Duration.ofMinutes(11));
+        chain.stream(chat, d -> { });
+        assertThat(calls).containsExactly("Gemini", "Groq");
+    }
 }

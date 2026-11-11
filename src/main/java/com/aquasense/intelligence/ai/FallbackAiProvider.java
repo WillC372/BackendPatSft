@@ -62,6 +62,24 @@ public class FallbackAiProvider implements AiTextProvider {
     /** Interactive requests: the user is waiting on screen, so the fastest models go first. */
     static final java.util.Set<String> INTERACTIVE = java.util.Set.of("CHAT", "CONCLUSION");
 
+    /**
+     * Circuit breaker for live answers: a model that failed or froze while streaming is tried after the others for a
+     * while, so the next questions do not wait for it again. A success clears it.
+     */
+    static final java.time.Duration STREAM_PENALTY = java.time.Duration.ofMinutes(10);
+    private final java.util.Map<AiTextProvider, java.time.Instant> streamFailures = new java.util.concurrent.ConcurrentHashMap<>();
+    private java.util.function.Supplier<java.time.Instant> clock = java.time.Instant::now;
+
+    /** Tests only. */
+    void useClock(java.util.function.Supplier<java.time.Instant> clock) {
+        this.clock = clock;
+    }
+
+    private boolean recentlyFailed(AiTextProvider provider) {
+        java.time.Instant failed = streamFailures.get(provider);
+        return failed != null && failed.plus(STREAM_PENALTY).isAfter(clock.get());
+    }
+
     private List<AiTextProvider> candidates(AiPrompt prompt) {
         List<AiTextProvider> candidates = new ArrayList<>(available().stream()
             .filter(provider -> !prompt.hasImage() || provider.supportsVision())
@@ -72,7 +90,8 @@ public class FallbackAiProvider implements AiTextProvider {
                 ? "Ningún proveedor configurado puede analizar imágenes." : "No hay proveedores de IA disponibles para esta solicitud.");
         }
         if (INTERACTIVE.contains(prompt.purpose())) {
-            candidates.sort(java.util.Comparator.comparing(provider -> !provider.isFast()));
+            candidates.sort(java.util.Comparator.<AiTextProvider, Boolean>comparing(provider -> !provider.isFast())
+                .thenComparing(this::recentlyFailed));
         }
         return candidates;
     }
@@ -90,13 +109,16 @@ public class FallbackAiProvider implements AiTextProvider {
             long start = System.currentTimeMillis();
             boolean[] sent = {false};
             try {
-                return provider.stream(prompt, delta -> {
+                AiAnswer answer = provider.stream(prompt, delta -> {
                     sent[0] = true;
                     onDelta.accept(delta);
                 });
+                streamFailures.remove(provider);
+                return answer;
             } catch (AiUnavailableException ex) {
                 LOG.warn("AI provider {} ({}) failed while streaming: {}", provider.providerName(), provider.modelName(), ex.getMessage());
                 notifyFailure(prompt, provider, start, ex.getMessage());
+                streamFailures.put(provider, clock.get());
                 if (sent[0]) {
                     if (i == candidates.size() - 1) {
                         throw new AiUnavailableException("La respuesta se interrumpió: " + ex.getMessage(), ex);
