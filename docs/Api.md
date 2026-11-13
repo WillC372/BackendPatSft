@@ -11,6 +11,8 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | POST | `/auth/forgot-password` | Enviar enlace de restablecimiento (pública; no revela si el correo existe) |
 | POST | `/auth/reset-password` | Cambiar contraseña con el token (pública) |
 | GET | `/users/me` | Datos de la cuenta. `avatarVersion`: momento de la foto de perfil, o `null` sin foto |
+| PUT | `/users/me` | `{ fullName }`. Cambia el nombre que muestra la app (403 en las cuentas de demostración) |
+| POST | `/users/me/password` | `{ currentPassword, newPassword }`. Pide la contraseña actual; cierra las demás sesiones y responde con el token nuevo de esta (las anteriores dejan de servir). 400 si la actual no es correcta o la nueva no cumple las reglas, 403 en las cuentas de demostración |
 | PUT · DELETE | `/users/me/avatar` | Sube (`multipart`, campo `file`, JPEG o PNG de hasta 10 MB) o quita la foto de perfil. El servidor recorta el cuadrado central, lo reduce a 256 px y lo vuelve a codificar como JPEG (sin metadatos como la ubicación). 403 en las cuentas de demostración, 415 si no es una imagen |
 | GET | `/users/me/avatar` | La foto (JPEG) del usuario autenticado; 404 sin foto. No hay fotos públicas |
 | DELETE | `/users/me` | `{ password }`. Elimina la propia cuenta y todos sus datos (204); 400 si la contraseña no coincide, 409 si es el último administrador activo o tiene pagos reales |

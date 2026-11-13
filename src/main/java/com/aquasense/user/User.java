@@ -74,6 +74,10 @@ public class User {
         this.createdAt = Instant.now();
     }
 
+    public void rename(String fullName) {
+        this.fullName = fullName;
+    }
+
     public void changePassword(String newHash) {
         this.passwordHash = newHash;
         revokeTokens();

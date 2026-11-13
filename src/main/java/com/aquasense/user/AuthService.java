@@ -194,6 +194,34 @@ public class AuthService {
         sessions.end(sessionId, userId, UserSession.EndReason.LOGOUT);
     }
 
+    /**
+     * Changes the password from inside the app. The current password is asked again; every other session is closed
+     * and the current one goes on with a new token (the old ones stop working because the token version changes).
+     */
+    @Transactional
+    public AuthResponse changePassword(Long userId, Long sessionId, String current, String next) {
+        User user = userRepository.findById(userId).orElseThrow(() -> BusinessException.notFound("La cuenta ya no existe."));
+        if (user.isDemo()) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "Las cuentas de demostración no pueden cambiar su contraseña.");
+        }
+        if (current == null || !passwordEncoder.matches(current, user.getPasswordHash())) {
+            auditService.recordIndependently(userId, "PASSWORD_CHANGE_FAILED", "Contraseña actual incorrecta");
+            throw BusinessException.badRequest("La contraseña actual no es correcta.");
+        }
+        if (passwordEncoder.matches(next, user.getPasswordHash())) {
+            throw BusinessException.badRequest("La nueva contraseña debe ser distinta de la actual.");
+        }
+        user.changePassword(passwordEncoder.encode(next));
+        int closed = sessions.endAll(userId, UserSession.EndReason.PASSWORD_CHANGED, sessionId);
+        auditService.record(userId, "PASSWORD_CHANGED", closed == 0 ? "Contraseña cambiada"
+            : "Contraseña cambiada; " + closed + (closed == 1 ? " sesión cerrada en otro equipo" : " sesiones cerradas en otros equipos"));
+        UserSession session = sessions.find(sessionId, userId)
+            .orElseThrow(() -> new BusinessException(HttpStatus.UNAUTHORIZED, "La sesión terminó. Inicia sesión de nuevo."));
+        JwtService.IssuedToken issued = jwtService.issue(user.getId(), user.getEmail(), user.getRole().name(), user.getTokenVersion(),
+            session.getId(), Instant.now(), session.getExpiresAt());
+        return new AuthResponse(issued.token(), issued.expiresAt(), UserResponse.from(user), null);
+    }
+
     /** Closes every other open session of the user (other browsers or devices), keeping the current one. */
     @Transactional
     public int closeOtherSessions(Long userId, Long sessionId) {

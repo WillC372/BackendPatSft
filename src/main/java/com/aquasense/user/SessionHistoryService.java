@@ -57,6 +57,11 @@ public class SessionHistoryService {
         }).orElse(false);
     }
 
+    @Transactional(readOnly = true)
+    public java.util.Optional<UserSession> find(Long sessionId, Long userId) {
+        return sessions.findByIdAndUserId(sessionId, userId);
+    }
+
     @Transactional
     public void end(Long sessionId, Long userId, UserSession.EndReason reason) {
         sessions.findByIdAndUserId(sessionId, userId).ifPresent(s -> s.end(reason, Instant.now()));

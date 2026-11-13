@@ -27,10 +27,13 @@ public class UserController {
     private final ProfileService profileService;
     private final AuditService auditService;
     private final AuthService authService;
+    private final com.aquasense.security.RateLimiter rateLimiter;
 
     public UserController(UserRepository userRepository, UserSettingsRepository settingsRepository,
-                          ProfileService profileService, AuditService auditService, AuthService authService) {
+                          ProfileService profileService, AuditService auditService, AuthService authService,
+                          com.aquasense.security.RateLimiter rateLimiter) {
         this.authService = authService;
+        this.rateLimiter = rateLimiter;
         this.userRepository = userRepository;
         this.settingsRepository = settingsRepository;
         this.profileService = profileService;
@@ -41,6 +44,42 @@ public class UserController {
     public UserResponse me() {
         return userRepository.findById(CurrentUser.id()).map(UserResponse::from)
             .orElseThrow(() -> BusinessException.notFound("La cuenta no existe."));
+    }
+
+    public record RenameRequest(
+        @jakarta.validation.constraints.NotBlank(message = "Escribe tu nombre.")
+        @jakarta.validation.constraints.Size(max = 120, message = "Máximo 120 caracteres.") String fullName) {
+    }
+
+    /** Changes the name shown in the app. Demo accounts keep theirs. */
+    @PutMapping
+    @Transactional
+    public UserResponse rename(@Valid @RequestBody RenameRequest request) {
+        User user = userRepository.findById(CurrentUser.id()).orElseThrow(() -> BusinessException.notFound("La cuenta no existe."));
+        if (user.isDemo()) {
+            throw new BusinessException(org.springframework.http.HttpStatus.FORBIDDEN, "Las cuentas de demostración no pueden cambiar su nombre.");
+        }
+        String name = request.fullName().trim().replaceAll("\\s+", " ");
+        if (!name.equals(user.getFullName())) {
+            auditService.record(user.getId(), "NAME_CHANGED", user.getFullName() + " → " + name);
+            user.rename(name);
+        }
+        return UserResponse.from(user);
+    }
+
+    public record PasswordChangeRequest(
+        @jakarta.validation.constraints.NotBlank(message = "Escribe tu contraseña actual.") String currentPassword,
+        @jakarta.validation.constraints.NotBlank(message = "Escribe la nueva contraseña.")
+        @jakarta.validation.constraints.Size(min = 8, max = 72, message = "La contraseña debe tener entre 8 y 72 caracteres.")
+        @jakarta.validation.constraints.Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "Usa al menos una letra y un número.")
+        String newPassword) {
+    }
+
+    /** Changes the password; the answer carries the new token of this session (the other sessions are closed). */
+    @org.springframework.web.bind.annotation.PostMapping("/password")
+    public com.aquasense.user.dto.AuthResponse changePassword(@Valid @RequestBody PasswordChangeRequest request) {
+        rateLimiter.check("password:" + CurrentUser.id());
+        return authService.changePassword(CurrentUser.id(), CurrentUser.sessionId(), request.currentPassword(), request.newPassword());
     }
 
     @GetMapping("/settings")
