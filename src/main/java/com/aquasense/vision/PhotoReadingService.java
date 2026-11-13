@@ -205,6 +205,12 @@ public class PhotoReadingService {
             opinions, agreement, agreementLabel, r.adjustments(), note, DISCLAIMER);
     }
 
+    /** Photo readings nobody confirmed are removed every 10 minutes. */
+    @org.springframework.scheduling.annotation.Scheduled(fixedDelay = 600_000, initialDelay = 600_000)
+    public void forgetUnconfirmedReadings() {
+        cleanup();
+    }
+
     private void cleanup() {
         pending.values().removeIf(Pending::isExpired);
     }

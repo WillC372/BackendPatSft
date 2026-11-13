@@ -32,23 +32,37 @@ public class MlModelService implements MeasurementListener {
     static final double MIN_THRESHOLD = 0.6;
 
     private final MeasurementRepository repository;
-    private final Map<CacheKey, Training> cache = new ConcurrentHashMap<>();
+    /** A trained model is kept while it is used: 30 minutes without use, or more than 200 models, and it is dropped. */
+    static final java.time.Duration MODEL_IDLE = java.time.Duration.ofMinutes(30);
+    static final int MAX_MODELS = 200;
+    private final com.aquasense.common.ExpiringCache<CacheKey, Training> cache =
+        new com.aquasense.common.ExpiringCache<>(MODEL_IDLE, MAX_MODELS);
 
     public MlModelService(MeasurementRepository repository) {
         this.repository = repository;
     }
 
     public Training model(Long userId, boolean includeSimulated) {
-        return cache.computeIfAbsent(new CacheKey(userId, includeSimulated), key -> train(userId, includeSimulated));
+        return cache.get(new CacheKey(userId, includeSimulated), key -> train(userId, includeSimulated));
     }
 
     @Override
     public void onMeasurementRecorded(Measurement measurement, WaterProfile profile) {
-        cache.keySet().removeIf(key -> key.userId().equals(measurement.getUserId()));
+        cache.removeIf(key -> key.userId().equals(measurement.getUserId()));
     }
 
     public void invalidate(Long userId) {
-        cache.keySet().removeIf(key -> key.userId().equals(userId));
+        cache.removeIf(key -> key.userId().equals(userId));
+    }
+
+    /** Every 10 minutes the models nobody used in the last 30 are freed. */
+    @org.springframework.scheduling.annotation.Scheduled(fixedDelay = 600_000, initialDelay = 600_000)
+    public void forgetUnusedModels() {
+        cache.evictExpired();
+    }
+
+    int cachedModels() {
+        return cache.size();
     }
 
     /**

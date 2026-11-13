@@ -31,11 +31,18 @@ public class SessionHistoryService {
 
     private final UserSessionRepository sessions;
     private final AuditRepository audit;
-    private final Map<Long, Instant> lastTouch = new ConcurrentHashMap<>();
+    /** When each session last wrote its activity; sessions not seen for 10 minutes leave the map by themselves. */
+    private final com.aquasense.common.ExpiringCache<Long, Instant> lastTouch =
+        new com.aquasense.common.ExpiringCache<>(Duration.ofMinutes(10), 50_000);
 
     public SessionHistoryService(UserSessionRepository sessions, AuditRepository audit) {
         this.sessions = sessions;
         this.audit = audit;
+    }
+
+    @org.springframework.scheduling.annotation.Scheduled(fixedDelay = 600_000, initialDelay = 600_000)
+    public void forgetIdleSessions() {
+        lastTouch.evictExpired();
     }
 
     @Transactional
@@ -48,7 +55,7 @@ public class SessionHistoryService {
     public boolean touch(Long sessionId, Long userId) {
         Instant now = Instant.now();
         return sessions.findById(sessionId).filter(s -> s.getUserId().equals(userId) && s.isOpen(now)).map(s -> {
-            Instant previous = lastTouch.get(sessionId);
+            Instant previous = lastTouch.getIfPresent(sessionId);
             if (previous == null || Duration.between(previous, now).compareTo(TOUCH_INTERVAL) >= 0) {
                 s.touch(now);
                 lastTouch.put(sessionId, now);

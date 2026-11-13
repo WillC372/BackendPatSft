@@ -48,7 +48,9 @@ public class DeepForecastService implements MeasurementListener {
 
     private final MeasurementRepository repository;
     private final ProfileService profileService;
-    private final Map<Key, Model> cache = new ConcurrentHashMap<>();
+    /** Trained networks are kept while they are used: 30 minutes without use, or more than 200, and they are dropped. */
+    private final com.aquasense.common.ExpiringCache<Key, Model> cache =
+        new com.aquasense.common.ExpiringCache<>(java.time.Duration.ofMinutes(30), 200);
 
     public DeepForecastService(MeasurementRepository repository, ProfileService profileService) {
         this.repository = repository;
@@ -57,12 +59,18 @@ public class DeepForecastService implements MeasurementListener {
 
     @Override
     public void onMeasurementRecorded(Measurement measurement, WaterProfile profile) {
-        cache.keySet().removeIf(key -> key.userId().equals(measurement.getUserId()));
+        cache.removeIf(key -> key.userId().equals(measurement.getUserId()));
     }
 
     public DeepForecastResponse forecast(Long userId, boolean includeSimulated) {
-        Model model = cache.computeIfAbsent(new Key(userId, includeSimulated), key -> train(userId, includeSimulated));
+        Model model = cache.get(new Key(userId, includeSimulated), key -> train(userId, includeSimulated));
         return model.toResponse(profileService.activeProfile(userId));
+    }
+
+    /** Every 10 minutes the networks nobody used in the last 30 are freed. */
+    @org.springframework.scheduling.annotation.Scheduled(fixedDelay = 600_000, initialDelay = 600_000)
+    public void forgetUnusedModels() {
+        cache.evictExpired();
     }
 
     Model train(Long userId, boolean includeSimulated) {

@@ -76,6 +76,12 @@ public class AgentJobService {
         this.guidelines = guidelines;
     }
 
+    /** Finished reports nobody came back for are removed every 10 minutes. */
+    @org.springframework.scheduling.annotation.Scheduled(fixedDelay = 600_000, initialDelay = 600_000)
+    public void forgetExpiredJobs() {
+        jobs.values().removeIf(Job::isExpired);
+    }
+
     public AgentJobResponse start(Long userId, AgentReportRequest request) {
         jobs.values().removeIf(Job::isExpired);
         if (jobs.values().stream().anyMatch(j -> j.userId.equals(userId) && "RUNNING".equals(j.status))) {

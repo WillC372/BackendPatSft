@@ -37,6 +37,7 @@ public class AiProviderProxy implements AiTextProvider, AiCallListener {
     private final AppProperties.Ai config;
     private final AiPricing pricing;
     private final AiUsageRecorder recorder;
+    static final int MAX_CACHED_ANSWERS = 500;
     private final Map<String, CacheEntry> cache = new HashMap<>();
     private final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
@@ -179,9 +180,34 @@ public class AiProviderProxy implements AiTextProvider, AiCallListener {
         cacheLock.writeLock().lock();
         try {
             cache.values().removeIf(entry -> entry.expiresAt().isBefore(Instant.now()));
+            if (cache.size() >= MAX_CACHED_ANSWERS) {
+                // Full: the answer closest to expiring makes room.
+                cache.entrySet().stream().min(java.util.Comparator.comparing(e -> e.getValue().expiresAt()))
+                    .ifPresent(oldest -> cache.remove(oldest.getKey()));
+            }
             cache.put(key, new CacheEntry(answer, Instant.now().plus(Duration.ofMinutes(config.cacheMinutes()))));
         } finally {
             cacheLock.writeLock().unlock();
+        }
+    }
+
+    /** Every 10 minutes the expired answers are removed, even if nobody asks anything new. */
+    @org.springframework.scheduling.annotation.Scheduled(fixedDelay = 600_000, initialDelay = 600_000)
+    public void evictExpiredAnswers() {
+        cacheLock.writeLock().lock();
+        try {
+            cache.values().removeIf(entry -> entry.expiresAt().isBefore(Instant.now()));
+        } finally {
+            cacheLock.writeLock().unlock();
+        }
+    }
+
+    int cachedAnswers() {
+        cacheLock.readLock().lock();
+        try {
+            return cache.size();
+        } finally {
+            cacheLock.readLock().unlock();
         }
     }
 
