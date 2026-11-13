@@ -89,22 +89,42 @@ public class MeasurementController {
         service.delete(CurrentUser.id(), id);
     }
 
+    /**
+     * CSV of the measurements. With {@code from} and {@code to} it exports that period (as the history table shows it,
+     * up to the maximum range); otherwise the last {@code days}. {@code source} and {@code status} filter like the table.
+     */
     @GetMapping(value = "/export", produces = "text/csv")
-    public ResponseEntity<byte[]> export(@RequestParam(defaultValue = "30") int days) {
+    public ResponseEntity<byte[]> export(@RequestParam(defaultValue = "30") int days,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
+            @RequestParam(required = false) MeasurementSource source,
+            @RequestParam(required = false) PhStatus status) {
         Long userId = CurrentUser.id();
-        Instant to = Instant.now();
-        Instant from = to.minus(Duration.ofDays(Math.min(Math.max(days, 1), MAX_RANGE_DAYS)));
+        boolean period = from != null && to != null;
+        if (period && from.isAfter(to)) {
+            throw com.aquasense.common.BusinessException.badRequest("La fecha inicial debe ser anterior a la final.");
+        }
+        if (!period) {
+            to = Instant.now();
+            from = to.minus(Duration.ofDays(Math.min(Math.max(days, 1), MAX_RANGE_DAYS)));
+        } else if (Duration.between(from, to).compareTo(Duration.ofDays(MAX_RANGE_DAYS)) > 0) {
+            from = to.minus(Duration.ofDays(MAX_RANGE_DAYS));
+        }
         StringBuilder csv = new StringBuilder("fecha_utc,ph,temperatura_c,origen,naturaleza,estado,validación,nota\n");
         Iterator<Measurement> iterator = service.iterate(userId, from, to);
         while (iterator.hasNext()) {
             Measurement m = iterator.next();
+            if ((source != null && m.getSource() != source) || (status != null && m.getStatus() != status)) {
+                continue;
+            }
             csv.append(m.getMeasuredAt()).append(',')
                 .append(String.format(Locale.US, "%.2f", m.getPh())).append(',')
                 .append(m.getTemperatureC() == null ? "" : String.format(Locale.US, "%.1f", m.getTemperatureC())).append(',')
                 .append(m.getSource()).append(',').append(m.getNature()).append(',').append(m.getStatus()).append(',')
                 .append(m.getValidationStatus()).append(',').append(csvText(m.getNote())).append('\n');
         }
-        audit.record(userId, "MEASUREMENTS_EXPORTED", "CSV de los últimos " + Math.min(Math.max(days, 1), MAX_RANGE_DAYS) + " días");
+        audit.record(userId, "MEASUREMENTS_EXPORTED", period ? "CSV del " + from + " al " + to
+            : "CSV de los últimos " + Math.min(Math.max(days, 1), MAX_RANGE_DAYS) + " días");
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aquasense-mediciones.csv\"")
             .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))

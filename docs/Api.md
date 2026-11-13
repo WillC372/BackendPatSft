@@ -32,7 +32,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | GET | `/measurements/latest` | Última medición (204 si no hay) |
 | GET | `/measurements/series` | Puntos para graficar (`days` o `from`/`to`) |
 | GET / DELETE | `/measurements/{id}` | Detalle o borrado |
-| GET | `/measurements/export?days=` | CSV |
+| GET | `/measurements/export?days=` o `?from=&to=&source=&status=` | CSV. Con `from` y `to` exporta ese periodo (como lo muestra el historial); `source` y `status` filtran igual que la tabla |
 | POST | `/vision/ph-reading` | Multipart `file` (JPEG/PNG, 10 MB) y `kind` (`TEST_STRIP` o `METER_DISPLAY`). Devuelve la lectura estimada, el margen, las opiniones y un `pendingId` |
 | POST | `/vision/ph-reading/{pendingId}/save` | `{ ph, note }`: guarda el valor confirmado o corregido con origen `PHOTO` |
 | GET | `/devices/scan` | Puertos serie del servidor (vacío en la nube; el simulador solo aparece con `SIMULATOR_ENABLED=true`) |
