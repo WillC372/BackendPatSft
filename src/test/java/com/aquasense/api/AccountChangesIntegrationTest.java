@@ -85,4 +85,21 @@ class AccountChangesIntegrationTest {
     private JsonNode json(MvcResult result) throws Exception {
         return mapper.readTree(result.getResponse().getContentAsString());
     }
+
+    @Test
+    void anAccountIsBlockedAfterFiveFailedLoginsEvenFromDifferentAddresses() throws Exception {
+        String email = "fuerza-" + UUID.randomUUID() + "@aquasense.test";
+        mvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON)
+            .content("{\"fullName\":\"Usuario Fuerza\",\"email\":\"" + email + "\",\"password\":\"Clave1234\"}")).andExpect(status().isCreated());
+        login(email, "Clave1234");
+        for (int i = 0; i < 5; i++) {
+            mvc.perform(post("/api/v1/auth/login").header("CF-Connecting-IP", "203.0.113." + i).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"" + email + "\",\"password\":\"Equivocada" + i + "\"}")).andExpect(status().isUnauthorized());
+        }
+        // Even the right password waits now, from any address; another account is not affected.
+        mvc.perform(post("/api/v1/auth/login").header("CF-Connecting-IP", "198.51.100.7").contentType(MediaType.APPLICATION_JSON)
+            .content("{\"email\":\"" + email + "\",\"password\":\"Clave1234\"}")).andExpect(status().isTooManyRequests());
+        JsonNode demos = json(mvc.perform(get("/api/v1/auth/demo-accounts")).andReturn());
+        login(demos.get(0).path("email").asText(), demos.get(0).path("password").asText());
+    }
 }

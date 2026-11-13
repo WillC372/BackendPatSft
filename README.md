@@ -120,7 +120,8 @@ docker compose --env-file .env up --build
 | `CORS_ORIGINS` | No | Orígenes permitidos para el frontend |
 | `ADMIN_EMAIL` | No | Correo del administrador. Quien se registra o inicia sesión con él recibe un enlace en ese correo, y el rol `ADMIN` se activa **solo** cuando lo abre (así nadie puede registrarse antes con ese correo y quedarse con el rol). Requiere un canal de correo |
 | `FRONTEND_ADMIN_VERIFY_URL` | No | Dirección de la pantalla que confirma el administrador (por defecto `http://localhost:5500/#/verify-admin`) |
-| `API_DOCS_ENABLED` | No | `true` por defecto. Pon `false` en producción para no publicar Swagger UI ni `/v3/api-docs` |
+| `API_DOCS_ENABLED` | No | `false` por defecto: Swagger UI y `/v3/api-docs` no se publican, porque el mapa completo de la API ayuda a un atacante. Ponlo en `true` solo en desarrollo |
+| `CLIENT_IP_HEADER` | No | Cabecera con la dirección real del cliente que pone el proxy de delante (`CF-Connecting-IP` por defecto, la de Cloudflare en Render). Vacía: la dirección de la conexión. Fuera de Cloudflare, ponla vacía o con la cabecera de tu proxy |
 | `MAILJET_API_KEY`, `MAILJET_SECRET_KEY`, `MAIL_FROM`, `MAIL_SENDER_NAME` | No | **Canal recomendado.** API de envío de Mailjet por HTTPS (plan gratuito de 200 correos al día; funciona aunque el puerto SMTP esté bloqueado). `MAIL_FROM` debe ser un remitente validado en Mailjet |
 | `BREVO_API_KEY` | No | Alternativa: API de correo transaccional de Brevo |
 | `MAIL_PROVIDER` | No | `auto` (Mailjet, Brevo o SMTP, el primero configurado), `mailjet`, `brevo`, `smtp` o `none` |
@@ -141,7 +142,7 @@ Sin ninguna clave de IA, el diagnóstico y la conclusión se calculan con reglas
 
 ## Documentación de la API
 
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- Swagger UI: `http://localhost:8080/swagger-ui.html` (con `API_DOCS_ENABLED=true`; apagado por defecto)
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - Resumen de endpoints: [`docs/Api.md`](docs/Api.md)
 
@@ -155,7 +156,7 @@ Todas las rutas están versionadas bajo `/api/v1`. Grupos: `auth`, `users/me` (i
 - Contraseñas con Argon2id; tokens de recuperación de un solo uso, guardados como hash SHA-256 y con vencimiento de 30 minutos.
 - Cada consulta filtra por el usuario autenticado; un usuario no puede leer ni borrar datos de otro (lo verifican las pruebas de integración).
 - `/api/v1/admin/**` requiere el rol `ADMIN`. Los planes gratuito y Premium se aplican en el servidor: días de análisis histórico, horizonte de predicción y cuota diaria de IA.
-- Límite de 10 intentos por minuto en registro, inicio de sesión y recuperación.
+- Límite de 10 intentos por minuto por dirección en registro, inicio de sesión y recuperación, con la dirección real del cliente (detrás de Cloudflare, `CF-Connecting-IP`). Además, una cuenta se bloquea 15 minutos tras 5 inicios de sesión fallidos, venga de donde venga; los intentos correctos no cuentan.
 
 ## AquaSense Intelligence
 

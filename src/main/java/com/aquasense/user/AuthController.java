@@ -27,9 +27,14 @@ public class AuthController {
     private final MailService mailService;
 
     private final DemoAccounts demoAccounts;
+    private final com.aquasense.security.ClientAddress clientAddress;
+    static final int ACCOUNT_FAILURES = 5;
+    static final java.time.Duration ACCOUNT_WINDOW = java.time.Duration.ofMinutes(15);
 
-    public AuthController(AuthService authService, RateLimiter rateLimiter, MailService mailService, DemoAccounts demoAccounts) {
+    public AuthController(AuthService authService, RateLimiter rateLimiter, MailService mailService, DemoAccounts demoAccounts,
+                          com.aquasense.security.ClientAddress clientAddress) {
         this.demoAccounts = demoAccounts;
+        this.clientAddress = clientAddress;
         this.authService = authService;
         this.rateLimiter = rateLimiter;
         this.mailService = mailService;
@@ -38,14 +43,25 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody RegisterRequest request, HttpServletRequest http) {
-        rateLimiter.check("register:" + http.getRemoteAddr());
+        rateLimiter.check("register:" + clientAddress.of(http));
         return authService.register(request, http.getHeader("User-Agent"));
     }
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest http) {
-        rateLimiter.check("login:" + http.getRemoteAddr());
-        return authService.login(request, http.getHeader("User-Agent"));
+        rateLimiter.check("login:" + clientAddress.of(http));
+        // Per account, only failures count: whoever tries passwords from many addresses is stopped after 5 in 15 minutes,
+        // and the shared demo accounts keep working for everyone who uses them correctly.
+        String account = "login-account:" + request.email().trim().toLowerCase(java.util.Locale.ROOT);
+        rateLimiter.ensureAllowed(account, ACCOUNT_FAILURES, ACCOUNT_WINDOW);
+        try {
+            return authService.login(request, http.getHeader("User-Agent"));
+        } catch (BusinessException ex) {
+            if (ex.getStatus() == HttpStatus.UNAUTHORIZED) {
+                rateLimiter.recordFailure(account);
+            }
+            throw ex;
+        }
     }
 
     /** Demonstration accounts for the buttons of the login screen (one per role). Empty if they are disabled. */
@@ -62,7 +78,7 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     public MessageResponse forgotPassword(@Valid @RequestBody ForgotPasswordRequest request, HttpServletRequest http) {
-        rateLimiter.check("forgot:" + http.getRemoteAddr());
+        rateLimiter.check("forgot:" + clientAddress.of(http));
         if (!mailService.isPasswordRecoveryAvailable()) {
             // The response is the same for any email, so it does not reveal which accounts exist.
             throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "La recuperación de contraseña por correo no está"
@@ -74,7 +90,7 @@ public class AuthController {
 
     @PostMapping("/verify-admin")
     public MessageResponse verifyAdmin(@Valid @RequestBody com.aquasense.user.dto.TokenRequest request, HttpServletRequest http) {
-        rateLimiter.check("verify-admin:" + http.getRemoteAddr());
+        rateLimiter.check("verify-admin:" + clientAddress.of(http));
         authService.verifyAdmin(request.token());
         return new MessageResponse("Rol de administrador confirmado. Inicia sesión de nuevo para usarlo.");
     }
