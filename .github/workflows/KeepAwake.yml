@@ -1,0 +1,38 @@
+# Keeps the Render free instance awake: Render stops it after 15 minutes without requests, and the next visit then
+# waits about a minute. Every 5 minutes this asks /actuator/health/liveness, which does not query the database, so the
+# Neon database can still suspend when nobody uses the app.
+# GitHub runs scheduled workflows on a best-effort basis (a run can start late or be skipped when GitHub is busy), so
+# an external monitor such as UptimeRobot is the main keep-alive and this is the backup. See docs/Deployment.md.
+name: Keep the API awake
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: keep-awake
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ask the API whether it is up
+        env:
+          URL: ${{ vars.KEEP_AWAKE_URL || 'https://aquasense-backend-willc372.onrender.com/actuator/health/liveness' }}
+        run: |
+          for attempt in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 "$URL" || true)
+            if [ "$code" = "200" ]; then
+              echo "The API answered $code on attempt $attempt."
+              exit 0
+            fi
+            echo "Attempt $attempt answered '$code'; waiting before retrying (it may be starting)."
+            sleep 30
+          done
+          echo "::error::The API did not answer 200 after 3 attempts."
+          exit 1

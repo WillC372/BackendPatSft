@@ -152,6 +152,7 @@ Todas las rutas están versionadas bajo `/api/v1`. Grupos: `auth`, `users/me` (i
 
 - `POST /api/v1/auth/login` devuelve un JWT. Se envía en `Authorization: Bearer <token>`.
 - Duración: 8 horas, o 30 días con "Recordarme".
+- `GET /auth/me` devuelve la cuenta del token y su sesión actual (inicio, vencimiento, estado). `GET /users/me` sigue devolviendo solo la cuenta.
 - Cada token lleva su sesión (`sid`). Cerrar sesión termina esa sesión: su token deja de servir y la sesión queda en el historial. "Cerrar mis otras sesiones" (`POST /users/me/sessions/close-others`) cierra las de otros equipos. Cambiar la contraseña, el rol o desactivar la cuenta cierra todas.
 - Contraseñas con Argon2id; tokens de recuperación de un solo uso, guardados como hash SHA-256 y con vencimiento de 30 minutos.
 - Cada consulta filtra por el usuario autenticado; un usuario no puede leer ni borrar datos de otro (lo verifican las pruebas de integración).
@@ -324,12 +325,14 @@ Publicado el 8 nov 2026 en **Render** (backend con Docker, plan gratuito), **Neo
 | Parte | Dirección |
 |---|---|
 | Aplicación | https://frontendpatsft.vercel.app |
-| API | https://aquasense-backend-willc372.onrender.com/api/v1 (salud: `/actuator/health`, documentación: `/swagger-ui.html`) |
+| API | https://aquasense-backend-willc372.onrender.com/api/v1 (salud: `/actuator/health`; para pings que la mantengan despierta: `/actuator/health/liveness`) |
 
 Verificado en producción: el formulario de registro y el de medición de la página de Vercel llaman a la API de Render y guardan en Neon; CORS acepta solo el dominio de Vercel (otro origen recibe 403); el diagnóstico y el chat responden con Gemini y citas válidas; el informe PDF se descarga con sus fuentes; el correo está configurado.
 
 - `render.yaml` crea el servicio con su verificación de salud (`/actuator/health`), genera `JWT_SECRET` y fija las direcciones del frontend. Las claves (base de datos, IA y correo) se escriben en el panel de Render, nunca en el repositorio.
 - La base se configura con una sola variable, `DATABASE_URL`, con la cadena que entrega Neon (`postgresql://usuario:clave@host/db?sslmode=require`).
+- **Mantenerla despierta:** Render apaga la instancia gratuita tras 15 minutos sin uso. Un monitor de UptimeRobot (cada 5 minutos) y, como respaldo, el flujo `.github/workflows/KeepAwake.yml` consultan `/actuator/health/liveness`, que no toca la base de datos. Pasos en [`docs/Deployment.md`](docs/Deployment.md#mantener-la-api-despierta).
+- **Memoria que se limpia sola:** los modelos entrenados por usuario (Isolation Forest y LSTM) se descartan tras 30 minutos sin uso y hay como máximo 200; la caché de respuestas de IA guarda hasta 500 y quita las vencidas cada 10 minutos; los informes del agente, las lecturas por foto sin confirmar y los intentos de inicio de sesión viejos también se borran solos. En la base, los enlaces de recuperación y verificación usados o vencidos hace más de un día se borran cada 6 horas.
 - El `Dockerfile` está ajustado a instancias de 512 MB. La imagen se construyó y se probó en un contenedor limitado a 512 MB: 335 MB de memoria después de generar PDF, el análisis con aprendizaje automático y la red LSTM.
 
 Un backend en la nube no puede leer un medidor conectado a tu computador. Para lecturas físicas, el backend debe correr en el equipo donde está conectado el medidor.
@@ -338,6 +341,7 @@ Un backend en la nube no puede leer un medidor conectado a tu computador. Para l
 
 | Síntoma | Causa y solución |
 |---|---|
+| La primera visita tarda alrededor de un minuto | Render apagó la instancia por inactividad. Configura el monitor de UptimeRobot ([pasos](docs/Deployment.md#mantener-la-api-despierta)) y revisa que el flujo *Keep the API awake* esté activo en GitHub |
 | `JWT_SECRET must be set...` al arrancar | Define `JWT_SECRET` con 32 caracteres o más |
 | `Connection refused` a PostgreSQL | Verifica que el servicio esté activo y los valores de `DB_*` |
 | El frontend muestra "No se pudo conectar con el servidor" | Backend apagado, o el origen del frontend no está en `CORS_ORIGINS` |

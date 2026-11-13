@@ -61,10 +61,26 @@ Si Vercel asigna otra dirección, hay que cambiarla en `CORS_ORIGINS`, `FRONTEND
 
 ## Límites de los planes gratuitos
 
-- **Render** apaga el backend tras 15 minutos sin uso. La primera visita después tarda alrededor de un minuto; la interfaz avisa que el servidor se está activando.
+- **Render** apaga el backend tras 15 minutos sin uso. La primera visita después tarda alrededor de un minuto; la interfaz avisa que el servidor se está activando. Para evitarlo, ver [Mantener la API despierta](#mantener-la-api-despierta).
 - La instancia gratuita tiene 512 MB de memoria. El contenedor se probó con ese límite: unos 335 MB después de generar PDF, el análisis con aprendizaje automático y el entrenamiento de la red LSTM.
 - **Neon** suspende la base tras unos minutos sin uso y la reactiva en la siguiente consulta.
 - No hay medidor físico conectado a un servidor en la nube: en el despliegue se usan el simulador, el registro manual y la lectura por foto.
+
+## Mantener la API despierta
+
+Render apaga la instancia gratuita tras 15 minutos sin peticiones. Si algo la consulta cada pocos minutos, no se apaga. La dirección para eso es `/actuator/health/liveness`: responde `{"status":"UP"}` sin iniciar sesión y **sin consultar la base de datos**, así Neon puede seguir suspendiéndose cuando nadie usa la app (la base solo despierta con el uso real y con las tareas programadas, que corren cada 1 a 6 horas).
+
+**Principal: UptimeRobot (gratis, cada 5 minutos).** Hay que crear la cuenta; el repositorio no puede hacerlo.
+
+1. Entra a https://uptimerobot.com y crea una cuenta gratuita.
+2. **New monitor** → tipo **HTTP(s)**.
+3. *Friendly name*: `AquaSense API`. *URL*: `https://aquasense-backend-willc372.onrender.com/actuator/health/liveness`.
+4. *Monitoring interval*: **5 minutes** (el mínimo del plan gratuito).
+5. Guarda. Además de mantenerla despierta, UptimeRobot avisa por correo si la API deja de responder.
+
+**Respaldo: GitHub Actions.** `.github/workflows/KeepAwake.yml` hace la misma consulta cada 5 minutos. GitHub ejecuta los flujos programados cuando puede (a veces con retraso o se salta alguno en horas de mucha carga), por eso no reemplaza a UptimeRobot. GitHub desactiva los flujos programados de un repositorio público tras 60 días sin actividad; se reactivan en **Actions → Keep the API awake → Enable workflow**. También se puede lanzar a mano con **Run workflow**. Para usar otra dirección, crea la variable `KEEP_AWAKE_URL` en *Settings → Secrets and variables → Actions → Variables*.
+
+**Costo.** Render da 750 horas gratis al mes por cuenta; una instancia encendida todo el mes usa unas 730. Si la cuenta tiene otro servicio gratuito encendido, las horas no alcanzan para los dos. Para volver al comportamiento anterior, pausa el monitor en UptimeRobot y desactiva el flujo en GitHub.
 
 ## Variables que fija `render.yaml`
 
