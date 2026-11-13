@@ -46,3 +46,7 @@ management:
   health:
     mail:
       enabled: false
+  endpoint:
+    health:
+      probes:
+        enabled: true

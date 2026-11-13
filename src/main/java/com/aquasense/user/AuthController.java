@@ -70,6 +70,12 @@ public class AuthController {
         return demoAccounts.list();
     }
 
+    /** The signed-in account and its current session. The same account data as {@code GET /users/me}, plus the session. */
+    @org.springframework.web.bind.annotation.GetMapping("/me")
+    public com.aquasense.user.dto.AuthMeResponse me() {
+        return authService.me(CurrentUser.id(), CurrentUser.sessionId());
+    }
+
     @PostMapping("/logout")
     public MessageResponse logout() {
         authService.logout(CurrentUser.id(), CurrentUser.sessionId());

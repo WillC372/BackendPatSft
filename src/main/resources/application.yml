@@ -49,6 +49,10 @@ management:
   endpoint:
     health:
       show-details: never
+      # /actuator/health/liveness only says the process is up (it does not query the database): it is the address for
+      # keep-alive pings, so they keep Render awake without keeping the Neon database awake. /health checks everything.
+      probes:
+        enabled: true
 
 # Interactive API documentation. In production it is better to disable it: API_DOCS_ENABLED=false.
 springdoc:

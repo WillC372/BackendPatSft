@@ -49,6 +49,14 @@ public class AuthService {
     private final AccountDeletionService accountDeletion;
     private final SessionHistoryService sessions;
 
+    /** The account of the token and the session it belongs to ({@code GET /auth/me}). */
+    @Transactional(readOnly = true)
+    public com.aquasense.user.dto.AuthMeResponse me(Long userId, Long sessionId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> BusinessException.notFound("La cuenta no existe."));
+        var session = sessionId == null ? null : sessions.detail(userId, sessionId, sessionId).session();
+        return new com.aquasense.user.dto.AuthMeResponse(UserResponse.from(user), session);
+    }
+
     public AuthService(UserRepository userRepository, UserSettingsRepository settingsRepository,
                        PasswordResetTokenRepository resetTokenRepository, PasswordEncoder passwordEncoder,
                        JwtService jwtService, ProfileService profileService, MailService mailService,

@@ -40,7 +40,7 @@ public class SecurityConfig {
                     "/api/v1/auth/forgot-password", "/api/v1/auth/reset-password", "/api/v1/auth/verify-admin",
                     "/api/v1/auth/demo-accounts").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/payments/payu/confirmation").permitAll()
-                .requestMatchers("/actuator/health", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/actuator/health", "/actuator/health/liveness", "/actuator/health/readiness", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
             .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
