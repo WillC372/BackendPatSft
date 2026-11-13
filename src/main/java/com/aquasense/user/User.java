@@ -56,6 +56,9 @@ public class User {
     @Column(name = "last_login_at")
     private Instant lastLoginAt;
 
+    @Column(name = "avatar_updated_at")
+    private Instant avatarUpdatedAt;
+
     /** Demonstration account of the login screen (see {@code DemoAccounts}). */
     private boolean demo;
 
@@ -80,6 +83,15 @@ public class User {
     public void promoteToAdmin() {
         this.role = Role.ADMIN;
         revokeTokens();
+    }
+
+    /** {@code at}: time of the new photo, or {@code null} when it is removed. */
+    public void avatarChanged(Instant at) {
+        this.avatarUpdatedAt = at;
+    }
+
+    public Instant getAvatarUpdatedAt() {
+        return avatarUpdatedAt;
     }
 
     public boolean isDemo() {

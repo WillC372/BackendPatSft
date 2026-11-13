@@ -13,6 +13,8 @@ public final class ActionLabels {
         Map.entry("PASSWORD_RESET_REQUESTED", "Pidió restablecer la contraseña"),
         Map.entry("PASSWORD_RESET", "Restableció la contraseña"),
         Map.entry("SETTINGS_UPDATED", "Cambió su configuración"),
+        Map.entry("AVATAR_UPDATED", "Cambió su foto de perfil"),
+        Map.entry("AVATAR_REMOVED", "Quitó su foto de perfil"),
         Map.entry("MEASUREMENT_SAVED", "Guardó una medición"),
         Map.entry("MEASUREMENT_DELETED", "Borró una medición"),
         Map.entry("MEASUREMENTS_EXPORTED", "Descargó sus mediciones"),

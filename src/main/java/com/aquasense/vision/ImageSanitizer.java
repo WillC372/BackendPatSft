@@ -100,6 +100,34 @@ public class ImageSanitizer {
         return toJpeg(target);
     }
 
+    /**
+     * Profile photo: the same checks as a photo reading, then the center square, reduced to {@code side} px and
+     * re-encoded as JPEG (no metadata survives).
+     */
+    public byte[] squareJpeg(byte[] input, int side) {
+        if (input == null || input.length == 0) {
+            throw BusinessException.badRequest("Elige una foto.");
+        }
+        if (input.length > MAX_BYTES) {
+            throw new BusinessException(HttpStatus.PAYLOAD_TOO_LARGE, "La foto supera 10 MB.");
+        }
+        BufferedImage source = decode(input);
+        int crop = Math.min(source.getWidth(), source.getHeight());
+        if (crop < MIN_SIDE) {
+            throw BusinessException.badRequest("La foto es demasiado pequeña; usa una de al menos " + MIN_SIDE + " px.");
+        }
+        int x = (source.getWidth() - crop) / 2;
+        int y = (source.getHeight() - crop) / 2;
+        int size = Math.min(side, crop);
+        BufferedImage target = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = target.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.drawImage(source, 0, 0, size, size, x, y, x + crop, y + crop, java.awt.Color.WHITE, null);
+        g.dispose();
+        return toJpeg(target);
+    }
+
     private static byte[] toJpeg(BufferedImage image) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              ImageOutputStream stream = ImageIO.createImageOutputStream(out)) {

@@ -7,6 +7,7 @@ API REST de **AquaSense AI**, un sistema de monitoreo de pH del agua. El backend
 ## Responsabilidades del servidor
 
 - Registrar usuarios, iniciar y cerrar sesión, recuperar contraseñas (JWT + Argon2id).
+- Guardar la **foto de perfil**: se recorta en cuadrado, se reduce a 256 px y se vuelve a codificar (se borran los metadatos, como la ubicación). Solo la ve su dueño.
 - Guardar el **historial de sesiones**: cada inicio de sesión abre una sesión que agrupa todo lo que el usuario hace hasta cerrarla.
 - Mantener las **cuentas de demostración** de los botones del inicio de sesión, una por rol (Usuario, Usuario Premium, Administrador).
 - Importar **datos oficiales de pH** del Servicio Geológico de EE. UU. (USGS) cada 3 horas y guardarlos aparte de las mediciones de los usuarios.
@@ -43,8 +44,8 @@ src/main/java/com/aquasense/
 └── dashboard/      Consulta agregada para la pantalla de inicio
 src/main/resources/
 ├── application.yml
-└── db/migration/   Migraciones Flyway V1 a V13 (V11 historial de sesiones, V12 cuentas de demostración,
-                    V13 datos oficiales)
+└── db/migration/   Migraciones Flyway V1 a V14 (V11 historial de sesiones, V12 cuentas de demostración,
+                    V13 datos oficiales, V14 foto de perfil)
 hardware/Esp32PhSensor/    Firmware de referencia para ESP32 (no probado con hardware)
 docs/                        Documentación técnica
 ```
@@ -298,7 +299,7 @@ El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENAB
 mvn test
 ```
 
-158 pruebas automatizadas. Cubren:
+160 pruebas automatizadas. Cubren:
 
 - Patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados.
 - El flujo completo de la API: registro, aislamiento entre usuarios, simulador, IA sin clave, informes, cierre de sesión y roles.
@@ -313,7 +314,7 @@ mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test
   -Dspring.datasource.username=aquasense -Dspring.datasource.password=TU_CLAVE
 ```
 
-Último resultado (11 nov 2026): 158/158 aprobadas. Incluyen el proveedor de IA contra un servidor HTTP local que imita la API, la cadena de respaldo, el validador de diagnósticos y el flujo completo con un proveedor saturado y otro que responde.
+Último resultado (13 nov 2026): 160/160 aprobadas. Incluyen el proveedor de IA contra un servidor HTTP local que imita la API, la cadena de respaldo, el validador de diagnósticos y el flujo completo con un proveedor saturado y otro que responde.
 
 ## Despliegue
 
