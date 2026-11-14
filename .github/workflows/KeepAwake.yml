@@ -1,8 +1,8 @@
 # Keeps the Render free instance awake: Render stops it after 15 minutes without requests, and the next visit then
 # waits about a minute. Every 5 minutes this asks /actuator/health/liveness, which does not query the database, so the
 # Neon database can still suspend when nobody uses the app.
-# GitHub runs scheduled workflows on a best-effort basis (a run can start late or be skipped when GitHub is busy), so
-# an external monitor such as UptimeRobot is the main keep-alive and this is the backup. See docs/Deployment.md.
+# GitHub runs scheduled workflows on a best-effort basis: in practice this ran only every 5 to 7 hours, which does not
+# keep the instance awake. An external monitor such as UptimeRobot is the real keep-alive. See docs/Deployment.md.
 name: Keep the API awake
 
 on:
