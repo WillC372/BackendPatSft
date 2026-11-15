@@ -9,7 +9,7 @@ API REST de **AquaSense AI**, un sistema de monitoreo de pH del agua. El backend
 - Registrar usuarios, iniciar y cerrar sesión, recuperar contraseñas (JWT + Argon2id).
 - Guardar la **foto de perfil**: se recorta en cuadrado, se reduce a 256 px y se vuelve a codificar (se borran los metadatos, como la ubicación). Solo la ve su dueño.
 - Guardar el **historial de sesiones**: cada inicio de sesión abre una sesión que agrupa todo lo que el usuario hace hasta cerrarla.
-- Mantener las **cuentas de demostración** de los botones del inicio de sesión, una por rol (Usuario, Usuario Premium, Administrador).
+- Mantener las **cuentas de demostración** de los botones del inicio de sesión, Usuario Premium y Administrador.
 - Importar **datos oficiales de pH** del Servicio Geológico de EE. UU. (USGS) cada 3 horas y guardarlos aparte de las mediciones de los usuarios.
 - Guardar y consultar mediciones con su origen: `REAL` (medidor), `MANUAL` o `PHOTO` (foto o cámara leída por IA). El origen `SIMULATED` solo existe en las pruebas automáticas.
 - Validar cada lectura (cadena de validación) y clasificarla según el perfil de agua activo.
@@ -206,13 +206,14 @@ Cada inicio de sesión (o registro) crea una fila en `user_sessions` con inicio,
 
 ## Cuentas de demostración
 
-`DemoAccounts` crea al arrancar tres cuentas reales, una por rol del caso de estudio:
+`DemoAccounts` crea al arrancar dos cuentas reales:
 
 | Botón | Correo | Rol y plan |
 |---|---|---|
-| Usuario | `usuario@demo.aquasense` | Usuario, plan gratuito |
 | Usuario Premium | `premium@demo.aquasense` | Usuario, Premium sin vencimiento |
 | Administrador | `admin@demo.aquasense` | Administrador de solo lectura |
+
+La cuenta gratuita de demostración (`usuario@demo.aquasense`) se retiró del inicio de sesión el 15 nov 2026. Como su contraseña era pública, al arrancar se desactiva; sus datos se conservan. Para probar el plan gratuito, crea una cuenta propia.
 
 `GET /auth/demo-accounts` las entrega al frontend con la contraseña (pública a propósito). Como cualquiera puede usarlas, tienen límites que aplica el servidor:
 

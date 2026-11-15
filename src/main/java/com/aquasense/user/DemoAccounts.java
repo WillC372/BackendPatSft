@@ -33,10 +33,8 @@ public class DemoAccounts implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DemoAccounts.class);
 
-    /** One account per role. */
+    /** The accounts offered on the login screen. */
     public enum Kind {
-        USER("usuario@demo.aquasense", "Usuaria Demo", "Usuario", "Plan gratuito: mediciones, historial y 20 consultas de IA al día.",
-            Role.USER, Plan.FREE),
         PREMIUM("premium@demo.aquasense", "Usuario Premium Demo", "Usuario Premium",
             "Plan Premium: 200 consultas de IA al día y análisis de hasta 365 días.", Role.USER, Plan.PREMIUM),
         ADMIN("admin@demo.aquasense", "Administración Demo", "Administrador",
@@ -58,6 +56,12 @@ public class DemoAccounts implements ApplicationRunner {
             this.plan = plan;
         }
     }
+
+    /**
+     * Demonstration accounts no longer offered (the free "Usuario" one was removed from the login screen). Their
+     * password is public, so they are disabled instead of left open; their data stays.
+     */
+    static final List<String> RETIRED = List.of("usuario@demo.aquasense");
 
     public record DemoAccount(String key, String label, String description, String email, String password) {
     }
@@ -123,6 +127,12 @@ public class DemoAccounts implements ApplicationRunner {
             if (user.getPlan() != kind.plan || user.getPremiumUntil() != null) {
                 user.changePlan(kind.plan, null);
             }
+        }
+        for (String email : RETIRED) {
+            users.findByEmailIgnoreCase(email).filter(u -> u.isDemo() && u.isEnabled()).ifPresent(u -> {
+                u.disable("Cuenta de demostración retirada", java.time.Instant.now());
+                log.info("{} is no longer a demonstration account and was disabled.", email);
+            });
         }
         log.info("Demonstration accounts ready ({}).", Arrays.toString(Kind.values()));
     }

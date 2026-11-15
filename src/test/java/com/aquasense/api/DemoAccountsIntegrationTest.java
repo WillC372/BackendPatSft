@@ -32,12 +32,10 @@ class DemoAccountsIntegrationTest {
     @Test
     void eachRoleHasADemoAccountThatLogsInWithTheShownCredentials() throws Exception {
         JsonNode accounts = json(mvc.perform(get("/api/v1/auth/demo-accounts")).andExpect(status().isOk()).andReturn());
-        assertThat(accounts.findValuesAsText("key")).containsExactly("USER", "PREMIUM", "ADMIN");
-        JsonNode user = login(accounts.get(0)).path("user");
-        JsonNode premium = login(accounts.get(1)).path("user");
-        JsonNode admin = login(accounts.get(2)).path("user");
-        assertThat(user.path("plan").asText()).isEqualTo("FREE");
-        assertThat(user.path("demo").asBoolean()).isTrue();
+        assertThat(accounts.findValuesAsText("key")).containsExactly("PREMIUM", "ADMIN");
+        JsonNode premium = login(accounts.get(0)).path("user");
+        JsonNode admin = login(accounts.get(1)).path("user");
+        assertThat(premium.path("demo").asBoolean()).isTrue();
         assertThat(premium.path("plan").asText()).isEqualTo("PREMIUM");
         assertThat(admin.path("role").asText()).isEqualTo("ADMIN");
     }
@@ -54,12 +52,12 @@ class DemoAccountsIntegrationTest {
                 .content("{\"fullName\":\"Persona Real Privada\",\"email\":\"" + realEmail + "\",\"password\":\"Clave1234\"}"))
             .andReturn()).path("user").path("id").asLong();
 
-        JsonNode adminLogin = login(accounts.get(2));
+        JsonNode adminLogin = login(accounts.get(1));
         String admin = adminLogin.path("token").asText();
         JsonNode page = json(mvc.perform(get("/api/v1/admin/users").param("size", "100").header("Authorization", "Bearer " + admin))
             .andExpect(status().isOk()).andReturn());
         assertThat(page.toString()).doesNotContain(realEmail).doesNotContain("Persona Real Privada");
-        assertThat(page.toString()).contains("r***@aquasense.test").contains("usuario@demo.aquasense");
+        assertThat(page.toString()).contains("r***@aquasense.test").contains("premium@demo.aquasense");
 
         mvc.perform(get("/api/v1/admin/users/" + realId).header("Authorization", "Bearer " + admin)).andExpect(status().isForbidden());
         mvc.perform(get("/api/v1/admin/users/" + realId + "/sessions").header("Authorization", "Bearer " + admin))
