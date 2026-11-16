@@ -3,6 +3,8 @@
 API REST de **AquaSense AI**, un sistema de monitoreo de pH del agua. El backend centraliza toda la lógica: autenticación, perfiles de agua, mediciones, **lectura del medidor físico** (USB o Bluetooth SPP), alertas, informes y el módulo de inteligencia **AquaSense Intelligence**.
 
 > Frontend: carpeta [`../Frontend`](../Frontend) (repositorio [FrontendPatSft](https://github.com/WillC372/FrontendPatSft)).
+>
+> Requerimientos funcionales y no funcionales (historias de usuario con criterios de aceptación y MockUps): [FrontendPatSft/docs/Requerimientos.md](https://github.com/WillC372/FrontendPatSft/blob/main/docs/Requerimientos.md).
 
 ## Responsabilidades del servidor
 
