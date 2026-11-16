@@ -36,7 +36,7 @@ public class UserSettings {
         UserSettings settings = new UserSettings();
         settings.userId = userId;
         settings.activeProfileId = defaultProfileId;
-        settings.theme = Theme.DARK;
+        settings.theme = Theme.LIGHT;
         settings.notificationsEnabled = true;
         settings.autoSave = false;
         settings.language = "es";
