@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name "AquaSense")(type "KiCad")(uri "${KIPRJMOD}/AquaSense.kicad_sym")(options "")(descr "Simbolos del proyecto"))
+)

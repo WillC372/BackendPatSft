@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "AquaSense")(type "KiCad")(uri "${KIPRJMOD}/AquaSense.pretty")(options "")(descr "Huellas del proyecto"))
+)

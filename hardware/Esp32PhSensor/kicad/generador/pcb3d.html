@@ -1,0 +1,151 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}canvas{display:block}</style></head>
+<body><script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<script src="/node_modules/occt-import-js/dist/occt-import-js.js"></script>
+<script type="module">
+// 3D view of the KiCad board: board body from the real outline and holes, KiCad layers painted on both faces,
+// and each footprint's 3D model placed with the same transform KiCad uses (offset, then -Z, -Y, -X rotations, scale).
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+const q = new URLSearchParams(location.search);
+const W = +q.get('w') || 1600, H = +q.get('h') || 1000;
+const data = await (await fetch('/pcb/board.json')).json();
+const [BX, BY, BW, BH] = data.bbox;                   // KiCad absolute mm (y down)
+const SVG = { x0: 9.0696 - 0.05, y0: 5.9294 - 0.05 }; // where the board bbox starts in the exported SVGs (mm)
+const T = data.thickness, PX = 24;                    // texture pixels per mm
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H); renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#ffffff');
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+
+async function layer(name) {
+  const img = new Image(); img.src = `/pcb/${name}.svg`; await img.decode();
+  const c = document.createElement('canvas'); c.width = Math.round(BW * PX); c.height = Math.round(BH * PX);
+  const g = c.getContext('2d');
+  const sw = img.naturalWidth, sh = img.naturalHeight, mmW = 89.1032, mmH = 53.0606; // SVG size in px and in mm
+  g.drawImage(img, SVG.x0 * sw / mmW, SVG.y0 * sh / mmH, BW * sw / mmW, BH * sh / mmH, 0, 0, c.width, c.height);
+  return c;
+}
+function tint(src, color) {
+  const c = document.createElement('canvas'); c.width = src.width; c.height = src.height;
+  const g = c.getContext('2d'); g.drawImage(src, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = color; g.fillRect(0, 0, c.width, c.height);
+  return c;
+}
+async function face(side) {
+  const cu = await layer(`${side}.Cu`), mask = await layer(`${side}.Mask`), silk = await layer(`${side}.SilkS`);
+  const c = document.createElement('canvas'); c.width = cu.width; c.height = cu.height;
+  const g = c.getContext('2d');
+  g.fillStyle = '#0f3d1c'; g.fillRect(0, 0, c.width, c.height);            // solder mask over bare FR-4
+  g.drawImage(tint(cu, '#1a5a2a'), 0, 0);                                   // copper seen through the mask
+  // Mask openings: exposed copper (HASL, silver). The opening drawing is inside the copper of the pads.
+  const open = tint(mask, '#d9dde2'); g.drawImage(open, 0, 0);
+  g.drawImage(tint(silk, '#f5f5f2'), 0, 0);                                 // silkscreen
+  g.globalCompositeOperation = 'destination-out';                           // drilled holes
+  for (const h of data.holes) { g.beginPath(); g.arc((h.x - BX) * PX, (h.y - BY) * PX, h.d / 2 * PX, 0, Math.PI * 2); g.fill(); }
+  g.globalCompositeOperation = 'source-over';
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  return t;
+}
+
+const root = new THREE.Group(); root.name = 'AquaSensePh';
+// Board body: outline with holes (KiCad y down -> 3D y up).
+const shape = new THREE.Shape(data.outline.map(([x, y]) => new THREE.Vector2(x, -y)));
+for (const h of data.holes) { const p = new THREE.Path(); p.absarc(h.x, -h.y, h.d / 2, 0, Math.PI * 2, true); shape.holes.push(p); }
+const body = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: T, bevelEnabled: false, curveSegments: 24 }),
+  new THREE.MeshStandardMaterial({ color: '#c9b67e', roughness: 0.8 }));
+body.name = 'PCB'; body.castShadow = true; body.receiveShadow = true; root.add(body);
+const uvShape = new THREE.ShapeGeometry(shape, 24);
+const uv = uvShape.attributes.uv;
+for (let i = 0; i < uv.count; i++) { const x = uvShape.attributes.position.getX(i), y = uvShape.attributes.position.getY(i); uv.setXY(i, (x - BX) / BW, (y + BY + BH) / BH); }
+const top = new THREE.Mesh(uvShape, new THREE.MeshStandardMaterial({ map: await face('F'), roughness: 0.45, metalness: 0.05, transparent: true }));
+top.position.z = T + 0.01; top.name = 'PCB_top'; top.receiveShadow = true; root.add(top);
+const bot = new THREE.Mesh(uvShape.clone(), new THREE.MeshStandardMaterial({ map: await face('B'), roughness: 0.45, metalness: 0.05, transparent: true, side: THREE.BackSide }));
+bot.position.z = -0.01; bot.name = 'PCB_bottom'; root.add(bot);
+// Plated barrels.
+for (const h of data.holes.filter((h) => h.plated)) {
+  const ring = new THREE.Mesh(new THREE.CylinderGeometry(h.d / 2, h.d / 2, T + 0.02, 20, 1, true), new THREE.MeshStandardMaterial({ color: '#d9dde2', metalness: 0.9, roughness: 0.35, side: THREE.DoubleSide }));
+  ring.rotation.x = Math.PI / 2; ring.position.set(h.x, -h.y, T / 2); root.add(ring);
+}
+
+// Components.
+const occt = await occtimportjs();
+const cache = new Map();
+function material(c) {
+  const col = c ? new THREE.Color(c[0], c[1], c[2]) : new THREE.Color(0.7, 0.7, 0.7);
+  const lum = 0.2126 * col.r + 0.7152 * col.g + 0.0722 * col.b;
+  const metal = col.r > 0.55 && Math.abs(col.r - col.g) < 0.08 && Math.abs(col.g - col.b) < 0.1 && lum > 0.55;
+  const gold = col.r > 0.7 && col.g > 0.5 && col.b < 0.35;
+  return new THREE.MeshStandardMaterial({ color: col, metalness: metal || gold ? 0.85 : 0.05, roughness: metal || gold ? 0.32 : 0.55 });
+}
+async function model(file) {
+  if (cache.has(file)) return cache.get(file).clone(true);
+  const buf = new Uint8Array(await (await fetch('/file?p=' + encodeURIComponent(file))).arrayBuffer());
+  const res = occt.ReadStepFile(buf, null);
+  const g = new THREE.Group();
+  const walk = (node) => {
+    for (const mi of node.meshes || []) {
+      const m = res.meshes[mi];
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(m.attributes.position.array, 3));
+      if (m.attributes.normal) geo.setAttribute('normal', new THREE.Float32BufferAttribute(m.attributes.normal.array, 3)); else geo.computeVertexNormals();
+      geo.setIndex(new THREE.BufferAttribute(Uint32Array.from(m.index.array), 1));
+      let mesh;
+      if (m.brep_faces?.some((f) => f.color)) {
+        const mats = [], key = new Map();
+        for (const f of m.brep_faces) { const k = JSON.stringify(f.color || m.color); if (!key.has(k)) { key.set(k, mats.length); mats.push(material(f.color || m.color)); } geo.addGroup(f.first * 3, (f.last - f.first + 1) * 3, key.get(k)); }
+        mesh = new THREE.Mesh(geo, mats);
+      } else mesh = new THREE.Mesh(geo, material(m.color));
+      mesh.castShadow = true; mesh.receiveShadow = true; g.add(mesh);
+    }
+    for (const c of node.children || []) walk(c);
+  };
+  walk(res.root);
+  cache.set(file, g);
+  return g.clone(true);
+}
+const hide = q.get('hide') ? new RegExp(q.get('hide')) : null;
+const d2r = Math.PI / 180;
+for (const fp of data.footprints) {
+  const gfp = new THREE.Group(); gfp.name = fp.ref;
+  gfp.position.set(fp.x, -fp.y, fp.back ? 0 : T); gfp.rotation.z = fp.rot * d2r;
+  fp.models.forEach(async () => {});
+  for (const [i, m] of fp.models.entries()) {
+    if (hide && hide.test(`${fp.ref}#${i}:${m.file}`)) continue;
+    const g = await model(m.file);
+    g.position.set(m.offset[0], m.offset[1], m.offset[2]);
+    g.rotation.set(-m.rotation[0] * d2r, -m.rotation[1] * d2r, -m.rotation[2] * d2r, 'ZYX');
+    g.scale.set(m.scale[0], m.scale[1], m.scale[2]);
+    gfp.add(g);
+  }
+  root.add(gfp);
+}
+root.rotation.x = -Math.PI / 2; // KiCad Z up -> three.js Y up
+scene.add(root);
+
+const box = new THREE.Box3().setFromObject(root), size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3());
+const view = q.get('view') || 'iso';
+const dirs = { iso: [0.75, 1.0, 1.05], iso2: [-0.95, 0.8, 0.95], top: [0, 1, 0.0001], bottom: [0, -1, 0.0001], front: [0, 0.3, 1], side: [1, 0.35, 0.15] };
+const d = new THREE.Vector3(...(dirs[view] || dirs.iso)).normalize();
+let cam;
+if (view === 'top' || view === 'bottom') {
+  const half = BW * 0.56; cam = new THREE.OrthographicCamera(-half, half, half * H / W, -half * H / W, 0.1, 5000);
+  cam.position.copy(center).addScaledVector(d, 300); cam.up.set(0, 0, view === 'top' ? -1 : -1);
+} else { cam = new THREE.PerspectiveCamera(28, W / H, 0.1, 5000); cam.position.copy(center).addScaledVector(d, Math.max(size.x, size.z) * (+q.get('zoom') || 2.05)); }
+cam.lookAt(center);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 0.55));
+const sun = new THREE.DirectionalLight(0xffffff, 1.7); sun.position.set(center.x + 50, center.y + 140, center.z + 70);
+sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -0.0003;
+Object.assign(sun.shadow.camera, { left: -90, right: 90, top: 90, bottom: -90, near: 1, far: 500 });
+sun.target.position.copy(center); scene.add(sun, sun.target);
+if (view !== 'bottom') {
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.ShadowMaterial({ opacity: 0.16 }));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = box.min.y - 0.05; ground.receiveShadow = true; scene.add(ground);
+}
+renderer.render(scene, cam);
+window.__info = { size: [size.x, size.y, size.z] };
+if (q.get('glb')) window.__glb = await new Promise((ok) => new GLTFExporter().parse(root, (r) => ok(Array.from(new Uint8Array(r))), () => ok(null), { binary: true }));
+window.__done = true;
+</script></body></html>
