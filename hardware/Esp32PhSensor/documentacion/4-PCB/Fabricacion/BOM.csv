@@ -1,0 +1,7 @@
+Referencias,Cantidad,Valor,Huella KiCad,Descripcion,En la placa
+H1 H2 H3 H4,4,M3,MountingHole:MountingHole_3.2mm_M3,Agujero de montaje M3,si
+J1,1,SENSOR,Connector_PinSocket_2.54mm:PinSocket_1x03_P2.54mm_Vertical,"Zocalo hembra 1x3 paso 2,54 mm (cable Dupont al PH-4502C)",si
+R1 R2,2,20k,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,Resistencia 20 kOhm 1/4 W 1 %,si
+U1,1,ESP32_DevKit_38P,AquaSense:ESP32_DevKit_38P_Socket,"ESP32 DevKit 38 pines USB-C en 2 zocalos hembra 1x19 (25,4 mm entre filas)",si
+U2,1,PH-4502C,-,Modulo amplificador de pH PH-4502C con sonda E201-BNC (fuera de la placa),no
+U1 (zocalos),2,PinSocket_1x19,Connector_PinSocket_2.54mm:PinSocket_1x19_P2.54mm_Vertical,"Zocalo hembra 1x19 paso 2,54 mm (incluido en la huella de U1; el ESP32 se enchufa en ellos)",si

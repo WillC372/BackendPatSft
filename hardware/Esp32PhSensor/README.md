@@ -4,6 +4,22 @@ Firmware y planos para armar un medidor de pH económico que la app lee por USB 
 
 > Estado: el firmware se compiló y se probó en un computador con una capa que imita a Arduino (31 pruebas, `tools/FirmwareTest.cpp`) y se puede simular en Wokwi. **Todavía no se ha probado con el sensor físico.**
 
+## Proyecto KiCad y documentación (cuatro vistas del mismo circuito)
+
+El circuito también está como proyecto de **KiCad 7** en [`kicad/`](kicad/) (ábrelo con `AquaSensePh.kicad_pro`), con una PCB de 2 capas de 80 × 44 mm en la que el ESP32 se enchufa en dos zócalos 1×19. En [`documentacion/`](documentacion/) están las cuatro representaciones, exportadas desde ese proyecto, y el resumen en [`Documentacion-Medidor-pH.pdf`](documentacion/Documentacion-Medidor-pH.pdf):
+
+| Vista | Archivos editables / exportables |
+|---|---|
+| 1. Esquemático | `kicad/AquaSensePh.kicad_sch` · PDF y SVG vectoriales · netlist `AquaSensePh.net` |
+| 2. Vista 3D de la PCB | `AquaSensePh-STEP.zip` (STEP: FreeCAD, Fusion 360, SolidWorks) · `AquaSensePh.glb` (Blender, Visor 3D) · 4 renders |
+| 3. Montaje en protoboard | `Protoboard.svg` (Inkscape, Illustrator) · `protoboard.json` (conexiones) · PNG |
+| 4. Layout de PCB | `kicad/AquaSensePh.kicad_pcb` · hoja del layout (SVG/PNG) · PDF por capa · Gerber + taladros (`AquaSensePh-Gerber.zip`) · BOM |
+
+- **Mismo circuito en todas:** [`Consistencia.md`](documentacion/Consistencia.md) compara red por red la netlist del esquemático, los pads de la PCB y las conexiones de la protoboard: coinciden. La vista 3D se genera desde el mismo archivo de PCB.
+- **Reglas de diseño (DRC) de KiCad:** 0 errores, 0 pads sin conectar.
+- Antes de mandar a fabricar la PCB, confirma con tu ESP32 que las filas de pines están a 25,4 mm (es lo que usa el diseño) y el orden de pines de tu PH-4502C.
+- La carpeta [`planos/`](planos/) es la versión para baquelita perforada (sin fabricar PCB), con el mismo circuito.
+
 ## Piezas
 
 | Ref. | Pieza | Cant. |

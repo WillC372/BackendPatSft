@@ -46,7 +46,7 @@ src/main/resources/
 ├── application.yml
 └── db/migration/   Migraciones Flyway V1 a V14 (V11 historial de sesiones, V12 cuentas de demostración,
                     V13 datos oficiales, V14 foto de perfil)
-hardware/Esp32PhSensor/    Medidor casero ESP32 + PH-4502C: firmware, pruebas, planos y simulación en Wokwi
+hardware/Esp32PhSensor/    Medidor casero ESP32 + PH-4502C: firmware, pruebas, proyecto KiCad (esquemático, PCB, 3D), protoboard y Wokwi
 docs/                        Documentación técnica
 ```
 
