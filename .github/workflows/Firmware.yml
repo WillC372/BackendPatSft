@@ -1,0 +1,26 @@
+# Compiles the ESP32 pH meter firmware logic on Linux with a stand-in for the Arduino core and runs its tests.
+name: Firmware tests
+
+on:
+  push:
+    paths: ["hardware/**", ".github/workflows/Firmware.yml"]
+  pull_request:
+    paths: ["hardware/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: hardware/Esp32PhSensor
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and run the firmware tests
+        run: g++ -std=c++17 -Wall -Wextra -Werror -I tools/shim -x c++ tools/FirmwareTest.cpp -o fwtest && ./fwtest
+      - name: Check that the Wokwi copy compiles
+        run: g++ -std=c++17 -Wall -Wextra -I tools/shim -fsyntax-only -x c++ -include tools/shim/Arduino.h wokwi/sketch.ino
