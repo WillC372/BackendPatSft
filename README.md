@@ -46,7 +46,7 @@ src/main/resources/
 ├── application.yml
 └── db/migration/   Migraciones Flyway V1 a V14 (V11 historial de sesiones, V12 cuentas de demostración,
                     V13 datos oficiales, V14 foto de perfil)
-hardware/Esp32PhSensor/    Firmware de referencia para ESP32 (no probado con hardware)
+hardware/Esp32PhSensor/    Medidor casero ESP32 + PH-4502C: firmware, pruebas, planos y simulación en Wokwi
 docs/                        Documentación técnica
 ```
 
@@ -291,6 +291,8 @@ Un medidor se conecta de tres formas:
 - **Al computador del usuario, desde la app publicada (Web Serial).** En Chrome o Edge, la página abre el puerto USB del medidor (o un Bluetooth emparejado como puerto serie), lee y calibra, y envía cada valor a `POST /devices/browser-readings`, que lo guarda como medición `REAL`. Es la forma de usar un medidor con el backend en la nube, que no puede ver los USB del usuario.
 - **Al servidor**, cuando AquaSense corre en el mismo computador del medidor: interfaz `PhMeter` con los adaptadores `AquaSenseFirmwareAdapter` (firmware ESP32 incluido), `AtlasEzoPhAdapter` (Atlas Scientific EZO-pH por UART) y `TextMeterAdapter` (medidores de laboratorio que envían el valor como texto por USB o RS-232).
 - **Por cámara**, para medidores sin cable de datos (ver `docs/Hardware.md`).
+
+**Medidor casero.** [`hardware/Esp32PhSensor/`](hardware/Esp32PhSensor/) tiene todo para armar uno con un ESP32 y el módulo PH-4502C: el firmware (calibración de 1 a 3 puntos con el valor real de cada sobre, por ejemplo 6.86), el esquemático, el cableado y el plano de la baquelita, y el proyecto para simularlo en Wokwi. El firmware se compiló y se probó en el computador (31 pruebas, también en GitHub Actions); falta probarlo con el sensor físico.
 
 El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENABLED=false` por defecto): la app publicada no muestra lecturas falsas.
 
