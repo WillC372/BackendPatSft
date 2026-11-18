@@ -40,11 +40,13 @@ public class TranslationService {
     private static final Logger LOG = LoggerFactory.getLogger(TranslationService.class);
 
     public static final int MAX_TEXT = 1500;
-    static final int CHUNK_ITEMS = 40;
-    static final int CHUNK_CHARS = 5000;
+    static final int CHUNK_ITEMS = 60;
+    static final int CHUNK_CHARS = 7000;
+    /** AI calls for translations at the same time: the free plans of the providers reject bursts. */
+    private static final int PARALLEL_CALLS = 3;
     private static final Pattern LETTER = Pattern.compile("\\p{L}");
     private static final Pattern MARKER = Pattern.compile("</?\\d{1,2}/?>|\\{\\d{1,2}\\}");
-    private static final Duration WAIT = Duration.ofSeconds(75);
+    private static final Duration WAIT = Duration.ofSeconds(110);
 
     private static final Map<String, Object> SCHEMA = Map.of(
         "type", "object",
@@ -60,6 +62,7 @@ public class TranslationService {
     /** Texts being translated right now, so two people opening the same screen do not pay for it twice. */
     private final Map<String, CompletableFuture<String>> inFlight = new ConcurrentHashMap<>();
     private final ExecutorService workers = Executors.newVirtualThreadPerTaskExecutor();
+    private final java.util.concurrent.Semaphore calls = new java.util.concurrent.Semaphore(PARALLEL_CALLS, true);
 
     public TranslationService(UiTranslationRepository repository, FallbackAiProvider ai, ObjectMapper mapper,
                               TranslationBudget budget) {
@@ -176,7 +179,15 @@ public class TranslationService {
     private void translateChunk(String lang, List<String> texts, Map<String, String> dictionary) {
         List<String> translated;
         try {
-            translated = ask(lang, texts);
+            calls.acquire();
+            try {
+                translated = ask(lang, texts);
+            } finally {
+                calls.release();
+            }
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return;
         } catch (RuntimeException ex) {
             LOG.warn("The AI could not translate {} texts into {}: {}", texts.size(), lang, ex.getMessage());
             return;
