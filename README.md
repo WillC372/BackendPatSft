@@ -25,7 +25,7 @@ API REST de **Aqua Assistant AI**, un sistema de monitoreo de pH del agua. El ba
 Monolito modular en capas (controlador → servicio → repositorio), organizado por módulo de negocio. Detalle y diagramas en [`docs/Architecture.md`](docs/Architecture.md). Catálogo de patrones de diseño con su función real y sus pruebas en [`docs/DesignPatterns.md`](docs/DesignPatterns.md).
 
 ```
-src/main/java/com/aquasense/
+src/main/java/com/aquaassistant/
 ├── AquaAssistantApplication.java
 ├── config/         Seguridad, CORS, OpenAPI y propiedades tipadas
 ├── security/       JWT, filtro de autenticación, limitador de intentos
@@ -97,7 +97,7 @@ Una base de datos creada antes del cambio de nombre de las migraciones necesita 
    o compila el JAR:
    ```bash
    mvn -DskipTests package
-   java -jar target/aquasense-backend-1.0.0.jar
+   java -jar target/aqua-assistant-backend-1.0.0.jar
    ```
 4. Comprueba: `http://localhost:8080/actuator/health` debe responder `{"status":"UP"}`.
 

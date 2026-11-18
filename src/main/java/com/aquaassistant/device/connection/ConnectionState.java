@@ -1,0 +1,44 @@
+package com.aquaassistant.device.connection;
+
+import com.aquaassistant.common.BusinessException;
+import com.aquaassistant.device.hardware.CalibrationPoint;
+import com.aquaassistant.device.hardware.PhMeter;
+import com.aquaassistant.device.hardware.PhReading;
+
+/**
+ * State: every meter state decides which operations are valid.
+ * Operations that are not allowed respond with a clear message instead of scattered conditionals.
+ */
+public abstract class ConnectionState {
+
+    public abstract DeviceState id();
+
+    public void connect(DeviceConnection connection, PhMeter meter, ConnectionSession session) {
+        throw notAllowed("conectar");
+    }
+
+    public void disconnect(DeviceConnection connection) {
+        throw notAllowed("desconectar");
+    }
+
+    public PhReading measure(DeviceConnection connection, int samples) {
+        throw notAllowed("medir");
+    }
+
+    public void startLive(DeviceConnection connection) {
+        throw notAllowed("iniciar la medición en tiempo real");
+    }
+
+    public void stopLive(DeviceConnection connection) {
+        throw notAllowed("detener la medición en tiempo real");
+    }
+
+    public String calibrate(DeviceConnection connection, CalibrationPoint point, double buffer) {
+        throw notAllowed("calibrar");
+    }
+
+    private BusinessException notAllowed(String action) {
+        return BusinessException.conflict("No se puede " + action + " con el medidor en estado \""
+            + id().label() + "\".");
+    }
+}

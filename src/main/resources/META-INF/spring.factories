@@ -1,1 +1,1 @@
-org.springframework.boot.env.EnvironmentPostProcessor=com.aquasense.config.DatabaseUrlEnvironment
+org.springframework.boot.env.EnvironmentPostProcessor=com.aquaassistant.config.DatabaseUrlEnvironment
