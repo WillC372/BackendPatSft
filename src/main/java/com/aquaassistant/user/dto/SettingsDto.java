@@ -10,10 +10,15 @@ public record SettingsDto(
     @NotNull(message = "Elige un tema.") Theme theme,
     boolean notificationsEnabled,
     boolean autoSave,
-    @Pattern(regexp = "es|en", message = "Idioma no soportado.") String language) {
+    @Pattern(regexp = "[a-z]{2,3}(-[A-Za-z0-9]{2,4})?", message = "Idioma no soportado.") String language,
+    Boolean emailAlerts) {
+
+    public SettingsDto(Long activeProfileId, Theme theme, boolean notificationsEnabled, boolean autoSave, String language) {
+        this(activeProfileId, theme, notificationsEnabled, autoSave, language, null);
+    }
 
     public static SettingsDto from(UserSettings settings) {
         return new SettingsDto(settings.getActiveProfileId(), settings.getTheme(), settings.isNotificationsEnabled(),
-            settings.isAutoSave(), settings.getLanguage());
+            settings.isAutoSave(), settings.getLanguage(), settings.isEmailAlerts());
     }
 }

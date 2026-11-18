@@ -32,6 +32,9 @@ public class UserSettings {
     @Column(name = "active_place_id")
     private Long activePlaceId;
 
+    @Column(name = "email_alerts")
+    private boolean emailAlerts = true;
+
     protected UserSettings() {
     }
 
@@ -68,4 +71,9 @@ public class UserSettings {
     public boolean isAutoSave() { return autoSave; }
     public String getLanguage() { return language; }
     public Long getActivePlaceId() { return activePlaceId; }
+    public boolean isEmailAlerts() { return emailAlerts; }
+
+    public void setEmailAlerts(boolean emailAlerts) {
+        this.emailAlerts = emailAlerts;
+    }
 }

@@ -25,6 +25,15 @@ public class AlertService implements MeasurementListener {
     private final MeasurementRepository measurementRepository;
     private final AnomalyDetector detector;
 
+    private com.aquaassistant.place.PlaceAccess places;
+    private com.aquaassistant.notify.Notifier notifier;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    void setOutsideNotifications(com.aquaassistant.place.PlaceAccess places, com.aquaassistant.notify.Notifier notifier) {
+        this.places = places;
+        this.notifier = notifier;
+    }
+
     public AlertService(AlertRepository repository, MeasurementRepository measurementRepository, AnomalyDetector detector) {
         this.repository = repository;
         this.measurementRepository = measurementRepository;
@@ -39,9 +48,22 @@ public class AlertService implements MeasurementListener {
             .filter(m -> !m.getMeasuredAt().isAfter(measurement.getMeasuredAt()))
             .toList());
         Collections.reverse(previous);
+        // Everyone in the place gets the alert (in the app), and important ones also outside it (phone and email).
+        List<Long> people = places == null ? List.of(measurement.getUserId()) : places.people(measurement.getPlaceId());
+        if (people.isEmpty()) {
+            people = List.of(measurement.getUserId());
+        }
         for (Anomaly anomaly : detector.detect(measurement, previous, profile)) {
-            repository.save(new Alert(measurement.getUserId(), measurement.getId(), anomaly.severity().name(),
-                anomaly.title(), anomaly.message()));
+            for (Long person : people) {
+                repository.save(new Alert(person, measurement.getId(), anomaly.severity().name(), anomaly.title(), anomaly.message()));
+                if (notifier != null) {
+                    notifier.alert(person, new com.aquaassistant.notify.Notifier.Message(
+                        anomaly.title(), String.format(java.util.Locale.US, "pH %.2f · %s", measurement.getPh(), anomaly.message()),
+                        "/#/dashboard", "Aqua Assistant AI - " + anomaly.title(),
+                        List.of(anomaly.message(), String.format(java.util.Locale.US, "Medición: pH %.2f.", measurement.getPh()),
+                            "Abre Aqua Assistant AI para ver el detalle y qué hacer. Puedes desactivar estos correos en Configuración.")));
+                }
+            }
         }
     }
 

@@ -92,6 +92,17 @@ public class PlaceAccess {
         return created;
     }
 
+    /** Everyone with access to the place: its owner and the people who joined. */
+    @Transactional(readOnly = true)
+    public List<Long> people(Long placeId) {
+        return places.findById(placeId).map(p -> {
+            List<Long> out = new java.util.ArrayList<>();
+            out.add(p.getOwnerId());
+            members.findByPlaceIdOrderByJoinedAtAsc(placeId).forEach(m -> out.add(m.getUserId()));
+            return out;
+        }).orElse(List.of());
+    }
+
     public Long activeId(Long userId) {
         return active(userId).getId();
     }

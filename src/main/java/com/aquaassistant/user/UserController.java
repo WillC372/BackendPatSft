@@ -95,6 +95,9 @@ public class UserController {
         UserSettings settings = settingsFor(userId);
         settings.update(request.theme(), request.notificationsEnabled(), request.autoSave(),
             request.language() == null ? "es" : request.language());
+        if (request.emailAlerts() != null) {
+            settings.setEmailAlerts(request.emailAlerts());
+        }
         if (request.activeProfileId() != null) {
             settings.activateProfile(profileService.getVisible(userId, request.activeProfileId()).getId());
         }
