@@ -1,19 +1,19 @@
 # Medidor de pH casero: ESP32 + PH-4502C
 
-Firmware y planos para armar un medidor de pH económico que la app lee por USB (o Bluetooth) con el tipo de medidor **«Firmware AquaSense (ESP32)»**.
+Firmware y planos para armar un medidor de pH económico que la app lee por USB (o Bluetooth) con el tipo de medidor **«Firmware Aqua Assistant (ESP32)»**.
 
 > Estado: el firmware se compiló y se probó en un computador con una capa que imita a Arduino (31 pruebas, `tools/FirmwareTest.cpp`) y se puede simular en Wokwi. **Todavía no se ha probado con el sensor físico.**
 
 ## Proyecto KiCad y documentación (cuatro vistas del mismo circuito)
 
-El circuito también está como proyecto de **KiCad 7** en [`kicad/`](kicad/) (ábrelo con `AquaSensePh.kicad_pro`), con una PCB de 2 capas de 80 × 44 mm en la que el ESP32 se enchufa en dos zócalos 1×19. En [`documentacion/`](documentacion/) están las cuatro representaciones, exportadas desde ese proyecto, y el resumen en [`Documentacion-Medidor-pH.pdf`](documentacion/Documentacion-Medidor-pH.pdf):
+El circuito también está como proyecto de **KiCad 7** en [`kicad/`](kicad/) (ábrelo con `AquaAssistantPh.kicad_pro`), con una PCB de 2 capas de 80 × 44 mm en la que el ESP32 se enchufa en dos zócalos 1×19. En [`documentacion/`](documentacion/) están las cuatro representaciones, exportadas desde ese proyecto, y el resumen en [`Documentacion-Medidor-pH.pdf`](documentacion/Documentacion-Medidor-pH.pdf):
 
 | Vista | Archivos editables / exportables |
 |---|---|
-| 1. Esquemático | `kicad/AquaSensePh.kicad_sch` · PDF y SVG vectoriales · netlist `AquaSensePh.net` |
-| 2. Vista 3D de la PCB | `AquaSensePh-STEP.zip` (STEP: FreeCAD, Fusion 360, SolidWorks) · `AquaSensePh.glb` (Blender, Visor 3D) · 4 renders |
+| 1. Esquemático | `kicad/AquaAssistantPh.kicad_sch` · PDF y SVG vectoriales · netlist `AquaAssistantPh.net` |
+| 2. Vista 3D de la PCB | `AquaAssistantPh-STEP.zip` (STEP: FreeCAD, Fusion 360, SolidWorks) · `AquaAssistantPh.glb` (Blender, Visor 3D) · 4 renders |
 | 3. Montaje en protoboard | `Protoboard.svg` (Inkscape, Illustrator) · `protoboard.json` (conexiones) · PNG |
-| 4. Layout de PCB | `kicad/AquaSensePh.kicad_pcb` · hoja del layout (SVG/PNG) · PDF por capa · Gerber + taladros (`AquaSensePh-Gerber.zip`) · BOM |
+| 4. Layout de PCB | `kicad/AquaAssistantPh.kicad_pcb` · hoja del layout (SVG/PNG) · PDF por capa · Gerber + taladros (`AquaAssistantPh-Gerber.zip`) · BOM |
 
 - **Mismo circuito en todas:** [`Consistencia.md`](documentacion/Consistencia.md) compara red por red la netlist del esquemático, los pads de la PCB y las conexiones de la protoboard: coinciden. La vista 3D se genera desde el mismo archivo de PCB.
 - **Reglas de diseño (DRC) de KiCad:** 0 errores, 0 pads sin conectar.
@@ -49,7 +49,7 @@ Planos completos en [`planos/`](planos/): esquemático, cableado y baquelita (vi
 
 | Comando | Respuesta |
 |---|---|
-| `PING` | `PONG AQUASENSE-PH-001` |
+| `PING` | `PONG AQUA-ASSISTANT-PH-001` |
 | `READ` | `PH:7.02;T:NA`, o `ERR:NO_SIGNAL` si no hay sensor, o `ERR:OUT_OF_RANGE` |
 | `CAL:MID:6.86` | `OK` (valor entre 6.00 y 8.00) |
 | `CAL:LOW:4.00` | `OK` (entre 2.00 y 5.50); `ERR:SAME_AS_MID` si la sonda está en el sobre equivocado |
@@ -64,11 +64,11 @@ Cada lectura toma 21 muestras y descarta las 5 más altas y las 5 más bajas. La
 1. Instala **Arduino IDE 2** y, en *Herramientas → Placa → Gestor de placas*, el paquete **esp32** de Espressif.
 2. Abre `Esp32PhSensor.ino`. Placa: **ESP32 Dev Module**. Puerto: el que aparece al conectar el USB-C.
 3. Si Windows no reconoce la placa, instala el controlador del chip USB que tenga impreso (CP210x, CH340 o CH9102).
-4. Pulsa **Subir**. En el *Monitor serie* (9600 baudios, «Nueva línea») escribe `PING`: debe responder `PONG AQUASENSE-PH-001`.
+4. Pulsa **Subir**. En el *Monitor serie* (9600 baudios, «Nueva línea») escribe `PING`: debe responder `PONG AQUA-ASSISTANT-PH-001`.
 
 ## Calibrar
 
-En la app: **Conexión → «Medidor conectado a este equipo»**, elige el tipo «Firmware AquaSense (ESP32)», pulsa **Conectar** y luego **Calibrar**. En la ventana, cambia «Valor del buffer» por el número de tu sobre:
+En la app: **Conexión → «Medidor conectado a este equipo»**, elige el tipo «Firmware Aqua Assistant (ESP32)», pulsa **Conectar** y luego **Calibrar**. En la ventana, cambia «Valor del buffer» por el número de tu sobre:
 
 1. Sonda en el sobre **6.86**, espera 1 minuto y calibra el punto **Medio** con el valor `6.86`.
 2. Enjuaga la sonda con agua destilada y sécala con toques suaves.

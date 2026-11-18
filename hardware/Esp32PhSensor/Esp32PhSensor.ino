@@ -1,10 +1,10 @@
-// AquaSense firmware for an ESP32 (38-pin DevKit, ESP-32 module) + PH-4502C pH module.
+// Aqua Assistant firmware for an ESP32 (38-pin DevKit, ESP-32 module) + PH-4502C pH module.
 //
 // Wiring (see planos/): PH-4502C V+ -> 5V, G -> GND, Po -> R1 20k -> GPIO34, and R2 20k from GPIO34 to GND.
 // The divider halves Po (0-5 V) so GPIO34 never receives more than 2.5 V.
 //
 // Text protocol, one command per line (\n, \r or \r\n), 9600 baud over USB and over classic Bluetooth (SPP):
-//   PING              -> PONG AQUASENSE-PH-001
+//   PING              -> PONG AQUA-ASSISTANT-PH-001
 //   READ              -> PH:7.02;T:NA       (ERR:NO_SIGNAL if the sensor is not connected, ERR:OUT_OF_RANGE)
 //   CAL:MID:6.86      -> OK                 (buffer between 6.00 and 8.00; also CAL:LOW:4.00 and CAL:HIGH:9.18)
 //   CAL:CLEAR         -> OK                 (back to the uncalibrated defaults)
@@ -28,7 +28,7 @@
 
 const int PH_PIN = 34;            // printed "G34" on the board; ADC1, works with Bluetooth on
 const int SAMPLES = 21;           // readings per measurement; the 5 lowest and 5 highest are discarded
-const char* DEVICE_ID = "AQUASENSE-PH-001";
+const char* DEVICE_ID = "AQUA-ASSISTANT-PH-001";
 
 // Before calibrating: about 2.5 V from the PH-4502C at pH 7 (1250 mV after the divider) and about -88 mV per pH unit.
 // These are approximations; every probe is different, so the meter must be calibrated with buffer solutions.
@@ -241,7 +241,7 @@ void setup() {
   Serial.begin(9600);
   analogReadResolution(12);
   analogSetPinAttenuation(PH_PIN, ADC_11db);  // measures up to about 3.1 V
-  prefs.begin("aquasense", false);
+  prefs.begin("aquaassistant", false);
   loadCalibration();
 #if USE_BLUETOOTH
   bt.begin(DEVICE_ID);

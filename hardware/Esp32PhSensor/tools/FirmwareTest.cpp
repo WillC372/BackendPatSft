@@ -32,9 +32,9 @@ static void expectNear(const std::string& what, const std::string& reply, double
 
 int main() {
   setup();
-  expect("PING", ask("PING"), "PONG AQUASENSE-PH-001");
-  expect("PING con \\r\\n (Windows)", ask("PING", "\r\n"), "PONG AQUASENSE-PH-001");
-  expect("PING con \\r (Atlas)", ask("PING", "\r"), "PONG AQUASENSE-PH-001");
+  expect("PING", ask("PING"), "PONG AQUA-ASSISTANT-PH-001");
+  expect("PING con \\r\\n (Windows)", ask("PING", "\r\n"), "PONG AQUA-ASSISTANT-PH-001");
+  expect("PING con \\r (Atlas)", ask("PING", "\r"), "PONG AQUA-ASSISTANT-PH-001");
   expect("comando desconocido", ask("HOLA"), "ERR:UNKNOWN_COMMAND");
   expect("linea vacia no responde", ask(""), "");
 
@@ -93,7 +93,7 @@ int main() {
 
   std::string longLine(80, 'X');
   expect("linea demasiado larga se ignora", ask(longLine), "");
-  expect("y la siguiente funciona", ask("PING"), "PONG AQUASENSE-PH-001");
+  expect("y la siguiente funciona", ask("PING"), "PONG AQUA-ASSISTANT-PH-001");
 
   std::printf("\n%s: %d fallas\n", failures ? "FALLO" : "TODO BIEN", failures);
   return failures ? 1 : 0;
