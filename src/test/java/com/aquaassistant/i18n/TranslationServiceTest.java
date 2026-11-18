@@ -74,6 +74,27 @@ class TranslationServiceTest {
     }
 
     @Test
+    void textsWithAnEmailAddressAreNeverSentNorStored() {
+        List<String> out = service.translate("fr", List.of("persona@example.com", "Escribe ana.lopez@example.com para confirmar"), "1.2.3.4");
+        assertThat(out).containsExactly("persona@example.com", "Escribe ana.lopez@example.com para confirmar");
+        verify(ai, times(0)).complete(any(AiPrompt.class));
+        verify(repository, times(0)).saveAndFlush(any(UiTranslation.class));
+    }
+
+    @Test
+    void aTranslationWithAnotherFormOfAddressIsAskedAgain() {
+        when(ai.complete(any(AiPrompt.class)))
+            .thenReturn(new AiAnswer("{\"t\":[\"Ajoutez votre eau\",\"Lieux\"]}", "Groq", "test", 10, 10, false))
+            .thenReturn(new AiAnswer("{\"t\":[\"Ajoute ton eau\"]}", "Groq", "test", 10, 10, false));
+        List<String> out = service.translate("fr", List.of("Agrega tu agua", "Lugares"), "1.2.3.4");
+        assertThat(out).containsExactly("Ajoute ton eau", "Lieux");
+        verify(ai, times(2)).complete(any(AiPrompt.class));
+        assertThat(TranslationService.otherTone("de", "Hier siehst du deine Werte")).isFalse();
+        assertThat(TranslationService.otherTone("de", "Hier sehen Sie Ihre Werte")).isTrue();
+        assertThat(TranslationService.otherTone("de", "Sie sind gespeichert.")).isFalse();
+    }
+
+    @Test
     void spanishAndUnknownTextsAreNotSentToTheAi() {
         assertThat(service.translate("es", List.of("Hola"), "x")).containsExactly("Hola");
         verify(ai, times(0)).complete(any(AiPrompt.class));

@@ -93,6 +93,22 @@ for (const file of javaFiles) {
     }
   }
 }
+// ---------- the server's own data shown on screen: the knowledge base and the system profiles ----------
+const before = texts.size;
+const addData = (raw) => { const k = key(String(raw ?? "")); if (k.length >= 2 && k.length <= 1500 && LETTER.test(k)) texts.add(k); };
+const kb = JSON.parse(fs.readFileSync(path.join(back, "src/main/resources/knowledge/Guidelines.json"), "utf8"));
+for (const s of kb.sources) [s.organization, s.legalStatus, s.edition].forEach(addData);
+for (const c of kb.chunks) addData(c.summaryEs);
+const migrations = path.join(back, "src/main/resources/db/migration");
+for (const f of fs.readdirSync(migrations)) {
+  const sql = fs.readFileSync(path.join(migrations, f), "utf8");
+  if (!/water_profiles/.test(sql) || !/(INSERT INTO|UPDATE) water_profiles/.test(sql)) continue;
+  for (const m of sql.matchAll(/'((?:[^']|'')*)'/g)) {
+    const t = m[1].replace(/''/g, "'");
+    if (/\s/.test(t.trim()) && SPANISH_HINT.test(t) && t.length > 3) addData(t);
+  }
+}
+console.log(`server data: ${texts.size - before}`);
 const list = [...texts].sort();
 fs.writeFileSync(out, list.join("\n") + "\n");
 console.log(`frontend: ${frontCount} · backend: ${texts.size - frontCount} · total: ${list.length}`);

@@ -47,6 +47,16 @@ public class TranslationService {
     private static final Pattern LETTER = Pattern.compile("\\p{L}");
     private static final Pattern MARKER = Pattern.compile("</?\\d{1,2}/?>|\\{\\d{1,2}\\}");
     private static final Duration WAIT = Duration.ofSeconds(110);
+    /** A text with an e-mail address is personal data: it is never sent to the AI nor kept in the shared dictionary. */
+    private static final Pattern EMAIL = Pattern.compile("[\\w.+-]+@[\\w-]+(?:\\.[\\w-]+)+");
+
+    /** Forms of address the app does not use ("vous", "Sie"...): a translation with one is asked again once. */
+    static final Map<String, Pattern> OTHER_TONE = Map.of(
+        "fr", Pattern.compile("(?i)\\b(vous|votre|vos)\\b"),
+        "de", Pattern.compile("\\bIhnen\\b|(?<=[\\p{Ll},] )(Sie|Ihr|Ihre|Ihren|Ihrem|Ihrer|Ihres)\\b"),
+        "it", Pattern.compile("(?<=\\p{Ll} )(Lei|Suo|Sua|Suoi|Sue)\\b"),
+        "ja", Pattern.compile("てね|だよ|ね。?$|よ。?$"),
+        "zh-Hans", Pattern.compile("您"));
 
     /** Strict JSON schema: Groq (and OpenAI) reject a strict schema without additionalProperties=false. */
     static final Map<String, Object> SCHEMA = Map.of(
@@ -102,7 +112,7 @@ public class TranslationService {
         Map<String, CompletableFuture<String>> waiting = new LinkedHashMap<>();
         List<String> mine = new ArrayList<>();
         for (String text : texts) {
-            if (text == null || text.isBlank() || text.length() > MAX_TEXT || !LETTER.matcher(text).find()) {
+            if (untranslatable(text)) {
                 continue;
             }
             if (dictionary.containsKey(text) || waiting.containsKey(text)) {
@@ -126,7 +136,7 @@ public class TranslationService {
             translateNew(lang, List.copyOf(sent), dictionary);
         }
         for (String text : texts) {
-            if (text == null || text.isBlank() || text.length() > MAX_TEXT || !LETTER.matcher(text).find()) {
+            if (untranslatable(text)) {
                 result.add(text);
                 continue;
             }
@@ -141,6 +151,16 @@ public class TranslationService {
             result.add(known);
         }
         return result;
+    }
+
+    private static boolean untranslatable(String text) {
+        return text == null || text.isBlank() || text.length() > MAX_TEXT || !LETTER.matcher(text).find()
+            || EMAIL.matcher(text).find();
+    }
+
+    static boolean otherTone(String lang, String text) {
+        Pattern p = OTHER_TONE.get(lang);
+        return p != null && text != null && p.matcher(text).find();
     }
 
     /** One text, for the server's own messages: falls back to Spanish when it cannot be translated now. */
@@ -231,7 +251,21 @@ public class TranslationService {
         try {
             calls.acquire();
             try {
-                translated = ask(lang, texts);
+                translated = new ArrayList<>(ask(lang, texts));
+                List<Integer> wrongTone = new ArrayList<>();
+                for (int i = 0; i < texts.size() && i < translated.size(); i++) {
+                    if (otherTone(lang, translated.get(i)) && !otherTone(lang, texts.get(i))) {
+                        wrongTone.add(i);
+                    }
+                }
+                if (!wrongTone.isEmpty()) {
+                    List<String> again = askAgain(lang, wrongTone.stream().map(texts::get).toList());
+                    for (int j = 0; j < wrongTone.size() && j < again.size(); j++) {
+                        if (again.get(j) != null && !again.get(j).isBlank()) {
+                            translated.set(wrongTone.get(j), again.get(j));
+                        }
+                    }
+                }
             } finally {
                 calls.release();
             }
@@ -253,7 +287,20 @@ public class TranslationService {
         }
     }
 
+    /** The texts whose translation used another form of address, asked once more (kept as they were if that fails). */
+    private List<String> askAgain(String lang, List<String> texts) {
+        try {
+            return ask(lang, texts, "Your previous answer used the wrong form of address. ");
+        } catch (RuntimeException ex) {
+            return List.of();
+        }
+    }
+
     List<String> ask(String lang, List<String> texts) {
+        return ask(lang, texts, "");
+    }
+
+    List<String> ask(String lang, List<String> texts, String reminder) {
         String system = """
             You translate the user interface of "Aqua Assistant AI", an app to measure and look after the pH of water \
             (swimming pools, aquariums, ponds, drinking water, irrigation, hydroponics, pH meters and their calibration).
@@ -266,9 +313,10 @@ public class TranslationService {
             the names "Aqua Assistant AI", "Aqua", "Premium", "USGS", "ESP32", product codes, and names of people or places.
             - If a string is not in Spanish, or is only a name, return it unchanged.
             - Use a friendly, simple tone, short like a phone app, and the quotation marks usual in that language.
-            - %s
+            - %s%s
             - Keep the same words for the same things everywhere (Aqua, Premium, pH, "Medir" = the measure button).
-            """.formatted(Languages.englishName(lang) + " (" + lang + ")", texts.size(), STYLE.getOrDefault(lang, "Address the person as \"you\"."));
+            """.formatted(Languages.englishName(lang) + " (" + lang + ")", texts.size(), reminder,
+                STYLE.getOrDefault(lang, "Address the person as \"you\"."));
         String user;
         try {
             user = mapper.writeValueAsString(texts);
