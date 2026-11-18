@@ -74,7 +74,7 @@ aquasense:
     featured: ${REFERENCE_STATIONS:USGS-01467200,USGS-01463500,USGS-04231600,USGS-03374100,USGS-08062500,USGS-09070500,USGS-11467000,USGS-14211010}
   demo:
     enabled: ${DEMO_ACCOUNTS_ENABLED:true}
-    password: ${DEMO_ACCOUNTS_PASSWORD:AquaSense-Demo-2026}
+    password: ${DEMO_ACCOUNTS_PASSWORD:AquaAssistant-Demo-2026}
   security:
     jwt-secret: ${JWT_SECRET:}
     access-token-hours: 8
@@ -160,7 +160,7 @@ aquasense:
   # Email delivery. provider: auto (Mailjet, Brevo or SMTP, the first one configured), mailjet, brevo, smtp or none.
   mail-delivery:
     provider: ${MAIL_PROVIDER:auto}
-    sender-name: ${MAIL_SENDER_NAME:AquaSense AI}
+    sender-name: ${MAIL_SENDER_NAME:Aqua Assistant AI}
     brevo:
       api-key: ${BREVO_API_KEY:}
       base-url: ${BREVO_BASE_URL:https://api.brevo.com/v3}

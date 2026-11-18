@@ -1,6 +1,6 @@
 # Capa 6 · Respaldo normativo (RAG)
 
-AquaSense recupera fragmentos **literales** de normas y guías oficiales y los cita junto a cada recomendación, diagnóstico, informe del agente y respuesta del asistente. La IA no puede citar una norma que el sistema no le entregó: cada id citado se comprueba en el servidor y los que no existen se descartan.
+Aqua Assistant recupera fragmentos **literales** de normas y guías oficiales y los cita junto a cada recomendación, diagnóstico, informe del agente y respuesta del asistente. La IA no puede citar una norma que el sistema no le entregó: cada id citado se comprueba en el servidor y los que no existen se descartan.
 
 ## Fuentes
 

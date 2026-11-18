@@ -6,7 +6,7 @@ import java.time.Instant;
 /**
  * Adapter for laboratory meters that send their reading as a text line (USB or RS-232) when the user presses
  * "Print"/"Send" or at a fixed interval. It sends no commands: it waits for the next line that contains a pH.
- * These meters are calibrated on the instrument itself, so calibration from AquaSense is not supported.
+ * These meters are calibrated on the instrument itself, so calibration from Aqua Assistant is not supported.
  */
 public class TextMeterAdapter implements PhMeter {
 

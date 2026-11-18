@@ -35,9 +35,9 @@ public class DemoAccounts implements ApplicationRunner {
 
     /** The accounts offered on the login screen. */
     public enum Kind {
-        PREMIUM("premium@demo.aquasense", "Usuario Premium Demo", "Usuario Premium",
+        PREMIUM("premium@demo.aquaassistant", "Usuario Premium Demo", "Usuario Premium",
             "Plan Premium: 200 consultas de IA al día y análisis de hasta 365 días.", Role.USER, Plan.PREMIUM),
-        ADMIN("admin@demo.aquasense", "Administración Demo", "Administrador",
+        ADMIN("admin@demo.aquaassistant", "Administración Demo", "Administrador",
             "Panel de administración en modo de solo lectura.", Role.ADMIN, Plan.FREE);
 
         final String email;
@@ -61,7 +61,7 @@ public class DemoAccounts implements ApplicationRunner {
      * Demonstration accounts no longer offered (the free "Usuario" one was removed from the login screen). Their
      * password is public, so they are disabled instead of left open; their data stays.
      */
-    static final List<String> RETIRED = List.of("usuario@demo.aquasense");
+    static final List<String> RETIRED = List.of("usuario@demo.aquaassistant");
 
     public record DemoAccount(String key, String label, String description, String email, String password) {
     }
@@ -74,7 +74,7 @@ public class DemoAccounts implements ApplicationRunner {
     private final ProfileService profiles;
 
     public DemoAccounts(@Value("${aquasense.demo.enabled:true}") boolean enabled,
-                        @Value("${aquasense.demo.password:AquaSense-Demo-2026}") String password,
+                        @Value("${aquasense.demo.password:AquaAssistant-Demo-2026}") String password,
                         UserRepository users, UserSettingsRepository settings, PasswordEncoder encoder, ProfileService profiles) {
         this.enabled = enabled;
         this.password = password;

@@ -133,7 +133,7 @@ public class AgentJobService {
     }
 
     public String renderText(AgentReportResponse r) {
-        StringBuilder t = new StringBuilder("AQUASENSE AI\n").append(r.report().title()).append('\n');
+        StringBuilder t = new StringBuilder("AQUA ASSISTANT AI\n").append(r.report().title()).append('\n');
         t.append("Elaborado: ").append(DATE.format(r.createdAt())).append(" · ").append(r.sourceLabel())
             .append(r.provider() == null ? "" : " (" + r.provider() + " · " + r.model() + ")").append('\n');
         t.append("Objetivo: ").append(r.focus()).append("\nPeriodo: últimos ").append(r.periodDays()).append(" días\n\n");

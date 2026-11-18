@@ -5,16 +5,16 @@ import java.time.Instant;
 import java.util.Locale;
 
 /**
- * Adapter for the AquaSense ESP32 firmware included in hardware/Esp32PhSensor.
+ * Adapter for the Aqua Assistant ESP32 firmware included in hardware/Esp32PhSensor.
  * Text protocol: "READ" answers "PH:7.12;T:24.5"; "CAL:MID:7.00" answers "OK" or "ERR:reason".
  */
-public class AquaSenseFirmwareAdapter implements PhMeter {
+public class AquaAssistantFirmwareAdapter implements PhMeter {
 
     private static final Duration READ_TIMEOUT = Duration.ofSeconds(3);
 
     private final SerialLink link;
 
-    public AquaSenseFirmwareAdapter(SerialLink link) {
+    public AquaAssistantFirmwareAdapter(SerialLink link) {
         this.link = link;
     }
 
@@ -39,7 +39,7 @@ public class AquaSenseFirmwareAdapter implements PhMeter {
         link.writeLine("PING");
         String response = link.readLine(READ_TIMEOUT);
         if (!response.startsWith("PONG")) {
-            throw new DeviceException("El dispositivo no respondió como firmware AquaSense (" + response + ").");
+            throw new DeviceException("El dispositivo no respondió como firmware Aqua Assistant (" + response + ").");
         }
     }
 

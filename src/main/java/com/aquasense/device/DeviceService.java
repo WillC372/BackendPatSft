@@ -77,7 +77,7 @@ public class DeviceService {
         repository.findByOwnerIdOrderByLastConnectedAtDesc(userId).forEach(d -> registered.put(d.getPort(), d.getId()));
         List<DetectedDeviceResponse> result = new ArrayList<>();
         if (simulatorEnabled) {
-            result.add(new DetectedDeviceResponse(SimulatedPhMeter.PORT, "Simulador AquaSense",
+            result.add(new DetectedDeviceResponse(SimulatedPhMeter.PORT, "Simulador Aqua Assistant",
                 "Genera lecturas de prueba. No mide agua real.", "SIMULADO", true, MeterProtocol.SIMULATOR.name(),
                 registered.get(SimulatedPhMeter.PORT)));
         }
@@ -238,7 +238,7 @@ public class DeviceService {
     }
 
     private static String defaultName(MeterProtocol protocol, String port) {
-        return protocol == MeterProtocol.SIMULATOR ? "Simulador AquaSense" : "Medidor pH " + port;
+        return protocol == MeterProtocol.SIMULATOR ? "Simulador Aqua Assistant" : "Medidor pH " + port;
     }
 
     private record PendingReading(Long userId, NewReading reading, Instant createdAt) {

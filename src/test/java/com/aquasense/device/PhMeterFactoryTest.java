@@ -3,7 +3,7 @@ package com.aquasense.device;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.aquasense.device.hardware.AquaSenseFirmwareAdapter;
+import com.aquasense.device.hardware.AquaAssistantFirmwareAdapter;
 import com.aquasense.device.hardware.AtlasEzoPhAdapter;
 import com.aquasense.device.hardware.DeviceException;
 import com.aquasense.device.hardware.MeterProtocol;
@@ -19,7 +19,7 @@ class PhMeterFactoryTest {
     void createsAdapterForEachProtocol() {
         assertThat(factory.create(MeterProtocol.SIMULATOR, null)).isInstanceOf(SimulatedPhMeter.class);
         assertThat(factory.create(MeterProtocol.ATLAS_EZO, "/dev/ttyUSB0")).isInstanceOf(AtlasEzoPhAdapter.class);
-        assertThat(factory.create(MeterProtocol.AQUASENSE_ESP32, "COM5")).isInstanceOf(AquaSenseFirmwareAdapter.class);
+        assertThat(factory.create(MeterProtocol.AQUASENSE_ESP32, "COM5")).isInstanceOf(AquaAssistantFirmwareAdapter.class);
     }
 
     @Test

@@ -159,7 +159,7 @@ class ApiFlowIntegrationTest {
         mvc.perform(post("/api/v1/devices/readings/" + pendingId + "/save").header("Authorization", bearer(token))
                 .contentType(MediaType.APPLICATION_JSON).content("{\"note\":\"prueba\"}"))
             .andExpect(status().isCreated()).andExpect(jsonPath("$.source").value("SIMULATED"))
-            .andExpect(jsonPath("$.deviceName").value("Simulador AquaSense"));
+            .andExpect(jsonPath("$.deviceName").value("Simulador Aqua Assistant"));
 
         mvc.perform(post("/api/v1/devices/calibrate").header("Authorization", bearer(token))
                 .contentType(MediaType.APPLICATION_JSON).content("{\"point\":\"MID\"}"))

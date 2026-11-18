@@ -5,7 +5,7 @@
 El backend publicado corre en la nube y no puede abrir un puerto USB del computador del usuario. Por eso la pantalla **Conexión → Medidor conectado a este equipo** usa la API Web Serial del navegador (Chrome o Edge en computador):
 
 1. El usuario elige el tipo de medidor y la velocidad, y pulsa **Conectar medidor**; el navegador muestra la lista de puertos para que elija el del medidor.
-2. La página habla el protocolo del medidor: firmware AquaSense (`PING`, `READ`, `CAL:...`), Atlas EZO-pH (`i`, `R`, `Cal,...`) o un medidor de laboratorio que envía texto (`pH 7.02  25.0 °C`).
+2. La página habla el protocolo del medidor: firmware Aqua Assistant (`PING`, `READ`, `CAL:...`), Atlas EZO-pH (`i`, `R`, `Cal,...`) o un medidor de laboratorio que envía texto (`pH 7.02  25.0 °C`).
 3. Cada lectura se envía a `POST /devices/browser-readings` y se guarda como medición real, con el medidor registrado en "Dispositivos registrados".
 
 Un medidor Bluetooth clásico emparejado en el sistema operativo aparece como puerto serie y se conecta igual. La pantalla muestra las últimas líneas que envía el medidor, útil para revisar el formato de un medidor nuevo.
@@ -21,13 +21,13 @@ Un medidor Bluetooth clásico emparejado en el sistema operativo aparece como pu
 
 Los precios y la disponibilidad deben confirmarse con el proveedor al momento de la compra. No se verificaron en esta entrega.
 
-## Protocolo del firmware AquaSense (ESP32)
+## Protocolo del firmware Aqua Assistant (ESP32)
 
 9600 baudios, líneas terminadas en `\n`:
 
 | Comando | Respuesta |
 |---|---|
-| `PING` | `PONG AQUASENSE-PH-001` |
+| `PING` | `PONG AQUA-ASSISTANT-PH-001` |
 | `READ` | `PH:7.12;T:NA` (o `T:24.5` si hay sensor de temperatura) |
 | `CAL:MID:7.00` / `CAL:LOW:4.00` | `OK` o `ERR:motivo` |
 

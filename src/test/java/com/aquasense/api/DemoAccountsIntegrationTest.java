@@ -57,7 +57,7 @@ class DemoAccountsIntegrationTest {
         JsonNode page = json(mvc.perform(get("/api/v1/admin/users").param("size", "100").header("Authorization", "Bearer " + admin))
             .andExpect(status().isOk()).andReturn());
         assertThat(page.toString()).doesNotContain(realEmail).doesNotContain("Persona Real Privada");
-        assertThat(page.toString()).contains("r***@aquasense.test").contains("premium@demo.aquasense");
+        assertThat(page.toString()).contains("r***@aquasense.test").contains("premium@demo.aquaassistant");
 
         mvc.perform(get("/api/v1/admin/users/" + realId).header("Authorization", "Bearer " + admin)).andExpect(status().isForbidden());
         mvc.perform(get("/api/v1/admin/users/" + realId + "/sessions").header("Authorization", "Bearer " + admin))

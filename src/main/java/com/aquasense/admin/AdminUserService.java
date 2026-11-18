@@ -181,8 +181,8 @@ public class AdminUserService {
         user.changePlan(change.plan(), until);
         String after = planText(user.getPlan(), user.getPremiumUntil());
         record(adminId, user, "ADMIN_PLAN_CHANGED", "ACCOUNT_PLAN_CHANGED", "Plan: " + before + " → " + after);
-        events.publishEvent(new AccountNotice(user.getEmail(), "Tu plan de AquaSense AI cambió", "Cambio de plan",
-            List.of("Hola, " + user.getFullName() + ".", "Un administrador cambió tu plan de AquaSense AI.",
+        events.publishEvent(new AccountNotice(user.getEmail(), "Tu plan de Aqua Assistant AI cambió", "Cambio de plan",
+            List.of("Hola, " + user.getFullName() + ".", "Un administrador cambió tu plan de Aqua Assistant AI.",
                 "Plan anterior: " + before + ". Plan actual: " + after + ".")));
         return detail(adminId, userId);
     }
@@ -205,8 +205,8 @@ public class AdminUserService {
         sessions.endAll(user.getId(), com.aquasense.user.UserSession.EndReason.ROLE_CHANGED, null);
         String label = role == Role.ADMIN ? "Administrador" : "Usuario";
         record(adminId, user, "ADMIN_ROLE_CHANGED", "ACCOUNT_ROLE_CHANGED", "Rol: " + label);
-        events.publishEvent(new AccountNotice(user.getEmail(), "Tu rol en AquaSense AI cambió", "Cambio de rol",
-            List.of("Hola, " + user.getFullName() + ".", "Un administrador cambió tu rol en AquaSense AI a: " + label + ".",
+        events.publishEvent(new AccountNotice(user.getEmail(), "Tu rol en Aqua Assistant AI cambió", "Cambio de rol",
+            List.of("Hola, " + user.getFullName() + ".", "Un administrador cambió tu rol en Aqua Assistant AI a: " + label + ".",
                 "Por seguridad se cerraron tus sesiones abiertas. Vuelve a iniciar sesión para continuar.")));
         return detail(adminId, userId);
     }
@@ -225,7 +225,7 @@ public class AdminUserService {
         if (enabled) {
             user.enable();
             record(adminId, user, "ADMIN_USER_ENABLED", "ACCOUNT_ENABLED", "Cuenta reactivada");
-            events.publishEvent(new AccountNotice(user.getEmail(), "Tu cuenta de AquaSense AI está activa", "Cuenta reactivada",
+            events.publishEvent(new AccountNotice(user.getEmail(), "Tu cuenta de Aqua Assistant AI está activa", "Cuenta reactivada",
                 List.of("Hola, " + user.getFullName() + ".", "Un administrador reactivó tu cuenta. Ya puedes iniciar sesión.")));
         } else {
             user.disable(cleanReason, Instant.now());
@@ -233,12 +233,12 @@ public class AdminUserService {
             record(adminId, user, "ADMIN_USER_DISABLED", "ACCOUNT_DISABLED",
                 "Cuenta desactivada" + (cleanReason == null ? "" : ". Motivo: " + cleanReason));
             List<String> text = new ArrayList<>(List.of("Hola, " + user.getFullName() + ".",
-                "Un administrador desactivó tu cuenta de AquaSense AI. Mientras siga así no podrás iniciar sesión; tus datos se conservan."));
+                "Un administrador desactivó tu cuenta de Aqua Assistant AI. Mientras siga así no podrás iniciar sesión; tus datos se conservan."));
             if (cleanReason != null) {
                 text.add("Motivo: " + cleanReason);
             }
             text.add("Si crees que es un error, responde a este correo o escribe al administrador.");
-            events.publishEvent(new AccountNotice(user.getEmail(), "Tu cuenta de AquaSense AI fue desactivada", "Cuenta desactivada",
+            events.publishEvent(new AccountNotice(user.getEmail(), "Tu cuenta de Aqua Assistant AI fue desactivada", "Cuenta desactivada",
                 text));
         }
         return detail(adminId, userId);
@@ -256,9 +256,9 @@ public class AdminUserService {
             throw BusinessException.conflict(blocked);
         }
         audit.record(adminId, "ADMIN_USER_DELETED", user.getEmail() + " (#" + user.getId() + ") · Cuenta eliminada con sus datos");
-        events.publishEvent(new AccountNotice(user.getEmail(), "Tu cuenta de AquaSense AI fue eliminada", "Cuenta eliminada",
+        events.publishEvent(new AccountNotice(user.getEmail(), "Tu cuenta de Aqua Assistant AI fue eliminada", "Cuenta eliminada",
             List.of("Hola, " + user.getFullName() + ".",
-                "Un administrador eliminó tu cuenta de AquaSense AI junto con sus mediciones, perfiles e informes.",
+                "Un administrador eliminó tu cuenta de Aqua Assistant AI junto con sus mediciones, perfiles e informes.",
                 "Si crees que es un error, responde a este correo o escribe al administrador.")));
         accountDeletion.delete(user);
     }

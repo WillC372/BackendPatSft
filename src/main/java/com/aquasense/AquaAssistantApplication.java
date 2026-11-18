@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableScheduling
-public class AquaSenseApplication {
+public class AquaAssistantApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AquaSenseApplication.class, args);
+        SpringApplication.run(AquaAssistantApplication.class, args);
     }
 }

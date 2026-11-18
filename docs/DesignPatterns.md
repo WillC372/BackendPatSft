@@ -1,10 +1,10 @@
-# Catálogo de patrones de diseño · AquaSense AI
+# Catálogo de patrones de diseño · Aqua Assistant AI
 
 Cada patrón resuelve un problema concreto del producto y tiene una prueba que lo ejercita. Los nombres de las pruebas corresponden a `src/test/java`.
 
 | Patrón | Categoría | Problema que resuelve | Clases | Prueba |
 |---|---|---|---|---|
-| **Adapter** | Estructural | Cada medidor habla un protocolo distinto (Atlas EZO: `R` → `7.12`; firmware ESP32: `READ` → `PH:7.12;T:24.5`). El sistema necesita una sola interfaz | `PhMeter` (objetivo), `AtlasEzoPhAdapter`, `AquaSenseFirmwareAdapter`, `SimulatedPhMeter` | `AdapterTest` |
+| **Adapter** | Estructural | Cada medidor habla un protocolo distinto (Atlas EZO: `R` → `7.12`; firmware ESP32: `READ` → `PH:7.12;T:24.5`). El sistema necesita una sola interfaz | `PhMeter` (objetivo), `AtlasEzoPhAdapter`, `AquaAssistantFirmwareAdapter`, `SimulatedPhMeter` | `AdapterTest` |
 | **Factory Method** | Creacional | Crear el adaptador correcto según el protocolo elegido, sin que el servicio conozca las clases concretas | `PhMeterFactory.create(protocol, port)` | `PhMeterFactoryTest` |
 | **State** | Comportamiento | Lo que se puede hacer con el medidor depende de su estado (no se mide desconectado; tras un fallo solo se reconecta o desconecta) | `DeviceConnection` (contexto), `ConnectionState`, `DisconnectedState`, `ConnectedState`, `LiveState`, `ErrorState` | `DeviceConnectionStateTest` |
 | **Observer** | Comportamiento | Varias partes deben reaccionar a una lectura nueva sin acoplarse: alertas, transmisión en vivo | `MeasurementListener` + `MeasurementPublisher` (mediciones guardadas → `AlertService`); `DeviceListener` (lecturas en vivo → `LiveFeed` SSE); `bus` en el frontend | `DeviceConnectionStateTest.liveModeNotifiesObservers`, `ApiFlowIntegrationTest` (la alerta se crea al guardar) |

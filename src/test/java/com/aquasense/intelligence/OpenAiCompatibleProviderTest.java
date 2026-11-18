@@ -43,7 +43,7 @@ class OpenAiCompatibleProviderTest {
         assertThat(answer.provider()).isEqualTo("Groq");
         assertThat(answer.inputTokens()).isEqualTo(120);
         assertThat(server.authorizations().get(0)).isEqualTo("Bearer test-key");
-        assertThat(server.userAgents().get(0)).startsWith("AquaSense-AI");
+        assertThat(server.userAgents().get(0)).startsWith("AquaAssistant-AI");
         JsonNode body = mapper.readTree(server.requests().get(0));
         assertThat(body.path("model").asText()).isEqualTo("openai/gpt-oss-120b");
         assertThat(body.path("messages").get(0).path("role").asText()).isEqualTo("system");

@@ -126,7 +126,7 @@ public class MeasurementController {
         audit.record(userId, "MEASUREMENTS_EXPORTED", period ? "CSV del " + from + " al " + to
             : "CSV de los últimos " + Math.min(Math.max(days, 1), MAX_RANGE_DAYS) + " días");
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aquasense-mediciones.csv\"")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aqua-assistant-mediciones.csv\"")
             .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))
             .body(csv.toString().getBytes(StandardCharsets.UTF_8));
     }

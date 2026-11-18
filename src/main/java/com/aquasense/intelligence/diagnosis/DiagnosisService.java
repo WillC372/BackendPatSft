@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
 public class DiagnosisService {
 
     static final String SYSTEM_PROMPT = """
-        You are the diagnosis engine of AquaSense AI, a system that monitors the pH of water.
+        You are the diagnosis engine of Aqua Assistant AI, a system that monitors the pH of water.
         You receive facts already computed by the system (measurements, statistics, anomalies, trend, forecast and profile rules).
         Your task is to produce a technical diagnosis in the JSON format given. Write every text field in Spanish. Rules:
         - Use only the provided facts. Do not invent measurements, dates, values or sensors that do not exist.
@@ -259,7 +259,7 @@ public class DiagnosisService {
         root.put("guidelineFragments", facts.guidelines().stream().map(c -> Map.of("id", c.id(),
             "organization", c.organization(), "section", c.section(), "literalQuote", c.quote(), "summary", c.summaryEs())).toList());
         try {
-            return "Facts computed by AquaSense (JSON):\n" + mapper.writeValueAsString(root);
+            return "Facts computed by Aqua Assistant (JSON):\n" + mapper.writeValueAsString(root);
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException(ex);
         }

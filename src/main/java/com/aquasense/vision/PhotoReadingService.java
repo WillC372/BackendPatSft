@@ -37,7 +37,7 @@ public class PhotoReadingService {
     private static final String DISCLAIMER = "Valor estimado por IA a partir de una foto. Las tiras reactivas tienen una "
         + "precisión aproximada de ±0,5; para decisiones importantes usa un medidor calibrado.";
     static final String SYSTEM_PROMPT = """
-        You are the photo reader of AquaSense AI. You receive the photo of a water pH test and answer only with the JSON given.
+        You are the photo reader of Aqua Assistant AI. You receive the photo of a water pH test and answer only with the JSON given.
         1. Identify the type: TEST_STRIP (strip or indicator paper), METER_DISPLAY (display of a meter) or OTHER (anything else).
         2. TEST_STRIP: compare the color of the reactive pad with the color chart that appears in the photo.
            Put in nearestReferenceValues the most similar chart values (one or two) and estimate ph between them.

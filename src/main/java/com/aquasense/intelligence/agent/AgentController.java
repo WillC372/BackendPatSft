@@ -54,7 +54,7 @@ public class AgentController {
     public ResponseEntity<byte[]> text(@PathVariable Long id) {
         String body = service.renderText(service.get(CurrentUser.id(), id));
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aquasense-informe-agente.txt\"")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aqua-assistant-informe-agente.txt\"")
             .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
             .body(body.getBytes(StandardCharsets.UTF_8));
     }
@@ -62,7 +62,7 @@ public class AgentController {
     @GetMapping(value = "/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> pdf(@PathVariable Long id) {
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aquasense-informe-agente-" + id + ".pdf\"")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aqua-assistant-informe-agente-" + id + ".pdf\"")
             .contentType(MediaType.APPLICATION_PDF)
             .body(pdfService.agentReport(CurrentUser.id(), id));
     }

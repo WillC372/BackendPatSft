@@ -1,6 +1,6 @@
 # Pagos del plan Premium (PayU Latam)
 
-Premium cuesta **COP 49.900 por 30 días**: pago por periodo, sin cobros automáticos ni medios de pago guardados. AquaSense nunca ve ni guarda datos de tarjeta; el pago ocurre en la página segura de PayU.
+Premium cuesta **COP 49.900 por 30 días**: pago por periodo, sin cobros automáticos ni medios de pago guardados. Aqua Assistant nunca ve ni guarda datos de tarjeta; el pago ocurre en la página segura de PayU.
 
 ## Modo de pruebas (configuración por defecto)
 
@@ -51,10 +51,10 @@ Nota sobre la documentación de PayU: en el ejemplo "con un decimal" de la pági
 
 ## Verificado en vivo (7 nov 2026)
 
-Pago completo en el sandbox real con el navegador: AquaSense, la página de PayU, la tarjeta de prueba y el regreso a AquaSense.
+Pago completo en el sandbox real con el navegador: Aqua Assistant, la página de PayU, la tarjeta de prueba y el regreso a Aqua Assistant.
 
-- **Rechazado:** PayU rechazó la transacción y AquaSense la registró como `DECLINED`, sin cambiar el plan.
-- **Aprobado:** PayU aprobó la orden 2158432496 y AquaSense activó Premium hasta el 7 de diciembre de 2026.
+- **Rechazado:** PayU rechazó la transacción y Aqua Assistant la registró como `DECLINED`, sin cambiar el plan.
+- **Aprobado:** PayU aprobó la orden 2158432496 y Aqua Assistant activó Premium hasta el 7 de diciembre de 2026.
 
 ## Configuración
 

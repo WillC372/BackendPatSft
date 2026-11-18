@@ -125,7 +125,7 @@ public class UsgsWaterDataClient {
 
     private JsonNode get(String url) throws IOException {
         HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofSeconds(60))
-            .header("Accept", "application/geo+json, application/json").header("User-Agent", "AquaSense-AI/1.0").GET();
+            .header("Accept", "application/geo+json, application/json").header("User-Agent", "AquaAssistant-AI/1.0").GET();
         if (!apiKey.isEmpty()) {
             builder.header("X-Api-Key", apiKey);
         }

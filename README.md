@@ -1,6 +1,6 @@
-# AquaSense AI · Backend
+# Aqua Assistant AI · Backend
 
-API REST de **AquaSense AI**, un sistema de monitoreo de pH del agua. El backend centraliza toda la lógica: autenticación, perfiles de agua, mediciones, **lectura del medidor físico** (USB o Bluetooth SPP), alertas, informes y el módulo de inteligencia **AquaSense Intelligence**.
+API REST de **Aqua Assistant AI**, un sistema de monitoreo de pH del agua. El backend centraliza toda la lógica: autenticación, perfiles de agua, mediciones, **lectura del medidor físico** (USB o Bluetooth SPP), alertas, informes y el módulo de inteligencia **la IA de Aqua**.
 
 > Frontend: carpeta [`../Frontend`](../Frontend) (repositorio [FrontendPatSft](https://github.com/WillC372/FrontendPatSft)).
 >
@@ -16,7 +16,7 @@ API REST de **AquaSense AI**, un sistema de monitoreo de pH del agua. El backend
 - Guardar y consultar mediciones con su origen: `REAL` (medidor), `MANUAL` o `PHOTO` (foto o cámara leída por IA). El origen `SIMULATED` solo existe en las pruebas automáticas.
 - Validar cada lectura (cadena de validación) y clasificarla según el perfil de agua activo.
 - Hablar con el medidor por puerto serie: búsqueda, conexión, medición estabilizada, calibración y transmisión en vivo (Server-Sent Events).
-- Detectar anomalías, analizar tendencias, predecir y recomendar (AquaSense Intelligence).
+- Detectar anomalías, analizar tendencias, predecir y recomendar (la IA de Aqua).
 - Llamar a la IA generativa (Gemini y Groq; Claude como opción de pago) solo desde el servidor, con cuotas por plan y caché. El chat responde **en vivo** (Server-Sent Events).
 - Generar informes del periodo en PDF (con gráficas y fuentes normativas) o texto, y exportar mediciones a CSV.
 
@@ -26,7 +26,7 @@ Monolito modular en capas (controlador → servicio → repositorio), organizado
 
 ```
 src/main/java/com/aquasense/
-├── AquaSenseApplication.java
+├── AquaAssistantApplication.java
 ├── config/         Seguridad, CORS, OpenAPI y propiedades tipadas
 ├── security/       JWT, filtro de autenticación, limitador de intentos
 ├── common/         Errores de negocio y manejo centralizado de excepciones
@@ -37,7 +37,7 @@ src/main/java/com/aquasense/
 ├── measurement/    Mediciones, cadena de validación, filtros (Specification), iterador y observadores
 ├── device/         Hardware: adaptadores, simulador, fábrica, máquina de estados, comandos, SSE
 ├── alert/          Alertas generadas por anomalías
-├── intelligence/   AquaSense Intelligence: estadística, reglas, diagnóstico IA, recomendaciones, escenarios, proveedores de IA
+├── intelligence/   la IA de Aqua: estadística, reglas, diagnóstico IA, recomendaciones, escenarios, proveedores de IA
 │   ├── agent/      Agente de informes: herramientas, ciclo, verificación de cifras, trabajos en segundo plano
 │   └── ml/         Isolation Forest propio, variables, escalado robusto, modelo por usuario y regla de anomalías
 ├── vision/         Lectura de pH desde fotos: saneo de imagen, validación, segunda opinión
@@ -134,7 +134,7 @@ docker compose --env-file .env up --build
 | `GROQ_API_KEY`, `GROQ_MODEL`, `GROQ_VISION_MODEL` | No | Groq, respaldo (texto `openai/gpt-oss-120b`; visión `qwen/qwen3.8-27b`) |
 | `RATE_LIMIT_PER_MINUTE` | No | Intentos por minuto en registro, inicio de sesión y recuperación (10) |
 | `ANTHROPIC_API_KEY`, `AI_MODEL`, `AI_EFFORT` | No | Claude, opción de pago (`claude-opus-5-5`) |
-| `DEMO_ACCOUNTS_ENABLED`, `DEMO_ACCOUNTS_PASSWORD` | No | Cuentas de demostración del inicio de sesión (`true` y `AquaSense-Demo-2026`). La contraseña es pública a propósito: solo abre esas cuentas limitadas |
+| `DEMO_ACCOUNTS_ENABLED`, `DEMO_ACCOUNTS_PASSWORD` | No | Cuentas de demostración del inicio de sesión (`true` y `AquaAssistant-Demo-2026`). La contraseña es pública a propósito: solo abre esas cuentas limitadas |
 | `REFERENCE_DATA_ENABLED`, `REFERENCE_STATIONS` | No | Importación de datos oficiales del USGS (`true`) y estaciones destacadas, separadas por comas |
 | `USGS_API_KEY` | No | Clave gratuita de api.data.gov: sube el límite de solicitudes al USGS (los datos son públicos sin ella) |
 | `SIMULATOR_ENABLED` | No | Simulador de medidor (`false`); solo lo encienden las pruebas automáticas |
@@ -161,7 +161,7 @@ Todas las rutas están versionadas bajo `/api/v1`. Grupos: `auth`, `users/me` (i
 - `/api/v1/admin/**` requiere el rol `ADMIN`. Los planes gratuito y Premium se aplican en el servidor: días de análisis histórico, horizonte de predicción y cuota diaria de IA.
 - Límite de 10 intentos por minuto por dirección en registro, inicio de sesión y recuperación, con la dirección real del cliente (detrás de Cloudflare, `CF-Connecting-IP`). Además, una cuenta se bloquea 15 minutos tras 5 inicios de sesión fallidos, venga de donde venga; los intentos correctos no cuentan.
 
-## AquaSense Intelligence
+## la IA de Aqua
 
 Primero calcula con estadística y reglas de dominio; la IA generativa solo redacta sobre resultados ya calculados.
 
@@ -212,10 +212,10 @@ Cada inicio de sesión (o registro) crea una fila en `user_sessions` con inicio,
 
 | Botón | Correo | Rol y plan |
 |---|---|---|
-| Usuario Premium | `premium@demo.aquasense` | Usuario, Premium sin vencimiento |
-| Administrador | `admin@demo.aquasense` | Administrador de solo lectura |
+| Usuario Premium | `premium@demo.aquaassistant` | Usuario, Premium sin vencimiento |
+| Administrador | `admin@demo.aquaassistant` | Administrador de solo lectura |
 
-La cuenta gratuita de demostración (`usuario@demo.aquasense`) se retiró del inicio de sesión el 15 nov 2026. Como su contraseña era pública, al arrancar se desactiva; sus datos se conservan. Para probar el plan gratuito, crea una cuenta propia.
+La cuenta gratuita de demostración (`usuario@demo.aquaassistant`) se retiró del inicio de sesión el 15 nov 2026. Como su contraseña era pública, al arrancar se desactiva; sus datos se conservan. Para probar el plan gratuito, crea una cuenta propia.
 
 `GET /auth/demo-accounts` las entrega al frontend con la contraseña (pública a propósito). Como cualquiera puede usarlas, tienen límites que aplica el servidor:
 
@@ -291,7 +291,7 @@ Las pruebas físicas con un medidor real están pendientes. Los detalles están 
 Un medidor se conecta de tres formas:
 
 - **Al computador del usuario, desde la app publicada (Web Serial).** En Chrome o Edge, la página abre el puerto USB del medidor (o un Bluetooth emparejado como puerto serie), lee y calibra, y envía cada valor a `POST /devices/browser-readings`, que lo guarda como medición `REAL`. Es la forma de usar un medidor con el backend en la nube, que no puede ver los USB del usuario.
-- **Al servidor**, cuando AquaSense corre en el mismo computador del medidor: interfaz `PhMeter` con los adaptadores `AquaSenseFirmwareAdapter` (firmware ESP32 incluido), `AtlasEzoPhAdapter` (Atlas Scientific EZO-pH por UART) y `TextMeterAdapter` (medidores de laboratorio que envían el valor como texto por USB o RS-232).
+- **Al servidor**, cuando Aqua Assistant corre en el mismo computador del medidor: interfaz `PhMeter` con los adaptadores `AquaAssistantFirmwareAdapter` (firmware ESP32 incluido), `AtlasEzoPhAdapter` (Atlas Scientific EZO-pH por UART) y `TextMeterAdapter` (medidores de laboratorio que envían el valor como texto por USB o RS-232).
 - **Por cámara**, para medidores sin cable de datos (ver `docs/Hardware.md`).
 
 **Medidor casero.** [`hardware/Esp32PhSensor/`](hardware/Esp32PhSensor/) tiene todo para armar uno con un ESP32 y el módulo PH-4502C: el firmware (calibración de 1 a 3 puntos con el valor real de cada sobre, por ejemplo 6.86), el esquemático, el cableado y el plano de la baquelita, y el proyecto para simularlo en Wokwi. El firmware se compiló y se probó en el computador (31 pruebas, también en GitHub Actions); falta probarlo con el sensor físico.
@@ -354,7 +354,7 @@ Un backend en la nube no puede leer un medidor conectado a tu computador. Para l
 | "IA no configurada" | Faltan `GEMINI_API_KEY` y `GROQ_API_KEY`; el resto del análisis funciona sin ellas |
 | Tras actualizar el servidor, todos deben volver a iniciar sesión | Los tokens emitidos antes del historial de sesiones no llevan sesión (`sid`) y ya no valen; ocurre una sola vez |
 | "Datos oficiales" dice que la última actualización falló | El USGS no respondió o limitó las solicitudes; se muestran los datos anteriores y se reintenta en 3 horas. `USGS_API_KEY` sube el límite |
-| Groq responde 403 "error code: 1010" | Cloudflare bloquea clientes sin User-Agent reconocible; el backend ya envía `AquaSense-AI/1.0` |
+| Groq responde 403 "error code: 1010" | Cloudflare bloquea clientes sin User-Agent reconocible; el backend ya envía `AquaAssistant-AI/1.0` |
 | El diagnóstico sale "con reglas" | Todos los proveedores fallaron o la respuesta no pasó la validación; el motivo aparece en la nota del diagnóstico |
 | "La recuperación de contraseña no está disponible" | No hay canal de correo: define `MAILJET_API_KEY`, `MAILJET_SECRET_KEY` y `MAIL_FROM` (o Brevo o SMTP). Solo en desarrollo puedes usar `MAIL_LOG_RESET_LINKS=true` y copiar el enlace del log |
 

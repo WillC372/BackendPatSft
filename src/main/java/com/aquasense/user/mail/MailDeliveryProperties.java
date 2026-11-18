@@ -10,7 +10,7 @@ public record MailDeliveryProperties(String provider, String senderName, Brevo b
 
     public MailDeliveryProperties {
         provider = provider == null || provider.isBlank() ? "auto" : provider.trim().toLowerCase(java.util.Locale.ROOT);
-        senderName = senderName == null || senderName.isBlank() ? "AquaSense AI" : senderName;
+        senderName = senderName == null || senderName.isBlank() ? "Aqua Assistant AI" : senderName;
         brevo = brevo == null ? new Brevo(null, null, 0) : brevo;
         mailjet = mailjet == null ? new Mailjet(null, null, null, 0) : mailjet;
     }

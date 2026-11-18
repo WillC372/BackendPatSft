@@ -19,7 +19,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
- * Builder of PDF documents with the AquaSense identity: handles the vertical position, automatic page breaks,
+ * Builder of PDF documents with the Aqua Assistant identity: handles the vertical position, automatic page breaks,
  * line wrapping and the blocks (headings, paragraphs, figures, citations, images). It embeds DejaVu Sans, so
  * accents, ñ and symbols such as ° and ± render in any reader.
  */
@@ -53,8 +53,8 @@ public final class PdfWriter implements AutoCloseable {
         this.footer = footer;
         PDDocumentInformation info = document.getDocumentInformation();
         info.setTitle(title);
-        info.setAuthor("AquaSense AI");
-        info.setCreator("AquaSense AI");
+        info.setAuthor("Aqua Assistant AI");
+        info.setCreator("Aqua Assistant AI");
         newPage();
     }
 
@@ -97,8 +97,8 @@ public final class PdfWriter implements AutoCloseable {
         content.setNonStrokingColor(CYAN);
         content.addRect(0, top - height, PDRectangle.A4.getWidth(), 4);
         content.fill();
-        text(bold, 13, Color.WHITE, MARGIN, top - 34, "AquaSense");
-        text(bold, 13, CYAN, MARGIN + bold.getStringWidth("AquaSense ") / 1000 * 13, top - 34, "AI");
+        text(bold, 13, Color.WHITE, MARGIN, top - 34, "Aqua Assistant");
+        text(bold, 13, CYAN, MARGIN + bold.getStringWidth("Aqua Assistant ") / 1000 * 13, top - 34, "AI");
         text(regular, 8.5f, new Color(0xb9, 0xd3, 0xf0), MARGIN, top - 50, eyebrow.toUpperCase());
         List<String> lines = wrap(title, bold, 19, width());
         float ty = top - 74;

@@ -10,7 +10,7 @@ import com.aquasense.device.connection.DeviceConnection;
 import com.aquasense.device.connection.DeviceListener;
 import com.aquasense.device.connection.DeviceSnapshot;
 import com.aquasense.device.connection.DeviceState;
-import com.aquasense.device.hardware.AquaSenseFirmwareAdapter;
+import com.aquasense.device.hardware.AquaAssistantFirmwareAdapter;
 import com.aquasense.device.hardware.DeviceException;
 import com.aquasense.device.hardware.PhReading;
 import com.aquasense.device.hardware.SimulatedPhMeter;
@@ -74,7 +74,7 @@ class DeviceConnectionStateTest {
     @Test
     void communicationFailureMovesToErrorStateAndAllowsReconnect() {
         FakeSerialLink link = new FakeSerialLink().respond("PONG");
-        connection.connect(new AquaSenseFirmwareAdapter(link), session);
+        connection.connect(new AquaAssistantFirmwareAdapter(link), session);
         assertThatThrownBy(() -> connection.measure(1)).isInstanceOf(DeviceException.class);
         assertThat(connection.currentState()).isEqualTo(DeviceState.ERROR);
         assertThat(connection.snapshot().lastError()).contains("no respondió");

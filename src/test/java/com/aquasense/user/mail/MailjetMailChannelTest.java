@@ -47,11 +47,11 @@ class MailjetMailChannelTest {
     @Test
     void sendsMessageWithBasicAuthentication() throws Exception {
         MailjetMailChannel mailjet = channel(200, "{\"Messages\":[{\"Status\":\"success\",\"To\":[{\"Email\":\"ana@correo.com\"}]}]}");
-        mailjet.send(new OutgoingMail("ana@correo.com", "Asunto", "Texto", "<p>Html</p>"), "remitente@correo.com", "AquaSense AI");
+        mailjet.send(new OutgoingMail("ana@correo.com", "Asunto", "Texto", "<p>Html</p>"), "remitente@correo.com", "Aqua Assistant AI");
         assertThat(auths.get(0)).isEqualTo("Basic " + Base64.getEncoder().encodeToString("llave:secreto".getBytes(StandardCharsets.UTF_8)));
         JsonNode message = mapper.readTree(bodies.get(0)).path("Messages").get(0);
         assertThat(message.path("From").path("Email").asText()).isEqualTo("remitente@correo.com");
-        assertThat(message.path("From").path("Name").asText()).isEqualTo("AquaSense AI");
+        assertThat(message.path("From").path("Name").asText()).isEqualTo("Aqua Assistant AI");
         assertThat(message.path("To").get(0).path("Email").asText()).isEqualTo("ana@correo.com");
         assertThat(message.path("Subject").asText()).isEqualTo("Asunto");
         assertThat(message.path("TextPart").asText()).isEqualTo("Texto");

@@ -39,7 +39,7 @@ public class ReportPdfService {
 
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy, HH:mm",
         Locale.forLanguageTag("es-CO")).withZone(ZoneId.of("America/Bogota"));
-    private static final String FOOTER = "AquaSense AI · Informe orientativo basado en el pH; no reemplaza un análisis de laboratorio.";
+    private static final String FOOTER = "Aqua Assistant AI · Informe orientativo basado en el pH; no reemplaza un análisis de laboratorio.";
 
     private final AgentJobService agentJobs;
     private final ReportService reportService;

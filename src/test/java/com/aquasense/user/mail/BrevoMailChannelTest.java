@@ -47,11 +47,11 @@ class BrevoMailChannelTest {
     void sendsTransactionalEmailWithApiKeyHeader() throws Exception {
         BrevoMailChannel brevo = channel(201, "{\"messageId\":\"<abc@smtp-relay.mailin.fr>\"}");
         assertThat(brevo.isConfigured()).isTrue();
-        brevo.send(new OutgoingMail("ana@correo.com", "Asunto", "Texto", "<p>Html</p>"), "remitente@correo.com", "AquaSense AI");
+        brevo.send(new OutgoingMail("ana@correo.com", "Asunto", "Texto", "<p>Html</p>"), "remitente@correo.com", "Aqua Assistant AI");
         assertThat(keys).containsExactly("xkeysib-prueba");
         JsonNode body = mapper.readTree(bodies.get(0));
         assertThat(body.path("sender").path("email").asText()).isEqualTo("remitente@correo.com");
-        assertThat(body.path("sender").path("name").asText()).isEqualTo("AquaSense AI");
+        assertThat(body.path("sender").path("name").asText()).isEqualTo("Aqua Assistant AI");
         assertThat(body.path("to").get(0).path("email").asText()).isEqualTo("ana@correo.com");
         assertThat(body.path("subject").asText()).isEqualTo("Asunto");
         assertThat(body.path("textContent").asText()).isEqualTo("Texto");

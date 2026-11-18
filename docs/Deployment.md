@@ -1,6 +1,6 @@
 # Despliegue en internet
 
-AquaSense se publica en tres servicios gratuitos que se comunican por la API REST:
+Aqua Assistant se publica en tres servicios gratuitos que se comunican por la API REST:
 
 ```mermaid
 flowchart LR
@@ -74,7 +74,7 @@ Render apaga la instancia gratuita tras 15 minutos sin peticiones. Si algo la co
 
 1. Entra a https://uptimerobot.com y crea una cuenta gratuita.
 2. **New monitor** → tipo **HTTP(s)**.
-3. *Friendly name*: `AquaSense API`. *URL*: `https://aquasense-backend-willc372.onrender.com/actuator/health/liveness`.
+3. *Friendly name*: `Aqua Assistant API`. *URL*: `https://aquasense-backend-willc372.onrender.com/actuator/health/liveness`.
 4. *Monitoring interval*: **5 minutes** (el mínimo del plan gratuito).
 5. Guarda. Además de mantenerla despierta, UptimeRobot avisa por correo si la API deja de responder.
 

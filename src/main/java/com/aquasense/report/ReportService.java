@@ -144,7 +144,7 @@ public class ReportService {
 
     public String renderText(Report report) {
         StringBuilder text = new StringBuilder();
-        text.append("AQUASENSE AI\n").append(report.title()).append('\n');
+        text.append("AQUA ASSISTANT AI\n").append(report.title()).append('\n');
         text.append("Perfil: ").append(report.profileName()).append('\n');
         text.append("Periodo: ").append(DATE.format(report.periodStart())).append(" - ")
             .append(DATE.format(report.periodEnd())).append(" UTC\n");

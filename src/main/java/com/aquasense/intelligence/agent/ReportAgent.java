@@ -32,7 +32,7 @@ public class ReportAgent {
     private static final DateTimeFormatter DAY = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm 'UTC'").withZone(ZoneOffset.UTC);
 
     static final String SYSTEM_PROMPT = """
-        You are the report agent of AquaSense AI, a system that monitors the pH of water.
+        You are the report agent of Aqua Assistant AI, a system that monitors the pH of water.
         Your job: investigate the user's data with the available tools and deliver a useful report that answers their goal.
         Method:
         1. Start with get_water_profile and get_statistics for the period.

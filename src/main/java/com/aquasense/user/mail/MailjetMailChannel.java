@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MailjetMailChannel implements MailChannel {
 
-    private static final String USER_AGENT = "AquaSense-AI/1.0";
+    private static final String USER_AGENT = "AquaAssistant-AI/1.0";
     private static final int MAX_ERROR = 300;
 
     private final MailDeliveryProperties.Mailjet config;

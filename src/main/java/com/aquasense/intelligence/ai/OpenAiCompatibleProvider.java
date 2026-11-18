@@ -20,7 +20,7 @@ import java.time.Duration;
  */
 public class OpenAiCompatibleProvider implements AiTextProvider {
 
-    static final String USER_AGENT = "AquaSense-AI/1.0";
+    static final String USER_AGENT = "AquaAssistant-AI/1.0";
     static final long MAX_RETRY_WAIT_MS = 20_000;
     private static final java.util.regex.Pattern SECONDS = java.util.regex.Pattern.compile("([0-9]+(?:\\.[0-9]+)?)(ms|s)?");
 

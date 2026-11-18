@@ -102,7 +102,7 @@ public class MailService {
             return false;
         }
         String text = """
-            Alguien creó o inició sesión en una cuenta de AquaSense AI con este correo, configurado como administrador.
+            Alguien creó o inició sesión en una cuenta de Aqua Assistant AI con este correo, configurado como administrador.
 
             Si fuiste tú, confirma el rol de administrador con este enlace (vence en 24 horas):
             %s
@@ -111,12 +111,12 @@ public class MailService {
             """.formatted(link);
         String safe = HtmlUtils.htmlEscape(link);
         String html = layout("Confirma tu cuenta de administrador",
-            "<p>Alguien creó o inició sesión en una cuenta de AquaSense AI con este correo, configurado como administrador.</p>"
+            "<p>Alguien creó o inició sesión en una cuenta de Aqua Assistant AI con este correo, configurado como administrador.</p>"
                 + "<p style=\"margin:28px 0\"><a href=\"" + safe + "\" style=\"background:#1e8bff;color:#ffffff;padding:13px 22px;"
                 + "border-radius:999px;text-decoration:none;font-weight:700;display:inline-block\">Confirmar administrador</a></p>"
                 + "<p style=\"color:#5b6b85;font-size:13px\">El enlace vence en 24 horas y solo se puede usar una vez. "
                 + "Si no fuiste tú, ignora este mensaje: la cuenta no obtendrá permisos de administrador.</p>");
-        return deliver(new OutgoingMail(email, "AquaSense AI - Confirma tu cuenta de administrador", text, html), "admin verification");
+        return deliver(new OutgoingMail(email, "Aqua Assistant AI - Confirma tu cuenta de administrador", text, html), "admin verification");
     }
 
     /** Simple account notice (approved payment, Premium about to expire). Without an email channel nothing is sent. */
@@ -137,12 +137,12 @@ public class MailService {
             throw new MailDeliveryException("No hay un canal de correo configurado.");
         }
         String text = """
-            Este es un correo de prueba de AquaSense AI.
+            Este es un correo de prueba de Aqua Assistant AI.
 
             Si lo recibiste, el envío de correos está configurado correctamente (%s).
             """.formatted(channel.label());
-        channel.send(new OutgoingMail(to, "AquaSense AI - Correo de prueba", text, layout("Correo de prueba",
-            "<p>Si recibiste este mensaje, el envío de correos de AquaSense AI está configurado correctamente.</p>"
+        channel.send(new OutgoingMail(to, "Aqua Assistant AI - Correo de prueba", text, layout("Correo de prueba",
+            "<p>Si recibiste este mensaje, el envío de correos de Aqua Assistant AI está configurado correctamente.</p>"
                 + "<p style=\"color:#5b6b85;font-size:13px\">Canal: " + HtmlUtils.htmlEscape(channel.label()) + "</p>")),
             config.from(), delivery.senderName());
     }
@@ -160,7 +160,7 @@ public class MailService {
 
     static OutgoingMail resetMail(String to, String link) {
         String text = """
-            Recibimos una solicitud para restablecer tu contraseña de AquaSense AI.
+            Recibimos una solicitud para restablecer tu contraseña de Aqua Assistant AI.
 
             Abre este enlace en los próximos 30 minutos:
             %s
@@ -169,22 +169,22 @@ public class MailService {
             """.formatted(link);
         String safe = HtmlUtils.htmlEscape(link);
         String html = layout("Restablecer tu contraseña",
-            "<p>Recibimos una solicitud para restablecer tu contraseña de AquaSense AI.</p>"
+            "<p>Recibimos una solicitud para restablecer tu contraseña de Aqua Assistant AI.</p>"
                 + "<p style=\"margin:28px 0\"><a href=\"" + safe + "\" style=\"background:#1e8bff;color:#ffffff;padding:13px 22px;"
                 + "border-radius:999px;text-decoration:none;font-weight:700;display:inline-block\">Restablecer contraseña</a></p>"
                 + "<p style=\"color:#5b6b85;font-size:13px\">El enlace vence en 30 minutos y solo se puede usar una vez. "
                 + "Si el botón no funciona, copia esta dirección en el navegador:<br><span style=\"word-break:break-all\">" + safe
                 + "</span></p><p style=\"color:#5b6b85;font-size:13px\">Si no la solicitaste, ignora este mensaje: tu contraseña no cambiará.</p>");
-        return new OutgoingMail(to, "AquaSense AI - Restablecer contraseña", text, html);
+        return new OutgoingMail(to, "Aqua Assistant AI - Restablecer contraseña", text, html);
     }
 
     private static String layout(String title, String content) {
         return "<!doctype html><html lang=\"es\"><body style=\"margin:0;background:#eaf3fc;font-family:Segoe UI,Arial,sans-serif;color:#0b1f3a\">"
             + "<div style=\"max-width:520px;margin:0 auto;padding:32px 20px\">"
-            + "<div style=\"font-size:22px;font-weight:800;color:#0b1f3a\">AquaSense <span style=\"color:#1e8bff\">AI</span></div>"
+            + "<div style=\"font-size:22px;font-weight:800;color:#0b1f3a\">Aqua Assistant <span style=\"color:#1e8bff\">AI</span></div>"
             + "<div style=\"background:#ffffff;border-radius:16px;padding:28px;margin-top:16px;box-shadow:0 8px 24px rgba(11,31,58,.08)\">"
             + "<h1 style=\"font-size:20px;margin:0 0 12px\">" + HtmlUtils.htmlEscape(title) + "</h1>" + content + "</div>"
-            + "<p style=\"color:#5b6b85;font-size:12px;text-align:center;margin-top:16px\">AquaSense AI · Monitoreo inteligente del pH del agua</p>"
+            + "<p style=\"color:#5b6b85;font-size:12px;text-align:center;margin-top:16px\">Aqua Assistant AI · Monitoreo inteligente del pH del agua</p>"
             + "</div></body></html>";
     }
 

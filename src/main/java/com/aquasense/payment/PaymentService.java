@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * <ol>
  *   <li>{@code checkout}: creates a PENDING payment with a unique reference and returns the signed form.</li>
- *   <li>The user pays on the PayU page; AquaSense never sees the card.</li>
+ *   <li>The user pays on the PayU page; Aqua Assistant never sees the card.</li>
  *   <li>{@code verify} (on return) and {@code confirm} (webhook): the server queries the order in PayU and checks the account,
  *       amount and currency. Only then it activates Premium, once per payment (idempotent).</li>
  * </ol>
@@ -91,7 +91,7 @@ public class PaymentService {
         String reference = "AQS" + userId + "-" + randomCode(10);
         Payment payment = repository.save(new Payment(userId, PayuGateway.PROVIDER, reference, config.price(), config.currency(),
             config.periodDays(), gateway.isTest()));
-        String description = "AquaSense AI Premium " + config.periodDays() + " dias";
+        String description = "Aqua Assistant AI Premium " + config.periodDays() + " dias";
         Map<String, String> fields = gateway.formFields(payment, description, user.getEmail(), config.responseUrl(),
             config.confirmationUrl());
         auditService.record(userId, "PAYMENT_STARTED", reference + (gateway.isTest() ? " (pruebas)" : ""));
@@ -164,7 +164,7 @@ public class PaymentService {
         if (until == null) {
             return "Pago aprobado. Tu cuenta ya tenía Premium sin vencimiento asignado por un administrador.";
         }
-        mailService.sendNotice(user.getEmail(), "AquaSense AI - Pago aprobado", "Pago aprobado", List.of(
+        mailService.sendNotice(user.getEmail(), "Aqua Assistant AI - Pago aprobado", "Pago aprobado", List.of(
             "Recibimos tu pago de Premium (referencia " + payment.getReferenceCode() + ").",
             "Premium está activo hasta el " + DATE.format(until) + ". Antes de esa fecha te avisaremos para que lo renueves.",
             payment.isTestMode() ? "Este pago se hizo en el modo de pruebas de PayU: no se cobró dinero real." : ""));
@@ -188,7 +188,7 @@ public class PaymentService {
             } else if (user.getPlan() == Plan.PREMIUM && user.getPremiumUntil() != null
                 && user.getPremiumUntil().isBefore(now.plus(Duration.ofDays(config.reminderDays())))
                 && !user.getPremiumUntil().equals(user.getPremiumReminderFor())) {
-                boolean sent = mailService.sendNotice(user.getEmail(), "AquaSense AI - Tu Premium vence pronto", "Tu Premium vence pronto",
+                boolean sent = mailService.sendNotice(user.getEmail(), "Aqua Assistant AI - Tu Premium vence pronto", "Tu Premium vence pronto",
                     List.of("Tu plan Premium vence el " + DATE.format(user.getPremiumUntil()) + ".",
                         "Para conservar el análisis de 365 días, la predicción a 7 días y más consultas de IA, renueva desde Configuración → Plan."));
                 if (sent) {

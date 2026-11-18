@@ -3,7 +3,7 @@ package com.aquasense.device;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.aquasense.device.hardware.AquaSenseFirmwareAdapter;
+import com.aquasense.device.hardware.AquaAssistantFirmwareAdapter;
 import com.aquasense.device.hardware.AtlasEzoPhAdapter;
 import com.aquasense.device.hardware.CalibrationPoint;
 import com.aquasense.device.hardware.DeviceException;
@@ -27,8 +27,8 @@ class AdapterTest {
 
     @Test
     void firmwareAdapterParsesPhAndTemperature() {
-        FakeSerialLink link = new FakeSerialLink().respond("PONG AQUASENSE-PH-001", "PH:6.85;T:24.5");
-        PhMeter meter = new AquaSenseFirmwareAdapter(link);
+        FakeSerialLink link = new FakeSerialLink().respond("PONG AQUA-ASSISTANT-PH-001", "PH:6.85;T:24.5");
+        PhMeter meter = new AquaAssistantFirmwareAdapter(link);
         meter.open();
         PhReading reading = meter.read();
         assertThat(reading.ph()).isEqualTo(6.85);
@@ -39,7 +39,7 @@ class AdapterTest {
     @Test
     void bothAdaptersExposeTheSameInterface() {
         PhMeter atlas = new AtlasEzoPhAdapter(new FakeSerialLink());
-        PhMeter firmware = new AquaSenseFirmwareAdapter(new FakeSerialLink());
+        PhMeter firmware = new AquaAssistantFirmwareAdapter(new FakeSerialLink());
         assertThat(atlas.supportsCalibration()).isTrue();
         assertThat(firmware.supportsCalibration()).isTrue();
         assertThat(atlas.isSimulated()).isFalse();
@@ -48,7 +48,7 @@ class AdapterTest {
 
     @Test
     void invalidResponsesBecomeDeviceErrors() {
-        PhMeter meter = new AquaSenseFirmwareAdapter(new FakeSerialLink().respond("HELLO"));
+        PhMeter meter = new AquaAssistantFirmwareAdapter(new FakeSerialLink().respond("HELLO"));
         assertThatThrownBy(meter::open).isInstanceOf(DeviceException.class);
         PhMeter atlas = new AtlasEzoPhAdapter(new FakeSerialLink().respond("abc"));
         assertThatThrownBy(atlas::read).isInstanceOf(DeviceException.class);

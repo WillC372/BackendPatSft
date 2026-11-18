@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 public class PayuGateway {
 
     static final String PROVIDER = "PAYU";
-    private static final String USER_AGENT = "AquaSense-AI/1.0";
+    private static final String USER_AGENT = "AquaAssistant-AI/1.0";
 
     private final PaymentProperties.Payu config;
     private final ObjectMapper mapper;

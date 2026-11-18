@@ -48,7 +48,7 @@ import org.springframework.stereotype.Service;
 public class ScenarioExplainer {
 
     static final String SYSTEM_PROMPT = """
-        You are the scenario engine of AquaSense AI, a system that monitors the pH of water.
+        You are the scenario engine of Aqua Assistant AI, a system that monitors the pH of water.
         The user wants to know what would happen if the pH of their water reached a hypothetical value. You receive facts already computed.
         Answer in clear Spanish, in the JSON given:
         - headline: one sentence that sums up the scenario.

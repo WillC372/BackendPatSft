@@ -18,7 +18,7 @@ public class PhMeterFactory {
         return switch (protocol) {
             case SIMULATOR -> new SimulatedPhMeter(SIMULATOR_BASELINE, System.nanoTime());
             case ATLAS_EZO -> new AtlasEzoPhAdapter(createLink(port, "\r"));
-            case AQUASENSE_ESP32 -> new AquaSenseFirmwareAdapter(createLink(port, "\n"));
+            case AQUASENSE_ESP32 -> new AquaAssistantFirmwareAdapter(createLink(port, "\n"));
             case TEXT_METER -> new TextMeterAdapter(createLink(port, "\r\n"));
         };
     }

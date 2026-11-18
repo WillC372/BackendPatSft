@@ -1,4 +1,4 @@
-# Arquitectura · AquaSense AI
+# Arquitectura · Aqua Assistant AI
 
 ## Vista general
 
@@ -14,7 +14,7 @@ flowchart LR
     C[Controladores REST] --> S[Servicios]
     S --> R[Repositorios JPA]
     S --> DEV[Capa de dispositivos]
-    S --> IA[AquaSense Intelligence]
+    S --> IA[la IA de Aqua]
   end
   R --> PG[(PostgreSQL)]
   DEV -- "USB serie / Bluetooth SPP" --> HW[[Medidor de pH]]

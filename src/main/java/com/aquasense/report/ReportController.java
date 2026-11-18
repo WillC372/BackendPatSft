@@ -32,7 +32,7 @@ public class ReportController {
                                        @RequestParam(defaultValue = "false") boolean includeAi) {
         String body = service.renderText(service.build(CurrentUser.id(), days, includeAi));
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aquasense-informe.txt\"")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aqua-assistant-informe.txt\"")
             .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
             .body(body.getBytes(StandardCharsets.UTF_8));
     }
@@ -41,7 +41,7 @@ public class ReportController {
     public ResponseEntity<byte[]> pdf(@RequestParam(defaultValue = "7") int days,
                                       @RequestParam(defaultValue = "false") boolean includeAi) {
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aquasense-informe.pdf\"")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"aqua-assistant-informe.pdf\"")
             .contentType(MediaType.APPLICATION_PDF)
             .body(pdfService.ruleReport(CurrentUser.id(), days, includeAi));
     }

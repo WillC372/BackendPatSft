@@ -14,8 +14,8 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI aquaSenseOpenApi() {
         return new OpenAPI()
-            .info(new Info().title("AquaSense AI API").version("v1")
-                .description("API REST de AquaSense AI: mediciones de pH, dispositivos, perfiles de agua y AquaSense Intelligence."))
+            .info(new Info().title("Aqua Assistant AI API").version("v1")
+                .description("API REST de Aqua Assistant AI: mediciones de pH, dispositivos, perfiles de agua y la IA de Aqua."))
             .components(new Components().addSecuritySchemes("bearer",
                 new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
             .addSecurityItem(new SecurityRequirement().addList("bearer"));
