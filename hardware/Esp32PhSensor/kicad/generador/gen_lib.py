@@ -1,4 +1,4 @@
-"""Writes the project library: AquaSense.kicad_sym (ESP32 DevKit 38P, PH-4502C) and AquaSense.pretty (DevKit footprint)."""
+"""Writes the project library: AquaAssistant.kicad_sym (ESP32 DevKit 38P, PH-4502C) and AquaAssistant.pretty (DevKit footprint)."""
 import os
 import sys
 import uuid
@@ -36,7 +36,7 @@ def esp32_symbol():
     return f'''  (symbol "ESP32_DevKit_38P" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
     (property "Reference" "U" (at 0 27.94 0) {FONT})
     (property "Value" "ESP32_DevKit_38P" (at 0 -27.94 0) {FONT})
-    (property "Footprint" "AquaSense:ESP32_DevKit_38P_Socket" (at 0 -30.48 0) {HIDE})
+    (property "Footprint" "AquaAssistant:ESP32_DevKit_38P_Socket" (at 0 -30.48 0) {HIDE})
     (property "Datasheet" "https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf" (at 0 0 0) {HIDE})
     (property "ki_keywords" "ESP32 DevKit WROOM-32 38 pin USB-C" (at 0 0 0) {HIDE})
     (property "ki_description" "Placa de desarrollo ESP32 de 38 pines con USB-C (modulo ESP-32), filas separadas 25,4 mm" (at 0 0 0) {HIDE})
@@ -125,13 +125,13 @@ def footprint():
 '''
 
 
-os.makedirs(os.path.join(OUT, "AquaSense.pretty"), exist_ok=True)
-with open(os.path.join(OUT, "AquaSense.kicad_sym"), "w") as f:
+os.makedirs(os.path.join(OUT, "AquaAssistant.pretty"), exist_ok=True)
+with open(os.path.join(OUT, "AquaAssistant.kicad_sym"), "w") as f:
     f.write(f"(kicad_symbol_lib (version 20220914) (generator kicad_symbol_editor)\n{esp32_symbol()}\n{ph_module_symbol()}\n)\n")
-with open(os.path.join(OUT, "AquaSense.pretty", "ESP32_DevKit_38P_Socket.kicad_mod"), "w") as f:
+with open(os.path.join(OUT, "AquaAssistant.pretty", "ESP32_DevKit_38P_Socket.kicad_mod"), "w") as f:
     f.write(footprint())
 with open(os.path.join(OUT, "sym-lib-table"), "w") as f:
-    f.write('(sym_lib_table\n  (lib (name "AquaSense")(type "KiCad")(uri "${KIPRJMOD}/AquaSense.kicad_sym")(options "")(descr "Simbolos del proyecto"))\n)\n')
+    f.write('(sym_lib_table\n  (lib (name "AquaAssistant")(type "KiCad")(uri "${KIPRJMOD}/AquaAssistant.kicad_sym")(options "")(descr "Simbolos del proyecto"))\n)\n')
 with open(os.path.join(OUT, "fp-lib-table"), "w") as f:
-    f.write('(fp_lib_table\n  (lib (name "AquaSense")(type "KiCad")(uri "${KIPRJMOD}/AquaSense.pretty")(options "")(descr "Huellas del proyecto"))\n)\n')
+    f.write('(fp_lib_table\n  (lib (name "AquaAssistant")(type "KiCad")(uri "${KIPRJMOD}/AquaAssistant.pretty")(options "")(descr "Huellas del proyecto"))\n)\n')
 print("lib ok")

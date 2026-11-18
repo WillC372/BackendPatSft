@@ -50,7 +50,7 @@ async function face(side) {
   return t;
 }
 
-const root = new THREE.Group(); root.name = 'AquaSensePh';
+const root = new THREE.Group(); root.name = 'AquaAssistantPh';
 // Board body: outline with holes (KiCad y down -> 3D y up).
 const shape = new THREE.Shape(data.outline.map(([x, y]) => new THREE.Vector2(x, -y)));
 for (const h of data.holes) { const p = new THREE.Path(); p.absarc(h.x, -h.y, h.d / 2, 0, Math.PI * 2, true); shape.holes.push(p); }

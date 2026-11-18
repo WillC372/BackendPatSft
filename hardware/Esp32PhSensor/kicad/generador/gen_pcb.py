@@ -1,4 +1,4 @@
-"""Builds AquaSensePh.kicad_pcb with the KiCad API: footprints, nets, copper tracks, GND pours, antenna keep-out,
+"""Builds AquaAssistantPh.kicad_pcb with the KiCad API: footprints, nets, copper tracks, GND pours, antenna keep-out,
 silkscreen, dimensions and the link of every footprint to its schematic symbol."""
 import json
 import os
@@ -15,7 +15,7 @@ SYM_UUIDS = json.load(open(os.path.join(OUT, ".symbol_uuids.json")))  # written 
 FP_DIRS = {"Resistor_THT": "/usr/share/kicad/footprints/Resistor_THT.pretty",
            "Connector_PinSocket_2.54mm": "/usr/share/kicad/footprints/Connector_PinSocket_2.54mm.pretty",
            "MountingHole": "/usr/share/kicad/footprints/MountingHole.pretty",
-           "AquaSense": os.path.join(OUT, "AquaSense.pretty")}
+           "AquaAssistant": os.path.join(OUT, "AquaAssistant.pretty")}
 OX, OY = 100.0, 70.0  # board origin on the drawing sheet
 W, H, RC = 80.0, 44.0, 2.0  # board size and corner radius (mm)
 
@@ -215,9 +215,9 @@ for (s, y) in (("PO", 10.0), ("GND", 12.54), ("5V", 15.08)):
     text(s, 2.9, y, 0.8, just=pcbnew.GR_TEXT_H_ALIGN_RIGHT, thick=0.12)
 text("SENSOR", 4.5, 18.2, 0.8, thick=0.12)
 text("PH-4502C", 4.5, 19.6, 0.8, thick=0.12)
-text("AquaSense pH", 40.0, 2.2, 1.2, thick=0.18)
+text("Aqua Assistant pH", 40.0, 2.2, 1.2, thick=0.18)
 text("v1.0", 56.0, 2.2, 0.9, thick=0.14)
-text("AquaSense AI - Medidor de pH v1.0", W / 2, H / 2 - 1.2, 1.4, pcbnew.B_SilkS, thick=0.2)
+text("Aqua Assistant AI - Medidor de pH v1.0", W / 2, H / 2 - 1.2, 1.4, pcbnew.B_SilkS, thick=0.2)
 text("ESP32 + PH-4502C - 2026", W / 2, H / 2 + 1.2, 1.0, pcbnew.B_SilkS, thick=0.15)
 
 # ---------- dimensions (comments layer) ----------

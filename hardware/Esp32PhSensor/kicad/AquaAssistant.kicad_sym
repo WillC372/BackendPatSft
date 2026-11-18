@@ -2,7 +2,7 @@
   (symbol "ESP32_DevKit_38P" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
     (property "Reference" "U" (at 0 27.94 0) (effects (font (size 1.27 1.27))))
     (property "Value" "ESP32_DevKit_38P" (at 0 -27.94 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "AquaSense:ESP32_DevKit_38P_Socket" (at 0 -30.48 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Footprint" "AquaAssistant:ESP32_DevKit_38P_Socket" (at 0 -30.48 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
     (property "ki_keywords" "ESP32 DevKit WROOM-32 38 pin USB-C" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
     (property "ki_description" "Placa de desarrollo ESP32 de 38 pines con USB-C (modulo ESP-32), filas separadas 25,4 mm" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))

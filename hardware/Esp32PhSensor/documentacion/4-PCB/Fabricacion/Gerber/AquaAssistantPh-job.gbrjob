@@ -5,12 +5,12 @@
       "Application": "Pcbnew",
       "Version": "7.0.11+dfsg-1build4"
     },
-    "CreationDate": "2026-11-16T01:05:26+00:00"
+    "CreationDate": "2026-11-18T04:00:10+00:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
-      "Name": "AquaSensePh",
-      "GUID": "41717561-5365-46e7-9365-50682e6b6963",
+      "Name": "AquaAssistantPh",
+      "GUID": "41717561-4173-4736-9973-74616e745068",
       "Revision": "1.0"
     },
     "Size": {
@@ -34,37 +34,37 @@
   ],
   "FilesAttributes": [
     {
-      "Path": "AquaSensePh-F_Cu.gtl",
+      "Path": "AquaAssistantPh-F_Cu.gtl",
       "FileFunction": "Copper,L1,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "AquaSensePh-B_Cu.gbl",
+      "Path": "AquaAssistantPh-B_Cu.gbl",
       "FileFunction": "Copper,L2,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "AquaSensePh-F_Silkscreen.gto",
+      "Path": "AquaAssistantPh-F_Silkscreen.gto",
       "FileFunction": "Legend,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "AquaSensePh-B_Silkscreen.gbo",
+      "Path": "AquaAssistantPh-B_Silkscreen.gbo",
       "FileFunction": "Legend,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "AquaSensePh-F_Mask.gts",
+      "Path": "AquaAssistantPh-F_Mask.gts",
       "FileFunction": "SolderMask,Top",
       "FilePolarity": "Negative"
     },
     {
-      "Path": "AquaSensePh-B_Mask.gbs",
+      "Path": "AquaAssistantPh-B_Mask.gbs",
       "FileFunction": "SolderMask,Bot",
       "FilePolarity": "Negative"
     },
     {
-      "Path": "AquaSensePh-Edge_Cuts.gm1",
+      "Path": "AquaAssistantPh-Edge_Cuts.gm1",
       "FileFunction": "Profile",
       "FilePolarity": "Positive"
     }

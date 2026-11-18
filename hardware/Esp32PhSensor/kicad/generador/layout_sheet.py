@@ -41,7 +41,7 @@ def panel(x, y, w, h, title, layers, view=(90, 60, 100, 66)):
 
 s = [f'<rect width="{W}" height="{H}" fill="#f6f7f9"/>', f'<rect x="14" y="14" width="{W-28}" height="{H-28}" fill="none" stroke="#111" stroke-width="2"/>',
      text(40, 58, "Diseño del circuito impreso (PCB Layout)", 28, 700),
-     text(40, 86, "Generado con KiCad 7 desde AquaSensePh.kicad_pcb. Vista desde arriba; la capa inferior se muestra como si la placa fuera transparente.", 14, 400, fill="#444")]
+     text(40, 86, "Generado con KiCad 7 desde AquaAssistantPh.kicad_pcb. Vista desde arriba; la capa inferior se muestra como si la placa fuera transparente.", 14, 400, fill="#444")]
 board_view = (91, 61, 98, 62)
 s += panel(30, 104, 1000, 640, "Capas superior (rojo) e inferior (azul) con serigrafía, contorno y cotas en mm",
            [("B.Cu", COL["B.Cu"], 0.45), ("F.Cu", COL["F.Cu"], 0.8), ("F.SilkS", COL["F.SilkS"], 1), ("Edge.Cuts", COL["Edge.Cuts"], 1), ("Cmts.User", COL["Cmts.User"], 1)], board_view)

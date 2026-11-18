@@ -1,10 +1,10 @@
 """Single source of the circuit: components, pins and nets used by the schematic, the PCB and the breadboard view."""
 
-PROJECT = "AquaSensePh"
-TITLE = "AquaSense AI - Medidor de pH (ESP32 + PH-4502C)"
+PROJECT = "AquaAssistantPh"
+TITLE = "Aqua Assistant AI - Medidor de pH (ESP32 + PH-4502C)"
 REV = "1.0"
 DATE = "2026-11-16"
-COMPANY = "AquaSense AI"
+COMPANY = "Aqua Assistant AI"
 
 # ESP32 DevKit 38 pines (USB-C), rotulos tal como estan impresos en la placa del usuario.
 ESP_LEFT = ["3V3", "EN", "VP", "VN", "G34", "G35", "G32", "G33", "G25", "G26", "G27", "G14", "G12", "GND", "G13", "SD2", "SD3", "CMD", "5V"]
@@ -20,7 +20,7 @@ PH_PINS = {"To": "1", "Do": "2", "Po": "3", "G": "4", "G2": "5", "V+": "6"}
 
 # Board components: ref -> (library footprint, value, description)
 PARTS = {
-    "U1": ("AquaSense:ESP32_DevKit_38P_Socket", "ESP32_DevKit_38P", "ESP32 DevKit 38 pines USB-C en 2 zocalos hembra 1x19 (25,4 mm entre filas)"),
+    "U1": ("AquaAssistant:ESP32_DevKit_38P_Socket", "ESP32_DevKit_38P", "ESP32 DevKit 38 pines USB-C en 2 zocalos hembra 1x19 (25,4 mm entre filas)"),
     "R1": ("Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal", "20k", "Resistencia 20 kOhm 1/4 W 1 %"),
     "R2": ("Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal", "20k", "Resistencia 20 kOhm 1/4 W 1 %"),
     "J1": ("Connector_PinSocket_2.54mm:PinSocket_1x03_P2.54mm_Vertical", "SENSOR", "Zocalo hembra 1x3 paso 2,54 mm (cable Dupont al PH-4502C)"),

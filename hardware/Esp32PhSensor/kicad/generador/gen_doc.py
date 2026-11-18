@@ -43,7 +43,7 @@ pages = []
 pages.append(f"""
 <section class="page cover">
   <div class="cover-text">
-    <p class="kicker">AquaSense AI · Documentación de hardware · Rev. {REV} · {DATE}</p>
+    <p class="kicker">Aqua Assistant AI · Documentación de hardware · Rev. {REV} · {DATE}</p>
     <h1>Medidor de pH: ESP32 + PH-4502C</h1>
     <p class="lead">Cuatro representaciones del mismo circuito, generadas desde un único proyecto editable de KiCad 7.</p>
     <ol class="toc">
@@ -60,8 +60,8 @@ pages.append(f"""
   <img class="cover-img" src="{img(os.path.join(D, '2-Vista3D/3D-isometrica.png'))}">
 </section>""")
 pages.append(f"""<section class="page"><h2>1 · Esquemático electrónico</h2>
-  <div class="frame">{svg_inline(os.path.join(D, '1-Esquematico/AquaSensePh.svg'))}</div>
-  <p class="cap">Archivo editable: <code>kicad/AquaSensePh.kicad_sch</code>. Exportado de KiCad: PDF y SVG vectoriales, netlist <code>AquaSensePh.net</code>.</p></section>""")
+  <div class="frame">{svg_inline(os.path.join(D, '1-Esquematico/AquaAssistantPh.svg'))}</div>
+  <p class="cap">Archivo editable: <code>kicad/AquaAssistantPh.kicad_sch</code>. Exportado de KiCad: PDF y SVG vectoriales, netlist <code>AquaAssistantPh.net</code>.</p></section>""")
 v = os.path.join(D, "2-Vista3D")
 pages.append(f"""<section class="page"><h2>2 · Vista tridimensional de la PCB</h2>
   <div class="grid4">
@@ -70,13 +70,13 @@ pages.append(f"""<section class="page"><h2>2 · Vista tridimensional de la PCB</
     <figure><img src="{img(os.path.join(v, '3D-superior.png'))}"><figcaption>Vista superior ortográfica: 80 × 44 mm, agujeros M3 a 3,5 mm de los bordes.</figcaption></figure>
     <figure><img src="{img(os.path.join(v, '3D-inferior.png'))}"><figcaption>Cara inferior (vista desde abajo): plano de GND y serigrafía inferior.</figcaption></figure>
   </div>
-  <p class="cap">Modelos 3D de las bibliotecas oficiales de KiCad (zócalos, resistencias, módulo ESP32-WROOM-32, USB-C…) colocados con las posiciones del archivo de PCB. Archivos: <code>AquaSensePh-STEP.zip</code> (STEP, editable en FreeCAD/Fusion 360/SolidWorks) y <code>AquaSensePh.glb</code> (Blender, Visor 3D de Windows).</p></section>""")
+  <p class="cap">Modelos 3D de las bibliotecas oficiales de KiCad (zócalos, resistencias, módulo ESP32-WROOM-32, USB-C…) colocados con las posiciones del archivo de PCB. Archivos: <code>AquaAssistantPh-STEP.zip</code> (STEP, editable en FreeCAD/Fusion 360/SolidWorks) y <code>AquaAssistantPh.glb</code> (Blender, Visor 3D de Windows).</p></section>""")
 pages.append(f"""<section class="page"><h2>3 · Diagrama de montaje en protoboard</h2>
   <div class="frame">{svg_inline(os.path.join(D, '3-Protoboard/Protoboard.svg'))}</div>
   <p class="cap">Archivo editable: <code>Protoboard.svg</code> (Inkscape, Illustrator). Las conexiones se calculan desde <code>protoboard.json</code>.</p></section>""")
 pages.append(f"""<section class="page"><h2>4 · Diseño del circuito impreso</h2>
   <div class="frame">{svg_inline(os.path.join(D, '4-PCB/PCB-Layout.svg'))}</div>
-  <p class="cap">Archivo editable: <code>kicad/AquaSensePh.kicad_pcb</code>. Capas en PDF: <code>Capa-F.Cu.pdf</code>, <code>Capa-B.Cu.pdf</code>, <code>Capa-F.SilkS.pdf</code>, <code>Capa-F.Mask.pdf</code>.</p></section>""")
+  <p class="cap">Archivo editable: <code>kicad/AquaAssistantPh.kicad_pcb</code>. Capas en PDF: <code>Capa-F.Cu.pdf</code>, <code>Capa-B.Cu.pdf</code>, <code>Capa-F.SilkS.pdf</code>, <code>Capa-F.Mask.pdf</code>.</p></section>""")
 pages.append(f"""<section class="page"><h2>5 · Fabricación, materiales y verificación</h2>
   <div class="two">
     <div>
@@ -84,7 +84,7 @@ pages.append(f"""<section class="page"><h2>5 · Fabricación, materiales y verif
       <table class="t small"><tr><th>Referencias</th><th>Cant.</th><th>Valor</th><th>Descripción</th><th>En placa</th></tr>{bom_rows}</table>
       <h3>Archivos de fabricación (Gerber RS-274X + Excellon)</h3>
       <p class="small">{' · '.join(gerbers)}</p>
-      <p class="small">Para pedir la placa (JLCPCB, PCBWay u otro): sube <code>AquaSensePh-Gerber.zip</code>; 2 capas, 1,6 mm, 80 × 44 mm.</p>
+      <p class="small">Para pedir la placa (JLCPCB, PCBWay u otro): sube <code>AquaAssistantPh-Gerber.zip</code>; 2 capas, 1,6 mm, 80 × 44 mm.</p>
     </div>
     <div>
       <h3>Verificación de consistencia</h3>

@@ -1,4 +1,4 @@
-"""Writes AquaSensePh.kicad_sch (KiCad 7) with standard symbols copied from the KiCad libraries."""
+"""Writes AquaAssistantPh.kicad_sch (KiCad 7) with standard symbols copied from the KiCad libraries."""
 import json
 import math
 import os
@@ -45,8 +45,8 @@ LIBS = {
     "power:GND": (f"{SYMDIR}/power.kicad_sym", "GND"),
     "power:PWR_FLAG": (f"{SYMDIR}/power.kicad_sym", "PWR_FLAG"),
     "Mechanical:MountingHole": (f"{SYMDIR}/Mechanical.kicad_sym", "MountingHole"),
-    "AquaSense:ESP32_DevKit_38P": (os.path.join(OUT, "AquaSense.kicad_sym"), "ESP32_DevKit_38P"),
-    "AquaSense:PH-4502C": (os.path.join(OUT, "AquaSense.kicad_sym"), "PH-4502C"),
+    "AquaAssistant:ESP32_DevKit_38P": (os.path.join(OUT, "AquaAssistant.kicad_sym"), "ESP32_DevKit_38P"),
+    "AquaAssistant:PH-4502C": (os.path.join(OUT, "AquaAssistant.kicad_sym"), "PH-4502C"),
 }
 lib_blocks = []
 pin_tables = {}
@@ -140,7 +140,7 @@ def box(a, b, dashed=True):
 # ---------------- placement ----------------
 # Off-board module U2 (PH-4502C).
 U2 = (63.5, 63.5)
-symbol("AquaSense:PH-4502C", "U2", "PH-4502C", U2, ref_at=(U2[0], U2[1] - 10.16), val_at=(U2[0], U2[1] + 10.16),
+symbol("AquaAssistant:PH-4502C", "U2", "PH-4502C", U2, ref_at=(U2[0], U2[1] - 10.16), val_at=(U2[0], U2[1] + 10.16),
        on_board=False, extra_props=[("Descripcion", OFFBOARD["U2"][2])])
 pv, ppo, pg = pin_points[("U2", "6")], pin_points[("U2", "3")], pin_points[("U2", "4")]
 wire(pv, (pv[0] + 2.54, pv[1]), (pv[0] + 2.54, pv[1] - 5.08))
@@ -192,7 +192,7 @@ power("PWR_FLAG", (flag_tee[0] - 5.08, flag_tee[1]), val_at=(flag_tee[0] - 5.08,
 
 # U1 ESP32 DevKit.
 U1 = (195.58, 78.74)
-symbol("AquaSense:ESP32_DevKit_38P", "U1", "ESP32_DevKit_38P", U1, footprint=PARTS["U1"][0],
+symbol("AquaAssistant:ESP32_DevKit_38P", "U1", "ESP32_DevKit_38P", U1, footprint=PARTS["U1"][0],
        ref_at=(U1[0], U1[1] - 27.94), val_at=(U1[0], U1[1] + 27.94))
 g34 = pin_points[("U1", "5")]
 assert abs(g34[1] - node[1]) < 0.01, (g34, node)
@@ -204,7 +204,7 @@ power("GND", (gpin[0] - 5.08, gpin[1] + 5.08))
 vpin = pin_points[("U1", "19")]
 wire(vpin, (vpin[0] - 10.16, vpin[1]), (vpin[0] - 10.16, vpin[1] - 5.08))
 power("+5V", (vpin[0] - 10.16, vpin[1] - 5.08))
-for n in pin_tables["AquaSense:ESP32_DevKit_38P"]:
+for n in pin_tables["AquaAssistant:ESP32_DevKit_38P"]:
     if n not in ("5", "14", "19"):
         no_connect(pin_points[("U1", n)])
 
