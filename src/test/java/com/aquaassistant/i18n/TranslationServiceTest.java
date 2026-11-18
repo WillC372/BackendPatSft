@@ -57,6 +57,13 @@ class TranslationServiceTest {
     }
 
     @Test
+    void numberMarkersMustSurvive() {
+        assertThat(TranslationService.sameMarkers("Cada {0} días", "Every {0} days")).isTrue();
+        assertThat(TranslationService.sameMarkers("Cada {0} días", "Every day")).isFalse();
+        assertThat(TranslationService.sameMarkers("<0>{0}</0> de {1}", "{1} の <0>{0}</0>")).isTrue();
+    }
+
+    @Test
     void spanishAndUnknownTextsAreNotSentToTheAi() {
         assertThat(service.translate("es", List.of("Hola"), "x")).containsExactly("Hola");
         verify(ai, times(0)).complete(any(AiPrompt.class));

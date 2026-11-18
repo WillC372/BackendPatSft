@@ -43,7 +43,7 @@ public class TranslationService {
     static final int CHUNK_ITEMS = 40;
     static final int CHUNK_CHARS = 5000;
     private static final Pattern LETTER = Pattern.compile("\\p{L}");
-    private static final Pattern MARKER = Pattern.compile("</?\\d{1,2}/?>");
+    private static final Pattern MARKER = Pattern.compile("</?\\d{1,2}/?>|\\{\\d{1,2}\\}");
     private static final Duration WAIT = Duration.ofSeconds(75);
 
     private static final Map<String, Object> SCHEMA = Map.of(
@@ -200,6 +200,7 @@ public class TranslationService {
             Rules:
             - Answer only with a JSON object {"t": [...]} with exactly %d strings, in the same order.
             - Keep the markers like <0>, </0> and <1/> exactly as written, around the words they wrap in your translation.
+            - {0}, {1}... stand for numbers: keep each one exactly once, where the number goes in your language.
             - Do not translate: numbers, units (pH, mg/L, ppm, °C, mL, L, m³, gal), e-mail addresses, web addresses, \
             the names "Aqua Assistant AI", "Aqua", "Premium", "USGS", "ESP32", product codes, and names of people or places.
             - If a string is not in Spanish, or is only a name, return it unchanged.
