@@ -89,10 +89,10 @@ class TranslationServiceTest {
     @Test
     void theAiIsToldTheLanguageAndToKeepTheMarkers() {
         aiAnswers("{\"t\":[\"Medir\"]}");
-        service.translate("pt-BR", List.of("Medir"), "x");
+        service.translate("de", List.of("Medir"), "x");
         ArgumentCaptor<AiPrompt> prompt = ArgumentCaptor.forClass(AiPrompt.class);
         verify(ai).complete(prompt.capture());
-        assertThat(prompt.getValue().system()).contains("Portuguese (Brazil)").contains("<0>");
+        assertThat(prompt.getValue().system()).contains("German").contains("<0>");
         assertThat(prompt.getValue().purpose()).isEqualTo("TRANSLATION");
         assertThat(prompt.getValue().userId()).isNull();
     }
@@ -122,12 +122,13 @@ class TranslationServiceTest {
 
     @Test
     void languagesAreNormalizedAndDescribed() {
-        assertThat(Languages.normalize("PT-br")).isEqualTo("pt-BR");
+        assertThat(Languages.normalize("ZH-hans")).isEqualTo("zh-Hans");
         assertThat(Languages.normalize("xx")).isNull();
         assertThat(Languages.englishName("zh-Hans")).isEqualTo("Simplified Chinese");
         assertThat(Languages.nativeName("fr")).isEqualTo("Français");
-        assertThat(Languages.rightToLeft("ar")).isTrue();
-        assertThat(Languages.drawableInPdf("ru")).isTrue();
-        assertThat(Languages.drawableInPdf("ja")).isFalse();
+        assertThat(Languages.codes()).containsExactly("es", "en", "fr", "de", "it", "zh-Hans", "ja");
+        assertThat(Languages.normalize("pt-BR")).isNull();
+        assertThat(Languages.drawableInPdf("ja")).isTrue();
+        assertThat(Languages.nativeName("ja")).isEqualTo("日本語");
     }
 }

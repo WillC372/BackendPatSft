@@ -31,9 +31,7 @@ class I18nIntegrationTest {
     @Test
     void theLanguagesAreOpenBeforeSigningIn() throws Exception {
         JsonNode list = json(mvc.perform(get("/api/v1/i18n/languages")).andExpect(status().isOk()).andReturn());
-        assertThat(list.size()).isGreaterThan(50);
-        assertThat(list.get(0).get("code").asText()).isEqualTo("es");
-        assertThat(list.findValuesAsText("code")).contains("en", "pt-BR", "zh-Hans", "ar", "qu");
+        assertThat(list.findValuesAsText("code")).containsExactly("es", "en", "fr", "de", "it", "zh-Hans", "ja");
         mvc.perform(get("/api/v1/i18n/dictionary/fr")).andExpect(status().isOk());
         mvc.perform(get("/api/v1/i18n/dictionary/xx")).andExpect(status().isBadRequest());
     }
@@ -54,10 +52,10 @@ class I18nIntegrationTest {
         String token = register();
         mvc.perform(put("/api/v1/users/me/settings").header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"theme\":\"LIGHT\",\"notificationsEnabled\":true,\"autoSave\":false,\"language\":\"pt-br\",\"voiceEnabled\":false}"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.language").value("pt-BR")).andExpect(jsonPath("$.voiceEnabled").value(false));
+                .content("{\"theme\":\"LIGHT\",\"notificationsEnabled\":true,\"autoSave\":false,\"language\":\"zh-hans\",\"voiceEnabled\":false}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.language").value("zh-Hans")).andExpect(jsonPath("$.voiceEnabled").value(false));
         mvc.perform(get("/api/v1/users/me/settings").header("Authorization", "Bearer " + token))
-            .andExpect(jsonPath("$.voiceEnabled").value(false)).andExpect(jsonPath("$.language").value("pt-BR"));
+            .andExpect(jsonPath("$.voiceEnabled").value(false)).andExpect(jsonPath("$.language").value("zh-Hans"));
     }
 
     private String register() throws Exception {

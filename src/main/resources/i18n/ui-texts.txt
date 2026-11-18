@@ -1,0 +1,2130 @@
+! Aquí ves cómo está tu agua. Toca «Medir» para registrar el pH.
+' debe tener al menos
+(IA no disponible: generado con reglas)
+(Premium ya asignado sin vencimiento)
+(cada {0} horas). Los valores recientes son provisionales hasta que el USGS los revisa.
+(generado con reglas y estadística)
+(se desplaza)
+(sin clave)
+(solo cuando Aqua Assistant corre en el mismo computador del medidor)
+(todavía nada)
+(tú)
+(última línea:
+) · Cuenta eliminada con sus datos
+). Cada lectura usa una.
+). Desde aquí puedes dar Premium a mano, con o sin vencimiento.
+). Intenta con otra foto o registra el valor manualmente.
+). Intenta verificar de nuevo en unos minutos.
+). Se generó el informe por reglas.
+ADMIN_EMAIL is set but no email channel is configured:
+API REST de Aqua Assistant AI: mediciones de pH, dispositivos, perfiles de agua y la IA de Aqua.
+Abierta
+Abierta sin uso
+Abre Aqua Assistant AI para ver el detalle y qué hacer. Puedes desactivar estos correos en Configuración.
+Abre Aqua Assistant en
+Abriendo informe...
+Abrir a Aqua
+Abrir a Aqua para elegir otra función
+Accede a tu cuenta para continuar
+Accept
+Acceso de demostración
+Acceso restringido
+Acciones
+Acciones recomendadas
+Acción
+Aceptada
+Acerca de
+Acondicionador de agua (acuario)
+Activa
+Activa los permisos de administrador de esta cuenta
+Activando el servidor...
+Activar
+Activas
+Actividad
+Actividad reciente
+Actividad reciente de la cuenta
+Activo
+Activo hasta el
+Activos {0} días
+Activos: aquí te llegan las alertas y los recordatorios aunque la app esté cerrada.
+Actual
+Actual:
+Actualizada ahora
+Actualizado
+Actualizando ahora desde el USGS.
+Actualizar
+Acuario
+Acumulación de desechos y ácidos orgánicos.
+Además, leer cada
+Adjunta una foto.
+Admin
+Admin principal
+Administración
+Administrador
+Administrador · sin límites
+Administradores
+Agente de informes
+Agrega incrementador de pH (carbonato de sodio) en dosis pequeñas según el fabricante.
+Agrega reductor de pH (bisulfato de sodio) en dosis pequeñas según el fabricante.
+Agricultura y riego
+Agua blanda o con CO{0} disuelto.
+Agua blanda: puede corroer superficies y equipos.
+Agua de pozo con bicarbonatos.
+Agua de reposición alcalina.
+Agua de reposición muy alcalina.
+Agua potable
+Agua {0}
+Ahora es administrador.
+Ahora es usuario.
+Aireación intensa (cascadas, jacuzzi).
+Al abrir a Aqua te saluda en voz alta y lee sus respuestas mientras las escribe. Si lo apagas, solo escribe.
+Al menos un número
+Al menos una letra
+Al pulsar Medir, Aqua Assistant espera el siguiente valor que envíe el medidor (hasta {0} s): pulsa su botón de enviar o imprimir.
+Alcalina
+Alcalinidad
+Alcalinidad alta: al pH le costará bajar.
+Alcalinidad baja: el pH cambiará con facilidad.
+Alcalinidad total
+Alcalinidad total (mg/L)
+Alcance
+Alerta anticipada
+Alerta anticipada: se prevé que el pH salga del rango ideal ({0} - {1}) en unas {2} h (pH {3}).
+Alertas
+Alertas por correo
+Alertas recientes
+Algo no funcionó como se esperaba en esta pantalla. Si se repite, recarga la página.
+Alta
+Alto
+Alto (pH {0})
+Analiza
+Analizando la foto con IA
+Analizar mi agua
+Android
+Anomalía
+Anomalías detectadas
+Anota cada vez que echas cloro, ácido o cambias agua. Así recuerdas qué hiciste y cuándo, y Aqua lo tiene en cuenta al revisar tus mediciones.
+Análisis histórico
+Apagada
+Apagados en este dispositivo.
+Apariencia
+Aplicar
+Approved
+Aprendizaje automático
+Aprendizaje automático local
+Aprobado
+Aprobado por el USGS
+Aqua
+Aqua Assistant
+Aqua Assistant AI
+Aqua Assistant AI - Confirma tu cuenta de administrador
+Aqua Assistant AI - Correo de prueba
+Aqua Assistant AI - Restablecer contraseña
+Aqua Assistant AI - Tu Premium vence pronto
+Aqua Assistant AI necesita JavaScript habilitado.
+Aqua Assistant AI ·
+Aqua Assistant AI, ir al inicio
+Aqua dice
+Aqua habla
+Aqua hablará.
+Aqua te dará un consejo al abrir cada pantalla.
+Aqua volverá a hablar.
+Aqua ya no dará consejos al cambiar de pantalla.
+Aqua · IA
+Aqua, asistente de IA: chatear y funciones de inteligencia artificial
+Aquí cambias el tema, las alertas y los datos de tu cuenta.
+Aquí tienes cada piscina, acuario o tanque por separado. También puedes compartir uno con un código.
+Aquí ves cómo cambió tu agua. Si quieres, tócame y busco valores raros.
+Aquí ves tu plan. Los pagos funcionan en modo de pruebas.
+Aquí ves tus inicios de sesión y lo que hiciste en cada uno.
+Arma un informe completo de tu agua
+Arquitectura
+Arriba, junto a tu nombre, aparece el lugar en el que estás. Tócalo para cambiar: Inicio, Historial, Medir y Cuidado pasan a mostrar ese lugar.
+Asegúrate de que tu medidor esté encendido y conectado al equipo donde corre el servidor de Aqua Assistant. Para Bluetooth, empareja primero el dispositivo desde el sistema operativo.
+Asignar
+Asistente IA
+Así está el agua de
+Así se verán los avisos en este dispositivo.
+Atención: el entrenamiento incluye datos del simulador, que no representan agua real.
+Atención: el periodo incluye lecturas del simulador, que no representan agua real.
+Atlas Scientific EZO-pH
+Atlas Scientific EZO-pH (UART)
+Atrás
+Authorization
+Automático
+Avisarme también fuera de la app
+Aviso enviado: debería aparecer en unos segundos.
+Avisos activados en este dispositivo.
+Avisos cuando una medición sale del rango (en la app y en los dispositivos donde actives los avisos).
+Avisos desactivados en este dispositivo.
+Avisos en este celular o computador
+Avisos en este dispositivo
+Aún no has conectado ningún dispositivo.
+Aún no has medido
+Aún no hay calibraciones. Conecta tu medidor por USB y usa «Calibrar».
+Aún no hay conversaciones guardadas.
+Aún no hay diagnósticos.
+Aún no hay informes del agente.
+Aún no hay mediciones. Realiza una medición para recibir recomendaciones.
+Aún no hay sesiones
+Aún no hay tratamientos en los últimos {0} días. Anota aquí cada producto que agregues: así Aqua y tú verán su efecto en las mediciones.
+Aún no tienes pagos.
+Baja
+Bajar el pH
+Bajar la alcalinidad
+Bajo
+Bajo (pH {0})
+Bajo {0}
+Barras rojas: mediciones que el modelo considera inusuales.
+Basadas en tu última medición: pH {0} ({1}) del {2} · Perfil {3}
+Basic
+Bearer
+Bearer {0}
+Biblioteca normativa
+Bicarbonato de sodio
+Bicarbonato de sodio (sube la alcalinidad)
+Bienvenido, {0}.
+Bisulfato de sodio (baja el pH)
+Bisulfato de sodio ({0} %)
+Blanqueador casero {0} %
+Bloq Mayús está activado
+Bloqueados en el navegador. Actívalos desde el candado junto a la dirección de la página.
+Bloqueaste los avisos para esta página. Actívalos en la configuración del navegador (el candado junto a la dirección).
+Bluetooth (SPP)
+Borra para siempre la cuenta y sus mediciones, perfiles, informes y conversaciones. Para conservar sus datos, desactívala en su lugar.
+Borrar
+Borrar conversación
+Borrar el perfil {0}
+Borrar lugar
+Borrar recordatorio
+Borrar todas
+Borrar todo
+Borrar tratamiento
+Borrar tratamiento {0}
+Borrar {0}
+Borró un lugar
+Borró un perfil de agua
+Borró un recordatorio
+Borró un tratamiento
+Borró una medición
+Brevo no respondió:
+Brevo rechazó el envío (
+Buffer
+Busca valores raros en tu historial
+Buscando dispositivos...
+Buscar
+Buscar en las normas
+Buscar en las normas, por ejemplo: pH bajo y corrosión
+Buscar por nombre o correo
+Buscó anomalías en
+CSV de los últimos
+CSV del
+Cada barra es una medición: cuanto más alta, más difícil de explicar con tu comportamiento habitual. En rojo, las que superan el umbral.
+Cada contexto usa rangos distintos. El perfil activo se aplica a nuevas mediciones y análisis.
+Cada cuántos días
+Cada inicio de sesión aparecerá aquí.
+Cada llamada queda registrada con su proveedor, tokens, latencia y costo estimado. Los intentos fallidos también se registran, pero no cuentan para tu cuota.
+Cada lugar guarda sus propias mediciones. Elige uno y toda la app cambia a ese lugar.
+Cada sitio con agua que mides, por separado.
+Cada vez que calibras un punto queda aquí: con qué solución buffer, qué marcaba el medidor antes y si el medidor lo aceptó. Si la diferencia crece mucho, es hora de revisar o cambiar la sonda.
+Cada vez que inicias sesión empieza una sesión nueva. Aquí queda lo que hiciste en cada una, desde que entraste hasta que la cerraste.
+Cada {0}
+Calcula cuánto producto echar, anota lo que le haces al agua y crea recordatorios.
+Calcula cuánto producto usar, anota lo que le haces al agua de
+Calculadora de dosis
+Calculadora de dosis, registro de lo que le echas al agua y recordatorios que te llegan al celular o al correo.
+Calculadora de dosis: cuánto producto echar
+Calculando consumo...
+Calculando estadística y anomalías
+Calculando tendencias y predicción...
+Calcular
+Calcular dosis
+Calculó estadísticas de
+Calibra el medidor
+Calibración
+Calibración borrada
+Calibrar
+Calibrar medidor
+Calibró el medidor
+Cambia el periodo o registra una medición.
+Cambia parte del agua
+Cambiar contraseña
+Cambiar el nombre
+Cambiar el perfil de uso (ahora {0})
+Cambiar foto
+Cambiar tema
+Cambiarlo reemplaza la fecha pagada.
+Cambio brusco de pH
+Cambio de agua
+Cambio de plan
+Cambio de rol
+Cambio frente a la hora anterior
+Cambio frente a la medición anterior
+Cambios guardados.
+Cambió el perfil activo
+Cambió el plan de un usuario
+Cambió el rol de un usuario
+Cambió su configuración
+Cambió su contraseña
+Cambió su foto de perfil
+Cambió su nombre
+Canal
+Cancelar
+Cannot read knowledge base
+Cantidad (opcional)
+Carbonato de sodio (sube el pH)
+Carbonato de sodio (sube pH)
+Cargando cifras...
+Cargando conversación...
+Cargando el último diagnóstico...
+Cargando la biblioteca normativa...
+Cargando tu panel...
+Cargando tu plan...
+Cargando tus lugares...
+Cargo real
+Causa frecuente para el perfil
+Causas probables
+Centro de análisis IA
+Cerrada al cambiar el rol
+Cerrada al cambiar la contraseña
+Cerrada al desactivar la cuenta
+Cerrada desde otra sesión
+Cerrar
+Cerrar a Aqua
+Cerrar aviso
+Cerrar consejo de Aqua
+Cerrar las otras
+Cerrar las otras sesiones
+Cerrar mis otras sesiones
+Cerrar sesión
+Cerró sesión
+Cerró sus otras sesiones
+Chat con memoria y normas oficiales
+Chatear conmigo
+Chrome
+Chrome en Windows
+Chunk
+Chunk without id
+Cifras por revisar
+Cifras verificadas
+Claro
+Clasificación
+Cloro
+Cloro libre
+Cloro libre (mg/L)
+Cloro líquido
+Cloro líquido (hipoclorito de sodio)
+Cloro líquido {0} % (piscinas)
+Cloruro de calcio (sube la dureza)
+Cloruro de calcio en escamas ({0} %)
+Cobertura por uso del agua
+Cobro real
+Color intermedio entre dos valores
+Como máximo cada {0} días.
+Como mínimo cada día.
+Compara tú mismo la tira con la carta de colores.
+Comparación en datos no vistos
+Compartir
+Compartir es opcional
+Compartió un lugar con un código
+Con la tendencia actual ({0} pH por día) el agua no se dirige a este valor.
+Con la tendencia actual ({0} pH por día) llegaría en unos {1} días, si nada cambia.
+Con la tendencia actual ({0} pH por día) tardaría más de {1} días.
+Con los litros de la piscina o la pecera, la pantalla Cuidado te dice cuánto producto echar.
+Con mi medidor
+Con más mediciones a distintas horas, el modelo aprenderá tu patrón habitual. Mientras tanto, las reglas fijas siguen detectando anomalías.
+Con pH alto el cloro pierde eficacia: verifica el cloro libre.
+Con una foto
+Con «Alertas por correo» te escribo cuando el agua sale del rango (como mucho un correo por hora). Los recordatorios también pueden llegar por correo si lo marcas al crearlos.
+Conclusión
+Conclusión de la IA
+Conecta aquí tu medidor de pH por USB o usa la cámara para leer su pantalla.
+Conecta tu medidor de pH a este computador por USB o Bluetooth, o léelo con la cámara si no tiene cable de datos.
+Conecta tu medidor de pH por USB (o por Bluetooth emparejado como puerto serie) al computador desde el que usas Aqua Assistant.
+Conecta tu medidor por USB o lee su pantalla con la cámara.
+Conectado
+Conectado por USB:
+Conectado: {0}
+Conectar medidor
+Conectar mi medidor
+Conexión del dispositivo
+Conexión recuperada.
+Confianza
+Confianza ajustada de {0} a {1} por la cantidad o el tipo de datos.
+Configuración
+Configuración de la cuenta
+Configuración → Avisos
+Configurado
+Confirma con una segunda medición y, si persiste, consulta a un especialista.
+Confirma el correo de la cuenta
+Confirma solo si tú creaste la cuenta con este correo. Después tendrás que iniciar sesión de nuevo.
+Confirma tu cuenta de administrador
+Confirmar
+Confirmar administrador
+Confirmar contraseña
+Confirmó el rol de administrador por correo
+Consejo:
+Consejos al cambiar de pantalla
+Consulta al proveedor del servicio sobre el tratamiento aplicado.
+Consulta y analiza tus registros. Las gráficas se generan cuando las solicitas.
+Consultando IA (Gemini → Groq)
+Consultas IA hoy
+Consultas de IA al día
+Consultas de IA hoy:
+Consultó el perfil de agua activo
+Consultó el último diagnóstico
+Consultó la predicción de la red neuronal
+Consumo y costos
+Consumo y costos de IA
+Contacto con rocas o materiales calcáreos.
+Continuo
+Contraseña
+Contraseña actual
+Contraseña actual incorrecta
+Contraseña actualizada. Ya puedes iniciar sesión.
+Contraseña cambiada
+Contraseña cambiada. Se cerraron tus sesiones en otros equipos.
+Contraseña de las cuentas de demostración: {0}
+Contraseña para confirmar
+Contraseña restablecida
+Conversaciones
+Conversación
+Conversación con Aqua
+Copiar
+Copiar respuesta
+Correctas
+Correo
+Correo de prueba
+Correo de prueba enviado a {0}.
+Correo del sistema
+Correo electrónico
+Correo o contraseña incorrectos.
+Corrige de forma gradual: no más de {0}-{1} unidades de pH por día.
+Corrosión de tuberías metálicas.
+Costo est.
+Costo estimado
+Could not encode image
+Crea tu cuenta
+Crea tu cuenta y luego pulsa tu nombre, arriba, para subir tu foto.
+Crea un perfil con tus propios rangos
+Crear cuenta
+Crear código
+Crear mi cuenta para poner mi foto
+Crear y usar
+Crear, editar o compartir lugares
+Credenciales inválidas o sesión expirada.
+Creó su cuenta
+Creó un lugar
+Creó un perfil de agua
+Crítico
+Cuando lo hagas, márcalo como hecho en Aqua Assistant AI y el próximo se contará desde ese momento.
+Cuando midas, aquí verás si tu agua es ácida, neutra o alcalina y si está en el rango para {0}.
+Cuando tengas mediciones, te diré qué hacer con tu agua.
+Cuenta creada
+Cuenta creada. ¡Bienvenido a Aqua Assistant AI!
+Cuenta de demostración
+Cuenta de demostración retirada
+Cuenta desactivada
+Cuenta desactivada.
+Cuenta eliminada
+Cuenta eliminada con todos sus datos.
+Cuenta reactivada
+Cuenta reactivada.
+Cuenta y plan
+Cuida
+Cuidado
+Cuidado del agua
+Cuidado del agua: dosis, tratamientos y recordatorios
+Curva de aprendizaje
+Cuántas consultas de IA has usado
+CÓMO SE ELABORÓ
+Cámara
+Cámara apagada
+Cámara {0}
+Código (
+Código activo
+Código copiado.
+Código nuevo
+Código para unirse
+Código: {0}
+Cómo se elaboró
+Cómo se elaboró este informe ({0} pasos)
+Dato medido ({0}) o interpolado ({1})
+Datos
+Datos de prueba publicados por PayU para su sandbox (VISA Colombia). Con ellos no se cobra nada.
+Datos insuficientes
+Datos oficiales
+Datos oficiales actualizados.
+Datos oficiales de pH
+Datos oficiales, sesiones, tu plan y la configuración también están aquí. En el celular, desliza la barra hacia los lados.
+Datos para entrenar
+Datos que mejorarían el diagnóstico
+Datos simulados
+Days back from today
+Days to forecast
+De prueba
+De una tira reactiva o de la pantalla de tu medidor
+De {0} · {1}
+Debe quedar al menos un administrador activo.
+Debe ser mayor que el mínimo ideal.
+Demasiado estabilizador: el cloro pierde eficacia.
+Demasiados intentos. Espera un minuto antes de intentarlo de nuevo.
+Demo
+Densa → {0} horas
+Dentro de la app
+Dentro del rango recomendado.
+Desactivada
+Desactivadas
+Desactivar
+Desactivar cuenta
+Desactivó el código de un lugar
+Desactivó una cuenta
+Descargar
+Descargar .txt
+Descargar PDF
+Descargó sus mediciones
+Descartar
+Desconectado
+Desconectar
+Desconectar medidor
+Describe el uso del perfil.
+Descripción del uso
+Desde
+Desde {0} · vence {1}
+Detalle
+Detección de anomalías
+Detención de medición en tiempo real
+Detención temprana: se guardan los pesos de la época con menor error de validación.
+Detener
+Detener continuo
+Detener vivo
+Diagnóstico IA
+Diagnóstico generado con reglas.
+Diagnóstico generado con {0}.
+Diagnóstico inteligente
+Diagnóstico orientativo basado en el pH. No reemplaza un análisis de laboratorio ni demuestra potabilidad.
+Diagnósticos anteriores
+Dicloro
+Dicloro {0} % (estabilizado)
+Diferencia
+Dile qué quieres saber. El agente decide qué datos consultar (estadísticas, anomalías, mediciones, predicción, alertas), investiga y redacta el informe. El sistema verifica cada cifra antes de mostrarlo.
+Disolución de CO{0} o lluvia ácida.
+Dispositivo
+Dispositivos
+Dispositivos registrados
+Distancia a la mediana de las {0} mediciones previas
+Distribución
+Distribución de mediciones
+Disuélvelo en un balde con agua de la piscina y repártelo con la bomba encendida. Espera {0} a {1} horas y vuelve a medir antes de agregar el resto.
+Documento original
+Dos modelos coinciden
+Dueño
+Duplicar
+Duplicar para personalizar
+Duplicated chunk id
+Duplicated source id
+Duplicó un perfil de agua
+Duración de Premium
+Dureza
+Dureza cálcica
+Dureza cálcica (mg/L)
+Edge
+Editar
+Editar el perfil {0}
+Editar lugar
+Editar perfil
+Editar recordatorio
+Editar {0}
+Editó un lugar
+Editó un perfil de agua
+Efectos
+Ej.: Medidor del laboratorio
+Ej.: piscina después de lluvia
+Ej.: piscina, después de lluvia
+Ej.: recomendación del fabricante, norma local
+Ej.: ¿Por qué bajó el pH esta semana?
+Ejemplo: tu piscina de {0} {1} litros está en pH {2} y la quieres en {3}. Eliges «Bajar el pH» y el producto que tienes, y te dice «{4} mL de ácido muriático». Así no echas de más ni de menos.
+El EZO-pH no confirmó la calibración (
+El EZO-pH respondió con error.
+El agente está ocupado. Intenta de nuevo en un minuto.
+El agua está dentro del rango recomendado para
+El botón más importante: registra el pH con tu medidor, con una foto o escribiendo el valor.
+El carbonato también sube la alcalinidad.
+El circuito no respondió como Atlas EZO-pH. Revisa el tipo de medidor y la velocidad ({0} por defecto).
+El circuito rechazó la calibración.
+El cloro es tóxico para los peces: usa un acondicionador de agua antes de agregarla.
+El cloro libre máximo es {0} mg/L.
+El cloro no puede ser negativo.
+El correo no es válido.
+El costo estimado multiplica los tokens por el precio configurado de cada modelo y se guarda con cada llamada, así un cambio de precio no reescribe el historial.
+El código no es válido.
+El código no existe o ya no está activo. Pídele uno nuevo a quien te lo compartió.
+El dispositivo no respondió como firmware Aqua Assistant (
+El dispositivo no respondió como firmware Aqua Assistant. Revisa el tipo de medidor y la velocidad ({0}).
+El enlace no contiene un código. Inicia sesión para recibir uno nuevo.
+El enlace no contiene un token. Solicita uno nuevo.
+El enlace no es válido o ya venció. Inicia sesión para recibir uno nuevo.
+El enlace no es válido o ya venció. Solicita uno nuevo.
+El enlace no es válido.
+El firmware rechazo la calibración:
+El informe PDF cubre desde el {0} hasta hoy ({1} días).
+El informe no existe.
+El lugar no existe.
+El lugar «En uso» es el que ves en toda la app
+El medidor está en uso por otra cuenta.
+El medidor está siendo usado por otra cuenta en este servidor.
+El medidor no envió un valor de pH
+El medidor no envió un valor de pH. Pulsa su botón de enviar o imprimir (Print/Send/Data), o revisa la velocidad en baudios.
+El medidor no respondió a tiempo.
+El medidor no respondió a tiempo. Revisa el cable y que la sonda esté conectada.
+El medidor rechazó la calibración ({0}).
+El modelo aún no tiene datos suficientes
+El modelo usa este patrón: un valor normal a una hora en la que tu agua nunca lo tiene también cuenta como inusual. Las franjas rayadas son horas sin mediciones.
+El motivo admite hasta {0} caracteres.
+El navegador bloqueó la cámara. Pulsa el icono del candado o de la cámara junto a la dirección, permite la cámara y vuelve a intentarlo.
+El navegador lee el medidor y guarda cada medición como real.
+El navegador no dio permiso para los avisos. Actívalos desde el candado junto a la dirección de la página.
+El navegador no permitió copiar. Selecciona el texto y cópialo a mano.
+El pH debe estar entre {0} y {1}.
+El pH es adecuado, pero no demuestra que el agua sea potable: la potabilidad requiere análisis
+El pH está por debajo
+El pH está por debajo del neutro. Revisa si es adecuado para el uso del agua.
+El pH está por encima
+El pH está por encima del neutro. Revisa si es adecuado para el uso del agua.
+El pH máximo es {0}.
+El pH mínimo es {0}.
+El pH por sí solo no confirma ni descarta contaminación.
+El pH por sí solo no demuestra que el agua sea potable ni que esté libre de contaminantes.
+El pH va de {0} a {1}.
+El pago está en proceso en PayU. Verifica de nuevo en unos minutos.
+El pago informado por PayU no coincide con el pedido (valor, moneda o comercio). No se activó Premium.
+El pago no existe.
+El pago venció sin completarse. Tu plan no cambió.
+El perfil elegido no existe.
+El perfil no existe.
+El perfil tiene mediciones asociadas y no se puede eliminar.
+El periodo incluye lecturas del simulador.
+El precio y la pasarela se configuran en el servidor (variables
+El puerto no existe o no está disponible. Busca los dispositivos de nuevo.
+El que desinfecta. Piscina: {0} a {1}.
+El recomendado para ese tipo de agua
+El recordatorio no existe.
+El servidor descarga los datos del USGS al arrancar y cada {0} horas. Vuelve en un minuto.
+El servidor gratuito se apaga cuando nadie lo usa y tarda hasta un minuto en arrancar. Espera un momento.
+El simulador está desactivado: conecta un medidor real.
+El simulador no admite calibración.
+El simulador no es un medidor real.
+El trabajo no existe o ya expiró.
+El tratamiento no existe.
+El valor de pH debe estar entre {0} y {1}.
+El valor deseado debe ser mayor que el actual.
+El valor deseado debe ser menor que el actual.
+El valor hipotético coincide con la medición actual.
+El volumen máximo es {0} millones de litros.
+El volumen mínimo es {0} litro.
+El volumen sirve para la calculadora
+El ácido cianúrico máximo es {0} mg/L.
+El ácido cianúrico no puede ser negativo.
+El ácido también baja la alcalinidad.
+Elaborado el
+Elaborado por el agente de IA
+Elegir foto de perfil
+Elegir lugar
+Elige cada cuántos días.
+Elige el dispositivo en la lista y pulsa Conectar para reintentar.
+Elige el punto de calibración.
+Elige el tipo de agua.
+Elige el tipo de medidor.
+Elige el tipo de recordatorio.
+Elige para qué usas el agua: cada uso tiene su rango ideal de pH.
+Elige qué aplicaste.
+Elige qué quieres ajustar y con qué producto.
+Elige un rango de fechas válido.
+Elige un tema.
+Elige una contraseña segura
+Elige una forma. El valor queda guardado en tu historial.
+Elige una foto.
+Elige una gráfica para generarla con los datos del periodo seleccionado.
+Eliminar
+Eliminar cuenta
+Eliminar definitivamente
+Eliminar medición
+Eliminar mi cuenta
+Eliminar perfil
+Eliminó una cuenta
+Email
+Empieza a monitorear la calidad de tu agua
+Empieza midiendo el agua de
+En
+En acuarios y estanques usa productos hechos para peces y cambia el pH como mucho {0} por día. Los productos de piscina pueden matarlos.
+En aumento
+En descenso
+En el celular, o con un medidor sin cable de datos, usa el
+En iPhone primero agrega la app a la pantalla de inicio (Compartir → Agregar a inicio) y ábrela desde ahí.
+En la práctica: unos {0} días con al menos una medición cada pocas horas.
+En pausa
+En rango
+En rango óptimo
+En rango óptimo: {0}. En precaución: {1}. Críticas: {2}.
+En tu celular o computador, aunque la app esté cerrada
+En una ventana privada o de incógnito el navegador no permite avisos. Abre la app en una ventana normal.
+En uso
+En vivo · {0} · no guardada
+En {0} h
+En {0} ventanas de prueba la red tuvo un error medio de {1} pH y no superó en al menos
+En {0} ventanas de prueba que la red no vio, su error medio fue {1} pH: {2} %% menor
+Encuadra aquí la pantalla del medidor
+Enfocada y sin reflejos.
+Enjuaga la sonda con agua destilada, sumérgela en la solución buffer indicada y espera a que la lectura se estabilice. Empieza siempre por pH {0}.
+Enlace de confirmación de administrador enviado
+Enlace inválido
+Entendido
+Enter
+Entrada
+Entrar
+Entre {0} y {1}
+Entre {0} y {1} caracteres
+Entre {0} y {1} días.
+Entrenado con
+Entrenamiento
+Entrenando el modelo...
+Entrenando la red neuronal...
+Enviar
+Enviar enlace
+Enviar pregunta
+Enviarme un correo de prueba
+Envió un correo de prueba
+Envío interrumpido.
+Error
+Error absoluto medio de las {0} horas. Menor es mejor.
+Error de comunicación
+Error de conexión
+Error {0}
+Errors
+Es el administrador principal configurado en el servidor (ADMIN_EMAIL).
+Es el único administrador activo: asigna otro administrador antes de eliminarla.
+Es un cambio grande: hazlo en varios días, de {0} a {1} de pH cada vez.
+Es una cuenta de demostración: no se puede modificar para que los botones de acceso sigan funcionando.
+Es una estimación estadística, no una medición. Confirma siempre con el medidor.
+Esa persona no está en el lugar.
+Escala de pH
+Escape
+Escenario hipotético: no se guarda en el historial ni representa una medición.
+Escenario hipotético: no se guarda en el historial.
+Escenario: ¿Qué pasa si...?
+Escribe el código completo.
+Escribe el código.
+Escribe el valor actual y el que quieres.
+Escribe el valor de pH.
+Escribe el volumen del agua.
+Escribe la cantidad con su unidad, o deja ambas vacías.
+Escribe la cantidad junto con su unidad, o deja ambas vacías.
+Escribe la nueva contraseña.
+Escribe qué quieres buscar.
+Escribe tu contraseña actual.
+Escribe tu contraseña para confirmar.
+Escribe tu contraseña.
+Escribe tu correo.
+Escribe tu nombre.
+Escribe tu pregunta...
+Escribe tu pregunta... puedes repreguntar sobre lo anterior
+Escribe un nombre para el lugar.
+Escribe un nombre.
+Escribe un valor entre {0} y {1}.
+Escribe un volumen mayor que cero.
+Escribe una cantidad mayor que cero.
+Escribe una contraseña.
+Escribe una pregunta.
+Escribe una temperatura entre -{0} y {1} °C.
+Escribe {0} para confirmar
+Escribir el valor
+Ese lugar es tuyo: no puedes salir de él, puedes borrarlo.
+Ese lugar ya es tuyo.
+Español
+Espera a que termine la respuesta actual o pulsa Detener.
+Esperando un cambio
+Esta cuenta está desactivada. Escribe al administrador para reactivarla.
+Esta cuenta ya no corresponde al correo de administrador configurado.
+Esta es una cuenta de demostración compartida: no se puede eliminar. Crea tu propia cuenta para tener tus datos privados.
+Esta es una de mis funciones. Tócame para elegir otra.
+Esta sección es solo para administradores.
+Esta semana
+Estable
+Estacional diaria (misma hora de ayer)
+Estaciones
+Estaciones con pH en las últimas {0} horas
+Estaciones destacadas
+Estación {0}
+Estado
+Estado de la cuenta
+Estado del agua
+Estado del medidor
+Estado hipotético
+Estado no disponible
+Estanque
+Este dispositivo no tiene una voz para el idioma de la app. Puedes instalarla en la configuración de voz o de idiomas del sistema.
+Este lugar está compartido contigo solo para ver: no puedes cambiar nada en él.
+Este medidor se calibra desde sus propios botones.
+Este navegador no permite avisos. Prueba con Chrome, Edge o Firefox.
+Este navegador no permite usar la cámara. Usa Chrome, Edge, Firefox o Safari actualizados.
+Este navegador no puede conectar medidores USB.
+Este navegador no puede conectar medidores USB. Usa Google Chrome o Microsoft Edge en un computador.
+Este navegador no puede hablar. Prueba con Chrome, Edge o Safari.
+Este pago se hizo en el modo de pruebas de PayU: no se cobró dinero real.
+Estás en el plan gratuito.
+Estás en una
+Estás en una cuenta de demostración. La usan muchas personas a la vez, por eso no admite foto propia. Para poner tu foto, crea tu cuenta (es gratis y toma un minuto).
+Estás usando el simulador. Sus lecturas se guardan como SIMULADAS y no representan agua real.
+Evaluación adicional:
+Evalúa acidificar el agua de riego con la dosis que indique un técnico.
+Evalúa la corrección con bases agrícolas según recomendación técnica.
+Evita dejar el agua en reposo en tuberías metálicas antes de consumirla.
+Evita que el pH suba y baje solo. Piscina: {0} a {1}.
+Evolución del pH
+Evolución del pH con
+Evolución del pH.
+Exceso de CO{0} (plantas, inyección de CO{1}).
+Exceso de carbonatos o bicarbonatos.
+Explicado por IA y validado por el sistema
+Explicar con IA
+Exportada el {0}
+Exportar CSV
+Fallos
+Fallos de proveedor
+Falló
+Falló el correo de prueba
+Falta el código del enlace.
+Falta el parámetro
+Falta el texto de '
+Falta el valor de pH.
+Falta la confianza.
+Falta la referencia del pago.
+Fecha
+Fecha y hora
+Firefox
+Firmware Aqua Assistant (ESP{0})
+Firmware Aqua Assistant ESP{0}
+Forbidden
+Formato no compatible. Usa una foto JPEG o PNG.
+Foto IA
+Foto a analizar
+Foto analizada
+Foto analizada con IA
+Foto con IA
+Foto de
+Foto de la prueba de pH
+Foto de perfil
+Foto de perfil actualizada.
+Foto de perfil quitada
+Foto de perfil quitada.
+Foto desenfocada
+Fragmentos aplicables a la última medición, seleccionados por el recuperador.
+Fragmentos aplicables a la última medición.
+Fragmentos que la IA citó en este diagnóstico. El sistema verificó que cada id existiera entre los fragmentos que le entregó.
+Frente al periodo anterior: {0}.
+From
+Fuente con alto contenido de carbonatos.
+Fuente de agua ácida.
+Fuente del rango
+Fuente:
+Fuente: USGS
+Fuentes
+Fuentes normativas citadas
+Fuentes normativas del informe
+Fuentes:
+Funciones de Aqua
+Función de Aqua
+Genera lecturas de prueba. No mide agua real.
+Genera una conclusión del periodo a partir de tus datos.
+Generado con reglas
+Generado con reglas y estadística
+Generado el
+Generado por IA y validado por el sistema
+Generado por IA ·
+Generado por IA · {0}
+Generando gráfica...
+Generando informe por reglas
+Generar conclusión
+Generar diagnóstico
+Generó un informe
+Gestionar
+Gestionar cuenta
+Gestionar {0}
+Global (admin)
+Google Chrome
+Google Gemini no pudo terminar: Google Gemini: límite...
+Gratuito
+Gráfica de {0}
+Gráficas
+Guardada automáticamente en el historial.
+Guardar
+Guardar automáticamente
+Guardar cambios
+Guardar contraseña
+Guardar las lecturas confiables ({0} % o más)
+Guardar mediciones automáticamente
+Guardar medición
+Guardarlo en el lugar
+Guardó un recordatorio
+Guardó una medición
+Hacer administrador
+Hacia dónde va tu pH en los próximos días
+Hallazgos
+Handler for {0} failed
+Hasta
+Hasta {0} días
+Haz cambios parciales con agua de pH más bajo, de forma gradual.
+Hecho
+Hidroponía
+Hipoclorito de calcio (cloro granulado)
+Hipoclorito de calcio (granulado)
+Hipoclorito de calcio {0} % (granulado)
+Hipotético
+Historial
+Historial de calibraciones
+Historial de mediciones
+Historial de pagos
+Historial de sesiones
+Hola
+Hola, así suena mi voz.
+Hola, soy Aqua, tu asistente de agua. Pregúntame lo que quieras sobre el agua y su pH: tus mediciones, piscinas, acuarios, agua potable, riego, cómo corregir el pH, medidores y calibración, o cómo usar Aqua Assistant. Recuerdo lo que hablamos en esta conversación.
+Hola, soy Aqua. Pregúntame sobre tus mediciones, piscinas, acuarios, agua potable, riego o calibración. Recuerdo lo que hablamos.
+Hora del día
+Hora del día (coseno)
+Hora del día (seno)
+Horas con dato
+Horas hasta la próxima medición fuera de rango.
+Hoy
+IA ({0} días)
+IA no configurada
+IA no configurada en el servidor
+Identifica el uso final del agua y elige el perfil correspondiente para una recomendación precisa.
+Idioma
+Igual
+Iluminación que altera los colores
+Incluye datos simulados
+Incluye datos simulados (solo pruebas).
+Indica el nombre del medidor.
+Indica el pH hipotético.
+Indica el plan.
+Indica el protocolo del medidor.
+Indica el rol.
+Indica la fuente del rango.
+Indica si la cuenta queda activa.
+Indicador de pH
+Infiltración de aguas ácidas en la fuente.
+Informe PDF
+Informe de
+Informe de calidad del agua
+Informe de calidad del agua - últimos
+Informe del agente de IA · últimos
+Informe del periodo con gráficas y fuentes normativas
+Informe elaborado a partir de mediciones de pH. No reemplaza un análisis de laboratorio
+Informe elaborado con {0}.
+Informe generado con reglas y estadística.
+Informe generado con reglas.
+Informe general de la semana
+Informe general del estado del agua en el periodo.
+Informe listo
+Informes anteriores
+Ingresos reales
+Inicia sesión
+Inicia sesión para continuar.
+Iniciar cámara
+Iniciar sesión
+Inicio
+Inicio de medición en tiempo real
+Inició sesión
+Inició un pago
+Intento de cambio de contraseña con la clave actual incorrecta
+Intento de ingreso con la cuenta desactivada
+Intento de inicio de sesión con la cuenta desactivada
+Intervalo empírico del {0} %: percentil {1} del error en datos de prueba que el modelo no vio
+Intervalo {0} %
+Investigando con
+Investigar y redactar
+Iones H+ frente a hoy
+Ir a iniciar sesión
+Isolation Forest ({0} árboles) sobre pH, cambio, velocidad de cambio,
+Isolation Forest entrenado con tus datos
+JPEG o PNG, hasta {0} MB. La foto no se guarda.
+Jacuzzi o spa
+Knowledge base is empty
+La IA devolvió una lectura inválida (
+La IA está analizando el escenario...
+La IA no está configurada en el servidor: la lectura por cámara no está disponible.
+La IA no pudo elaborar el informe (
+La IA no pudo responder. Intenta de nuevo.
+La alcalinidad máxima es {0} mg/L.
+La alcalinidad no puede ser negativa.
+La alerta no existe.
+La búsqueda admite como máximo {0} caracteres.
+La campana de arriba muestra las alertas cuando una medición sale del rango. Siempre está.
+La cantidad debe ser mayor que cero.
+La cantidad es demasiado grande.
+La carta de colores no aparece en la foto
+La contraseña actual no es correcta.
+La contraseña debe tener entre {0} y {1} caracteres.
+La contraseña no es correcta.
+La conversación no existe.
+La cuenta de demostración de administrador no puede enviar correos.
+La cuenta de demostración de administrador solo puede consultar: no puede hacer cambios.
+La cuenta está desactivada: reactívala antes de darle el rol de administrador.
+La cuenta no existe.
+La cuenta ya no existe.
+La cámara está en uso por otro programa (videollamada u otra pestaña). Ciérralo y vuelve a intentarlo.
+La cámara solo funciona en una página segura (https). Abre Aqua Assistant desde su dirección https.
+La duración máxima es {0} días.
+La duración mínima es {0} día.
+La dureza máxima es {0} mg/L.
+La dureza no puede ser negativa.
+La fecha de la medición está en el futuro.
+La fecha de la medición tiene más de un año de antigüedad.
+La fecha inicial debe ser anterior a la final.
+La fecha no puede estar en el futuro.
+La foto es demasiado grande en píxeles. Usa una foto de cámara normal (máximo {0} megapíxeles).
+La foto es demasiado pequeña para analizarla.
+La foto no permite una lectura confiable.
+La foto supera {0} MB.
+La imagen no es una prueba de pH
+La incertidumbre crece con el horizonte y con la dispersión de tus mediciones.
+La lectura por foto no está disponible: no hay un proveedor de IA con visión configurado. Registra el valor manualmente.
+La lectura ya no está disponible. Realiza una nueva medición.
+La lectura ya no está disponible. Vuelve a analizar la foto.
+La medición no existe.
+La medición se eliminará del historial. Esta acción no se puede deshacer.
+La nota admite hasta {0} caracteres.
+La nueva contraseña debe ser distinta de la actual.
+La pantalla no se puede leer
+La recuperación de contraseña por correo no está
+La red necesita al menos {0} ventanas de {1} horas continuas
+La respuesta de la IA no superó la validación (
+La respuesta no contiene pH:
+La respuesta no es JSON.
+La ruta solicitada no existe.
+La sesión terminó. Inicia sesión de nuevo.
+La solicitud tiene un formato inválido.
+La tendencia de los últimos {0} días es estable: el agua no se dirige a este valor por sí sola.
+La tira junto a su carta de colores.
+La tira no se ve con claridad
+La última actualización falló (
+La última imagen no permitió leer el número.
+Las contraseñas no coinciden.
+Las cuentas de demostración no pueden cambiar su contraseña.
+Las cuentas de demostración no pueden cambiar su nombre.
+Las cuentas de demostración no pueden compartir lugares. Crea tu cuenta para hacerlo.
+Las cuentas de demostración no pueden hacer pagos. Crea tu propia cuenta para pasar a Premium.
+Las cuentas de demostración no pueden unirse a lugares. Crea tu cuenta para hacerlo.
+Las cuentas de demostración no se pueden eliminar.
+Las cuentas de demostración son compartidas y no pueden cambiar su foto. Crea tu propia cuenta para tener la tuya.
+Las últimas mediciones tienen más de {0} horas: la predicción parte
+Latencia media
+Lectura en vivo crítica: pH {0}
+Lectura generada por el simulador. No corresponde a agua real.
+Lectura generada por el simulador: no corresponde a agua real.
+Lectura periódica
+Lectura por cámara ({0})
+Leer ahora
+Leer automáticamente cuando el número cambie
+Leer desde foto
+Leer pH de una foto
+Leer pH desde una foto
+Ligeramente por debajo
+Ligeramente por encima
+Limitaciones
+Limpia el filtro
+Limpieza del filtro
+Linux
+Lista inválida:
+Listo
+Llamadas
+Llamadas de IA por día
+Llamadas por día
+Los administradores no tienen límites y no pagan.
+Los administradores no tienen límites: su plan es Premium permanente y no se cambia.
+Los argumentos deben ser un objeto JSON.
+Los avisos de este dispositivo están apagados, así que el recordatorio solo se verá en Inicio. Para que te llegue al celular, actívalos en
+Los avisos solo funcionan en la página segura (https).
+Los datos oficiales se están importando
+Los modelos no coinciden
+Los pagos no están habilitados en este servidor.
+Los perfiles del sistema no se pueden editar. Duplícalo para personalizarlo.
+Los perfiles del sistema no se pueden modificar. Duplícalo para personalizarlo.
+Los rangos deben estar entre {0} y {1}.
+Los rangos del sistema son referencias generales con su fuente. Verifica la norma o recomendación aplicable a tu caso.
+Lugar
+Lugar borrado.
+Lugar compartido por {0} · {1}
+Lugar guardado.
+Lugar que estás viendo. Toca para cambiar de piscina, acuario o tanque.
+Lugar: {0}. Cambiar de lugar
+Lugares
+Lugares → Unirme con un código
+Luz natural o blanca, sin sombras.
+Límite de la sesión
+M {0} {1} A {2} {3} {4} {5} {6} {7} {8}
+Mac
+Mailjet no respondió:
+Mailjet rechazó el envío (
+Mantener la frecuencia de medición y registrar cualquier cambio en el uso del agua.
+Mantener la frecuencia de medición.
+Manual
+Marcaba
+Marcar como leidas
+Marcó un recordatorio como hecho
+Materia orgánica en descomposición.
+Maximum number of alerts
+Media
+Mediana
+Mediciones
+Mediciones del periodo por estado según el perfil
+Mediciones inusuales
+Mediciones reales de pH de las estaciones de monitoreo continuo del Servicio Geológico de EE. UU. (USGS) en ríos y arroyos.
+Mediciones: {0}. Promedio: {1}. Mínimo: {2}. Máximo: {3}.
+Medición
+Medición de pH {0}
+Medición eliminada.
+Medición en tiempo real
+Medición en tiempo real detenida.
+Medición en tiempo real iniciada. Las lecturas en vivo no se guardan.
+Medición estabilizada con
+Medición guardada en el historial.
+Medición guardada: pH {0} ({1}), origen foto.
+Medición guardada: pH {0} ({1}).
+Medición rechazada:
+Medición: pH {0}.
+Medidor
+Medidor USB
+Medidor USB {0}:{1}
+Medidor con salida de texto (laboratorio)
+Medidor conectado a este equipo
+Medidor conectado al servidor
+Medidor conectado por USB:
+Medidor conectado.
+Medidor conectado: {0}.
+Medidor de laboratorio que envía texto (USB o RS-{0})
+Medidor desconectado.
+Medidor físico
+Medidor por cámara
+Medidor serie
+Medidor: {0}
+Medio
+Medio (pH {0})
+Medir
+Medir ahora
+Medir cada {0} s
+Medir y guardar
+Mejorar a Premium
+Messages
+Mi agua
+Mi consumo
+Mi cuenta
+Microsoft Edge
+Mide
+Mide el pH hoy
+Mide hoy
+Mide la alcalinidad total (referencia {0}-{1} ppm) antes de corregir.
+Midiendo en continuo
+Midiendo en tiempo real
+Midiendo... mantén la sonda sumergida.
+Miembro desde
+Mientras tanto la cuenta funciona como usuario normal.
+Mirar el futuro
+Missing font
+Modelo
+Moderado
+Modo
+Modo de apariencia
+Modo de pruebas
+Modo de pruebas de PayU
+Modo de pruebas de PayU: no se cobra dinero real. Usa los datos de prueba publicados por PayU.
+Modo desarrollo
+Modo desarrollo: los enlaces de recuperación se escriben en el log del servidor. No lo uses en producción.
+Monitoreo de pH con medidor físico (USB o Bluetooth), lectura por cámara o foto, registro manual y análisis con la IA de Aqua: estadística, reglas de dominio e IA generativa.
+Mostrar contraseña
+Motivo (opcional). Se incluye en el correo al usuario.
+Motivo: {0}
+Mucho cloro: espera a que baje antes de usar el agua.
+Mueve el control para simular un pH hipotético con las reglas de tu perfil activo. No se guarda en el historial.
+Muy por debajo
+Muy por encima
+M{0} {1} C{2} {3} {4} {5} {6} {7} a{8} {9} {10} {11} {12} -{13} {14} C{15} {16} {17} {18} {19} {20}Z
+Más herramientas
+Máximo
+Máximo {0} caracteres.
+Máximo {0} días.
+Método HTTP no permitido para esta ruta.
+Mínimo
+Mínimo {0} caracteres, letras y números
+Mínimo {0} día.
+Mínimo {0}, letras y números
+Name
+Navegación principal
+Navegador
+Necesitas al menos un lugar propio. Crea otro antes de borrar este.
+Neutra
+Ninguna cuenta coincide con la búsqueda o los filtros.
+Ninguna medición del periodo se sale de tu comportamiento habitual.
+Ninguno
+No authenticated user
+No coinciden:
+No disponible
+No disponible:
+No diste permiso para los avisos.
+No elegiste ningún puerto. Conecta el medidor y vuelve a intentarlo.
+No es posible generar una predicción confiable
+No existe el fragmento
+No había otras sesiones abiertas.
+No hay acciones registradas en esta sesión.
+No hay causas que investigar con los datos actuales.
+No hay datos de esa estación.
+No hay datos del periodo anterior para comparar.
+No hay lecturas guardadas en este periodo.
+No hay mediciones en el periodo seleccionado.
+No hay mediciones en los últimos
+No hay ningún medidor conectado. Elige uno de la lista para conectarlo.
+No hay suficientes mediciones de los últimos {0} días para estimar cuándo se llegaría a este valor.
+No hay suficientes mediciones para graficar.
+No hay un canal de correo configurado.
+No hay un medidor conectado en este equipo.
+No hay un medidor conectado. Conecta uno en la sección Conexión.
+No hay una medición actual para comparar.
+No hizo cambios en esta sesión (solo consultó).
+No measurements
+No podrá iniciar sesión y sus sesiones abiertas se cerrarán. Sus datos se conservan.
+No pudimos enviar el correo para activar tus permisos de administrador.
+No puede ser mayor que el mínimo ideal.
+No puede ser menor que el máximo ideal.
+No puedes cambiar tu propio rol.
+No puedes desactivar tu propia cuenta.
+No se detectan anomalías
+No se detectan anomalías. Los valores se mantienen estables y en rango.
+No se detectaron anomalías.
+No se encontró esa sesión.
+No se encontró ninguna cámara en este equipo. Conecta una cámara web o abre Aqua Assistant en tu celular.
+No se prevé que el pH salga del rango ideal en las próximas {0} horas.
+No se pudieron activar los avisos en este navegador. Inténtalo de nuevo o prueba con otro navegador.
+No se pudieron cargar
+No se pudieron cargar los datos oficiales
+No se pudieron cargar los lugares
+No se pudieron cargar los perfiles
+No se pudo abrir
+No se pudo abrir Medir. Revisa tu conexión y recarga la página.
+No se pudo abrir el chat: {0}
+No se pudo abrir el puerto
+No se pudo abrir el puerto: puede estar en uso por otro programa (cierra el monitor serie de Arduino u otra pestaña).
+No se pudo abrir esta pantalla
+No se pudo abrir la cámara
+No se pudo abrir la imagen. Prueba con una foto JPEG o PNG.
+No se pudo analizar
+No se pudo analizar la foto:
+No se pudo buscar
+No se pudo calcular
+No se pudo cargar
+No se pudo cargar el historial
+No se pudo cargar el historial de sesiones
+No se pudo cargar el panel
+No se pudo cargar la configuración
+No se pudo cargar tu plan
+No se pudo conectar con el servidor
+No se pudo conectar con el servidor. Revisa tu conexión a internet e inténtalo de nuevo.
+No se pudo consultar PayU en este momento (
+No se pudo consultar PayU:
+No se pudo elaborar el informe. Intenta de nuevo.
+No se pudo entregar el aviso. Desactívalos y vuelve a activarlos.
+No se pudo enviar el comando al medidor.
+No se pudo enviar el correo de prueba:
+No se pudo enviar el enlace de confirmación de administrador
+No se pudo enviar el enlace para confirmar el rol de administrador
+No se pudo generar la gráfica
+No se pudo leer esa imagen. Usa una foto JPEG o PNG.
+No se pudo leer la foto enviada.
+No se pudo leer la pantalla
+No se pudo leer un valor de pH
+No se pudo preparar la foto.
+No se puede
+No te volveré a avisar de esto.
+No tienes alertas pendientes.
+No tienes permiso para esta operación.
+Nombre
+Nombre (opcional)
+Nombre actualizado.
+Nombre completo
+Nombre de medidor demasiado largo.
+Nombre del titular
+Normas oficiales sobre el pH del agua
+Nota
+Nota (opcional)
+Notificaciones de alertas
+Notificaciones y medición
+Notification
+Nueva contraseña
+Nueva conversación
+Nuevo
+Nuevo lugar
+Nuevo perfil personalizado
+Nuevo recordatorio
+Nunca
+Nunca mezcles ácido con cloro ni productos entre sí. Echa siempre el producto al agua, nunca agua sobre el producto.
+Número
+Objetivo del informe
+Objetivo: {0}
+Observaciones
+Ocultar
+Ocultar contraseña
+Ocurrió un error inesperado. Intenta de nuevo.
+Opera
+Orden cronológico: {0} ventanas de entrenamiento, {1} de validación y {2} de prueba, con {3} horas de separación entre partes para que el modelo no vea el futuro.
+Orientativo {0}–{1}
+Origen
+Origen: medidor físico {0}, manual {1}, foto con IA {2}, simulador {3}.
+Oscuro
+Otra foto
+Otra imagen
+Otras funciones
+Otro
+Otro (escríbelo)
+Otro navegador
+Otros
+Otros parámetros
+Otros parámetros (opcional)
+Pagar con PayU
+Pagas en la página segura de {0}. Aqua Assistant nunca ve los datos de tu tarjeta y activa Premium solo después de confirmar el pago con PayU.
+Pago aprobado
+Pago aprobado. Premium activo hasta el
+Pago aprobado. Tu cuenta ya tenía Premium sin vencimiento asignado por un administrador.
+Pago con datos que no coinciden
+Pago rechazado
+Pago único por periodo: sin cobros automáticos y sin guardar tu tarjeta.
+Pagos
+Pagó Premium
+Panel de administración en modo de solo lectura, sin límites de IA ni de historial.
+Pantalla de medidor
+Pantalla del medidor
+Para activar los permisos de administrador, abre el enlace que enviamos a tu correo.
+Para agua de consumo, un pH fuera de rango justifica un análisis de laboratorio.
+Para conservar el análisis de {0} días, la predicción a {1} días y más consultas de IA, renueva desde Configuración → Plan.
+Para correcciones de pH en riego, consulta a un agrónomo: la dosis depende del cultivo y del suelo.
+Para el circuito Atlas Scientific EZO-pH en modo UART, con un adaptador USB-serie. Velocidad por defecto: {0}.
+Para el medidor armado con ESP{0} y el firmware Aqua Assistant incluido en el proyecto. Velocidad: {1}.
+Para el pH hace falta la alcalinidad total (mg/L). Mídela o escribe un valor aproximado.
+Para hoy
+Para medidores de laboratorio o de mesa con salida USB o RS-{0} (con un adaptador USB-serie). El medidor envía el valor como texto cuando pulsas su botón de enviar o imprimir (Print, Send, Data) o cada cierto tiempo. Se calibra desde sus propios botones.
+Para medidores sin cable de datos: apunta la cámara a la pantalla del medidor de pH. Aqua Assistant lee el número con IA
+Parte de las mediciones del periodo proviene del simulador y no representa agua real.
+Pasarela
+Paso {0} de {1}
+PayU informó un error en la transacción. Tu plan no cambió.
+PayU rechazó el pago. No se hizo ningún cobro y tu plan no cambió.
+PayU rechazó la consulta:
+PayU respondió
+PayU todavía no registra un pago con esta referencia. Si acabas de pagar, espera un momento y verifica de nuevo.
+Pendiente
+Pensando el siguiente paso...
+Perderá el acceso a la administración. Sus sesiones abiertas se cerrarán.
+Perfil
+Perfil aplicado
+Perfil de pH
+Perfil duplicado. Ajusta sus rangos.
+Perfil eliminado.
+Perfil guardado.
+Perfiles
+Perfiles de agua
+Perfiles de uso
+Perfiles propios
+Periodo
+Periodo de
+Periodo: últimos
+Persistencia (sin cambio)
+Persona quitada del lugar.
+Personalizado
+Personas en este lugar
+Pidió restablecer la contraseña
+Pidió un diagnóstico con IA
+Pidió un informe al agente de IA
+Pidió una predicción a
+Piscina
+Piscina de la casa
+Piscina, acuario, agua potable, riego… cada uno cambia el rango ideal de pH.
+Plan
+Plan Premium
+Plan Premium: {0} consultas de IA al día y análisis de hasta {1} días.
+Plan actualizado.
+Plan de acción
+Plan gratuito
+Plan y pagos
+Poca luz
+Poco cloro: la desinfección puede no ser suficiente.
+Poco estabilizador: el sol degrada el cloro rápido.
+Pocos cambios de agua.
+Por USB (ESP{0} o medidor de bolsillo) o con la cámara
+Por correo
+Por ejemplo tu piscina, la pecera de la sala o el tanque del techo. Cada uno guarda sus propias mediciones, sin mezclarse con las de los otros.
+Por ejemplo «medir el pH cada {0} días» o «limpiar el filtro cada semana». Cuando toca, aparece en Inicio en «Para hoy» y, si quieres, te llega un aviso al celular o un correo.
+Por función
+Por modelo
+Por seguridad se cerraron tus sesiones abiertas. Vuelve a iniciar sesión para continuar.
+Posibles causas
+Precaución
+Precaución máxima
+Precaución mínima
+Precaución {0} – {1} · fuera: crítico
+Precio
+Precios no verificados.
+Predicción
+Predicción a
+Predicción aprendida de tus propios datos
+Predicción con: {0}
+Predicción de tendencias
+Predicción estadística a {0} horas basada en tu historial. No reemplaza una
+Predicción no disponible:
+Pregunta
+Preguntarle a Aqua
+Preguntó al asistente de IA
+Pregúntale a Aqua
+Pregúntame lo que quieras...
+Premium
+Premium activo hasta el {0}.
+Premium amplía el análisis histórico a {0} días, la predicción a {1} días y la cuota diaria de IA a {2} consultas.
+Premium asignado por un administrador, sin vencimiento.
+Premium está activo hasta el
+Premium hasta el
+Premium hasta el {0}
+Premium sin vencimiento
+Premium: {0}
+Premium: {0} días
+Preparando gráfica...
+Preparando la investigación
+Prepárame un informe para una inspección
+Prevención
+Primero agrega la mitad:
+Print
+Prioridad fuera de rango.
+Probar
+Probar aviso
+Producto
+Producto no soportado.
+Promedio
+Protege el cloro del sol. Piscina exterior: {0} a {1}.
+Protocolo
+Proveedores que fallaron antes:
+Provisional
+Provisional (sujeto a revisión del USGS)
+Prueba
+Próxima vez
+Puede medir
+Puede tardar entre {0} y {1} segundos según la demanda del proveedor.
+Puedes cambiar o borrar este recordatorio en la app.
+Puedes tener hasta
+Puerto
+Pulsa Medir para leer el medidor
+Pulsa «Código nuevo» para crear un código con este permiso.
+Puntaje de anomalía por medición
+Puntaje de rareza por medición
+Punto
+Punto bajo (ácido)
+Punto de calibración guardado en el medidor.
+Página {0} de {1}
+Página {{0}} de {{1}}
+Quien escriba el código en
+Quitar
+Quitar a {0}
+Quitar foto
+Quitar rol de administrador
+Quitó a una persona de un lugar
+Quitó su foto de perfil
+Qué dicen las normas oficiales sobre este caso. Las citas se recuperan de la biblioteca normativa con búsqueda BM{0}.
+Qué hacer según tu última medición
+Qué puede hacer quien se una
+Rango ideal
+Rango ideal para {0}: {1} - {2}
+Rango recomendado
+Rango recomendado ({0})
+Rango recomendado para
+Rango {0} %
+Reactivar cuenta
+Reactivó una cuenta
+Real
+Realiza un cambio parcial de agua del {0}-{1} %.
+Realizar una medición con el medidor o registrarla manualmente.
+Recargar
+Rechazada
+Rechazado
+Recibimos tu pago de Premium (referencia
+Recircula el agua y vuelve a medir después de {0}-{1} horas.
+Recircula el agua {0}-{1} horas y vuelve a medir antes de una segunda dosis.
+Recomendaciones
+Reconectar
+Recordarme
+Recordatorio
+Recordatorio guardado.
+Recordatorios
+Recordatorios: tareas que se repiten
+Recuerda {0} mensajes
+Recuperar contraseña
+Red LSTM desplegada en el tiempo
+Red neuronal (LSTM)
+Red neuronal de predicción (LSTM)
+Referencia
+Referencia {0}–{1}
+Referencia: hoy el pH típico de {0} ríos de EE. UU. es
+Reflejos
+Registrar
+Registrar en tratamientos
+Registrar tratamiento
+Registro
+Registro manual
+Registros
+Registró un tratamiento
+Reglas
+Reglas y estadística
+Regresión lineal (mínimos cuadrados) con intervalo de predicción del {0} %
+Regulador de pH (acuario o riego)
+Regístrate aquí
+Reintentar
+Remitente
+Renovar con PayU
+Repite la contraseña
+Repite la medición después de enjuagar la sonda con agua destilada.
+Repite la nueva
+Residuos de limpiadores alcalinos.
+Respaldo normativo
+Respondo sobre tu agua, piscinas, acuarios, riego y calibración
+Respuesta con números inválidos:
+Respuesta copiada.
+Respuesta detenida.
+Respuesta incompleta: {0}
+Respuesta inesperada del EZO-pH:
+Respuesta inesperada del firmware:
+Respuesta reutilizada de la cache (no consumio cuota).
+Respuesta reutilizada de la caché (no consumió cuota).
+Respuestas generadas por IA a partir de tus datos y de las normas citadas. Verifica la norma aplicable a tu caso.
+Restablecer contraseña
+Restablecer tu contraseña
+Restableció la contraseña
+Resultado
+Resultado de la medición
+Resumen
+Resumen del periodo
+Resumen ejecutivo
+Resumen en español (no es traducción oficial)
+Resumen en español (no es traducción oficial):
+Reuniendo mediciones
+Revisa el cloro
+Revisa el filtro y retira restos de comida.
+Revisa incrustaciones en grifos y calentadores.
+Revisa los campos marcados.
+Revisa obstrucciones por carbonatos en goteros.
+Revisa tu conexión a internet e inténtalo de nuevo.
+Revisa tu conexión y recarga la página. Si se publicó una versión nueva de Aqua Assistant, recargar la descarga.
+Revisa tus mediciones y te dice el riesgo
+Revisando tus datos...
+Revisar la bomba
+Revisó las alertas recientes
+Revisó las mediciones de
+Riego
+Riesgo
+Riesgo {0}
+Rol
+Rol de administrador confirmado por correo
+Rol de administrador confirmado. Inicia sesión de nuevo para usarlo.
+SMTP no está disponible.
+SMTP rechazó el envío:
+Safari
+Salida
+Salir
+Salir del lugar
+Saliste del lugar.
+Salió de un lugar compartido
+Saltar
+Saltar al contenido
+Salvaguardas aplicadas
+Salvaguardas aplicadas por el sistema
+Screen could not be rendered:
+Se agotaron las consultas de IA de hoy. Registra el valor manualmente o vuelve mañana.
+Se alcanzó el máximo de {0} lecturas en esta sesión de cámara. Detén e inicia de nuevo para seguir.
+Se borran para siempre la cuenta y todos sus datos. No se puede deshacer.
+Se borran para siempre tu cuenta, tus mediciones, perfiles, informes, diagnósticos y conversaciones. No se puede deshacer.
+Se borrará esta conversación y su memoria. No se puede deshacer.
+Se borrarán para siempre tu cuenta y todos tus datos. ¿Continuar?
+Se borrarán todas tus conversaciones con el asistente.
+Se cerraron
+Se cerrará esta sesión. Lo que hiciste queda guardado en tu historial de sesiones.
+Se cerrará la conexión con el medidor.
+Se cerrarán las sesiones abiertas en otros navegadores o equipos. Esta sesión sigue abierta.
+Se cerró {0} sesión abierta en otro equipo.
+Se cortó la conexión mientras llegaba la respuesta. Vuelve a preguntar.
+Se creó solo cuando te registraste y ahí están todas tus mediciones. Si solo mides un sitio, no necesitas hacer nada más. Puedes cambiarle el nombre con «Editar».
+Se descartaron citas que no provenían de la biblioteca:
+Se detectaron
+Se detectó {0} anomalía en
+Se detectó {0} anomalía en el periodo.
+Se disuelve lento: ponlo en el skimmer o disuelto en un balde, nunca directo sobre el fondo.
+Se elige la voz más natural de este dispositivo para el idioma de la app.
+Se envió el enlace para confirmar el rol de administrador
+Se guardan hasta {0} días.
+Se necesitan al menos
+Se necesitan al menos {0} mediciones en el periodo para graficar.
+Se perdió la comunicación con el medidor.
+Se perdió la conexión con el medidor (¿se desconectó el cable?).
+Se perdió la conexión con el servidor mientras se enviaba la foto. Vuelve a enviarla.
+Se perdió la conexión con el servidor por un momento. Vuelve a intentarlo.
+Se prevé que el pH llegue a {0} en unas {1} h, fuera del rango de precaución ({2} - {3}).
+Se quitará del registro.
+Se unió a un lugar compartido
+Se usa el centro de la foto en cuadrado. Se guarda reducida y sin datos como la ubicación, y solo tú la ves.
+Secciones
+Sección
+Segunda opinión no concluyente
+Seguridad
+Selecciona un puerto serie válido.
+Send
+Serie horaria
+Sesiones
+Sesión actual
+Sesión cerrada
+Sesión cerrada.
+Sesión normal
+Sesión recordada
+Severidad del primer efecto elevada a crítica porque el pH hipotético está fuera del rango de precaución.
+Señales tempranas
+Si alguien te compartió su piscina o acuario, escribe aquí el código de {0} letras y números que te dio.
+Si crees que es un error, responde a este correo o escribe al administrador.
+Si el correo está configurado, el usuario recibe un aviso de cada cambio de plan, rol o estado.
+Si el correo está registrado, recibirás un enlace para restablecer la contraseña.
+Si el valor persiste
+Si está activo, cada medición con el medidor se guarda sin pedir confirmación.
+Si los peces muestran estrés (respiración rápida, letargo), consulta a un especialista en acuarios.
+Si quieres que tu familia o tu técnico vean ese lugar desde su propia cuenta, toca «Compartir» y dales el código. Ellos lo escriben abajo, en «Unirme con un código».
+Si renuevas antes de que venza, los días se suman a tu fecha actual.
+Si tienes piscina y acuario, cada uno lleva su propio historial. Arriba ves en cuál estás y lo cambias con un toque.
+Si una medición sale del rango, te aviso aquí.
+Si ya mediste con otro equipo
+Siguiente
+Simulación
+Simulador
+Simulador (no es una medición real)
+Simulador Aqua Assistant (no es un medidor real)
+Simulador conectado. Sus lecturas se marcaran como simuladas.
+Simulador de escenarios
+Simular
+Sin actividad registrada.
+Sin actividad.
+Sin actualizar en esta ronda:
+Sin alertas
+Sin anomalías en {0} días
+Sin conexión a internet. Lo que hagas no se guardará hasta que vuelva la conexión.
+Sin configurar
+Sin cuota de IA
+Sin cámara
+Sin dato
+Sin datos
+Sin datos suficientes
+Sin diagnósticos todavía
+Sin dinero real
+Sin fechas elegidas, el informe PDF cubre los últimos {0} días.
+Sin fragmentos aplicables al perfil
+Sin fragmentos para “{0}”.
+Sin lectura
+Sin lecturas todavía
+Sin llamadas en el periodo.
+Sin límite
+Sin mediciones
+Sin mediciones en el periodo: no se consultó a la IA.
+Sin mediciones en este periodo
+Sin medición actual
+Sin medición actual: no se puede estimar cuándo se llegaría a este valor.
+Sin medidor
+Sin medidor conectado. Toca para conectar
+Sin pagos
+Sin pagos.
+Sin precio configurado
+Sin rango general
+Sin resultados
+Sin segunda opinión:
+Sin servicio de correo: la recuperación de contraseña no está disponible. Configura MAILJET_API_KEY y MAILJET_SECRET_KEY (o Brevo o SMTP).
+Sin vencimiento
+Sistema
+Sobre {0}
+Solicitar enlace
+Solicitud de restablecimiento
+Solo hay
+Solo puedes ver este lugar
+Solo puedo responder preguntas sobre la calidad del agua, el pH y el uso de Aqua Assistant. Esa pregunta está fuera de ese tema.
+Solo quien creó el lugar puede borrarlo. Puedes salir de él.
+Solo quien creó el lugar puede compartirlo o quitar personas.
+Solo si tienes un kit de prueba de piscina o acuario (tiras o gotas): el medidor de pH no mide esto. Si no lo tienes, déjalo vacío. Sirve para ver el estado completo del agua en Inicio y para que la calculadora acierte. Todo en mg/L (ppm).
+Solo ver
+Son datos públicos de referencia, no mediciones de tu agua, y se guardan aparte de tu historial.
+Son mediciones reales de ríos de EE. UU. (USGS). Te sirven como referencia.
+Sonda sin calibrar o contaminada.
+Sonda sin calibrar.
+Status
+Stored agent report
+Stored diagnosis
+Sube un poco el pH.
+Sube un poco la dureza cálcica.
+Subir el cloro libre
+Subir el estabilizador (ácido cianúrico)
+Subir el pH
+Subir foto
+Subir la alcalinidad
+Subir la dureza cálcica
+Subject
+Sumerge la sonda en la solución buffer indicada, espera a que la lectura se estabilice y confirma. Empieza siempre por el punto medio (pH {0}).
+Sustrato o rocas calcáreas.
+Tab
+Tabla
+También baja el pH: después súbelo con aireación (bomba, cascadas) más que con productos.
+También sube el ácido cianúrico unos {0} mg/L y baja un poco el pH.
+También sube el ácido cianúrico unos {0} mg/L.
+Te ayudo a cuidar el pH de tu agua. En un minuto te muestro dónde está cada cosa.
+Te enviaremos un enlace para restablecerla
+Te escribo a tu correo cuando una medición sale del rango (como mucho uno por hora).
+Te llevamos a la página segura de PayU...
+Tema
+Tema actualizado.
+Temperatura
+Temperatura fuera de rango.
+Temperatura fuera de {0}-{1} °C: la compensación de pH puede no ser confiable.
+Temperatura °C (opcional)
+Tendencia
+Tendencia lineal
+Tendencia sin datos suficientes
+Tendencias de los últimos {0} días
+Tendrá acceso a esta pantalla y a los datos de todos los usuarios. Sus sesiones abiertas se cerrarán.
+Terminada
+Terminó el periodo pagado
+Texto
+Texto vacío:
+The knowledge base has no official guideline for the profile
+There are no measurements in the last
+Tiempo real
+Tipo de agua
+Tipo de foto
+Tipo de gráfica
+Tipo de imagen no permitido.
+Tipo de medidor
+Tira reactiva
+Tira reactiva o pantalla del medidor
+To
+Toca hoy
+Toca para abrir Aqua Assistant AI.
+Toca tu inicial o tu nombre para ver tu cuenta y para «Cerrar sesión».
+Toca una para ver su serie
+Toda la app cambia al idioma que elijas: pantallas, mensajes, respuestas y voz de Aqua, correos, avisos e informes. La primera vez en un idioma puede tardar unos segundos mientras se traduce.
+Todas tus conversaciones, en grande
+Todas tus mediciones con gráficas, filtros y descarga.
+Todavía nadie ha iniciado un pago.
+Todavía no se ha unido nadie.
+Todo
+Todo está en la barra
+Todo listo. Tócame si quieres un análisis completo.
+Todos los estados
+Todos los orígenes
+Todos los planes
+Todos los roles
+Todos los usos
+Tokens
+Toma otra foto con buena luz, la tira junto a la carta de colores, o registra el valor manualmente.
+Toma una foto o elige una imagen
+Tomar foto
+Total measurements in
+Tramos continuos
+Tratamiento con cal o soda mal ajustado.
+Tratamiento registrado.
+Tratamientos
+Tratamientos: tu cuaderno de lo que le haces al agua
+Tricloro (pastillas)
+Tricloro {0} % (pastillas o granulado)
+Tu Premium vence pronto
+Tu agua
+Tu asistente de agua con IA
+Tu contraseña
+Tu correo electrónico
+Tu cuenta
+Tu cuenta de Aqua Assistant AI está activa
+Tu cuenta de Aqua Assistant AI fue desactivada
+Tu cuenta de Aqua Assistant AI fue eliminada
+Tu cuenta fue eliminada.
+Tu cuenta ya tiene Premium asignado por un administrador, sin vencimiento.
+Tu cuenta: {0}
+Tu idioma usa una escritura que el PDF del servidor no puede dibujar: se abre la impresión de esta pantalla ya traducida. Elige «Guardar como PDF».
+Tu medición está cerca de ese valor.
+Tu medición está {0}
+Tu nombre
+Tu pH según la hora del día
+Tu plan
+Tu plan Premium vence el
+Tu plan de Aqua Assistant AI cambió
+Tu rol en Aqua Assistant AI cambió
+Tu última medición y si tu agua está bien para el uso que elegiste.
+Tuyo
+Tócame para chatear conmigo, pedir un diagnóstico, predecir tu pH o armar un informe. Toda la IA está aquí.
+Tócame si quieres que analice tu agua.
+Tú:
+USB / serie
+Umbral
+Umbral {0}
+Un administrador cambió su plan
+Un administrador cambió su rol
+Un administrador cambió tu plan de Aqua Assistant AI.
+Un administrador cambió tu rol en Aqua Assistant AI a:
+Un administrador desactivó la cuenta
+Un administrador eliminó tu cuenta de Aqua Assistant AI junto con sus mediciones, perfiles e informes.
+Un administrador reactivó la cuenta
+Un administrador reactivó tu cuenta. Ya puedes iniciar sesión.
+Un cambio de {0} unidad de pH equivale a multiplicar por {1} la concentración de iones H+.
+Un filtro neutralizador (calcita) puede corregirlo, pero debe instalarlo un técnico.
+Un lugar es un sitio con agua que mides
+Un modelo Isolation Forest aprende cómo se comporta normalmente tu agua (valor, cambios, velocidad y hora del día) y señala las mediciones que no encajan, aunque estén dentro del rango. Corre en el servidor: sin APIs externas y sin enviar tus datos.
+Un pH alto reduce la disponibilidad de hierro, fósforo y zinc.
+Un pH bajo puede liberar aluminio y manganeso y reducir calcio y magnesio.
+Una red neuronal recurrente aprende de tu historial por horas y predice el pH de las próximas {0} horas. Antes de usarla, el sistema la compara con referencias simples en datos que nunca vio: si no es mejor, usa la referencia y lo dice.
+Una sola lectura
+Unauthorized
+Unidad
+Unidad del volumen
+Unidades ocultas
+Unirme
+Unirme con un código
+Urgency
+Usar
+Usar la cámara de este equipo
+Uso de cloro ácido (tricloro) o exceso de reductor de pH.
+Uso de hipoclorito de sodio o calcio.
+Uso del agua
+Uso general
+Uso tus datos registrados, cito normas oficiales cuando aplican y no respondo temas ajenos al agua.
+Uso tus datos, cito normas oficiales y no respondo temas ajenos al agua.
+Usuario
+Usuario no encontrado.
+Usuario ·
+Usuarios
+Usuarios con más consumo
+Usuarios, planes y pagos. Cada cambio queda registrado en la auditoría.
+Validación
+Validada
+Validada con observaciones
+Validando la respuesta
+Valor
+Valor a guardar (puedes corregirlo)
+Valor actual
+Valor actual de {0}
+Valor atípico
+Valor corregido por el usuario.
+Valor de pH
+Valor del buffer
+Valor deseado
+Valor estimado por IA a partir de una foto. Las tiras reactivas tienen una
+Valor extremo: revisa que la sonda este sumergida y conectada.
+Valor no permitido en
+Variables de entrada y división de datos
+Velocidad
+Velocidad (baudios)
+Velocidad de cambio
+Velocidad de la voz
+Vence
+Vencido
+Venció sin cerrar sesión
+Venció su Premium
+Ventanas
+Ver
+Ver detalle
+Ver documento original
+Ver en USGS
+Ver gráfica de anomalías
+Ver historial
+Ver la cita {0}
+Ver la estación en el sitio del USGS
+Ver lo que se hizo
+Ver los {0} fragmentos
+Ver plan y pagos
+Ver por sesión
+Ver sesiones anteriores ({0} más)
+Ver sus sesiones y lo que hizo en cada una
+Ver todas mis conversaciones
+Ver todo
+Verificar
+Volumen (opcional, para calcular dosis)
+Volumen del agua (litros)
+Volumen sin indicar
+Volver a iniciar sesión
+Volver a las funciones
+Voz
+Voz de Aqua
+Voz de Aqua: tócalo para que hable o se quede callada
+Vs. periodo anterior
+What if
+Windows
+Y aquí estoy yo
+Ya existe una cuenta con ese correo.
+Ya hay un informe en elaboración. Espera a que termine.
+Ya hay un medidor conectado. Desconéctalo primero.
+[data-aqua-ask] input
+[data-cam-last] strong
+alcalinidad (mg/L)
+alertas por correo
+anomalías en
+anomalías en el periodo.
+anomalías encontradas
+anomalías marcadas en rojo.
+cada cuántas horas medir
+calculado por el sistema
+cambio en la pantalla
+cierre de la piscina
+cifras coinciden con los datos.
+cifras de pH del informe coinciden con los datos que consultó el agente.
+cloro libre (mg/L)
+complejo solo se usa si demuestra ser mejor.
+con el botón «Medir» de abajo.
+con precios de pago
+confianza {0} %
+corrosión de tuberías
+cuando cambia y se estabiliza, y lo guarda como medición. La imagen se analiza en tu equipo y solo se envía un cuadro por lectura.
+cuenta de demostración compartida
+cuenta desactivada
+cuentas desactivadas
+d 'de' MMMM 'de' yyyy
+d 'de' MMMM 'de' yyyy, HH:mm
+daño a equipos de riego
+de abajo.
+de administración (solo lectura)
+de ese momento y no describe el agua de hoy.
+del rango recomendado (
+del rango recomendado. Conviene vigilar la tendencia.
+del rango recomendado. Requiere acción.
+detener la medición en tiempo real
+disponible porque el servidor no tiene un servicio de correo configurado. Contacta al administrador.
+distancia a la mediana reciente, hora del día y temperatura (si está disponible). Entrenado con tus últimos {0} días.
+draw {0}s ease forwards
+dureza cálcica (mg/L)
+día
+días
+días (línea discontinua) con intervalo del {0} %.
+el máximo del modelo
+en los últimos
+en nivel crítico.
+en un computador (Windows, macOS, Linux o ChromeOS).
+en {0} días
+este tipo de agua
+facturación de pago
+fuente citada
+fuentes citadas
+galones (EE. UU.)
+guardada en el ESP{0}.
+guardada · {0}
+hace unos segundos
+hace {0} d
+hace {0} h
+hace {0} min
+has no profile type
+has no quote
+has no summary
+h{0}, h{1}, h{2}, .card-title
+iniciar la medición en tiempo real
+iniciaron sesión
+input, select, textarea, [data-action]
+la pantalla
+la respuesta no es JSON
+lectura manual
+lectura periódica
+limpia el filtro
+lista inválida:
+lo de ayer
+mediciones (insuficientes para tendencia)
+mediciones en el periodo para analizar la tendencia (hay
+mediciones provienen del simulador.
+mediciones · {0} días
+medición
+medidor por cámara
+mejor época ({0})
+menos de {0} min
+microbiológicos y químicos de laboratorio.
+minutos antes de intentarlo de nuevo.
+muestra de {0}
+más alcalino
+más ácido
+ni demuestra que el agua sea potable.
+no change
+no disponible:
+no measurements
+no pudo terminar
+notificación
+otra persona
+pH alto alcalino depósitos incrustaciones bajar corregir
+pH bajo ácido corrosión corrosivo subir corregir
+pH cercano al neutro, ideal para la mayoria de los usos.
+pH en nivel crítico
+pH fuera de {0}-{1}.
+pH fuera del rango ideal
+pH hipotético
+pH ideal máximo
+pH ideal mínimo
+pH medido
+pH más alto ahora
+pH más bajo ahora
+pH típico
+pH {0} es inusual frente a tus últimas {1} mediciones (mediana {2}, puntaje z robusto {3}).
+pH {0} · puntaje {1}
+pago real
+pagos deshabilitados
+pagos habilitados
+pagos reales
+para tener tus datos privados.
+plan gratuito de los proveedores
+poco habitual en tu historial
+por debajo
+por encima
+por la calidad de la foto
+por la precisión del método
+por {0} días
+promedio por hora (UTC)
+próxima {0}
+rango recomendado
+reales o manuales
+registrada en el EZO-pH.
+reportaron pH
+section, .card, .modal
+según la CDC
+sesiones abiertas en otros equipos.
+sesiones cerradas en otros equipos
+sesión cerrada
+sesión cerrada en otro equipo
+severidad no permitida
+sin detalle
+sin diagnósticos
+sin límite de días
+sin límites
+sin respuesta
+sin uso desde {0}
+sin vencimiento
+solo ver
+texto vacío:
+toast toast-{0}
+tu lugar
+una tira reactiva
+ver y medir
+verá las mediciones, tratamientos y análisis de este lugar. Tú decides si también puede medir.
+v{0} · Tecnología al servicio del agua
+y pidiendo una segunda opinión
+y programa recordatorios.
+{0} % de error frente a {1}
+{0} % de los intentos
+{0} ({1}, sin dinero real)
+{0} L{1},{2} L{3},{4} Z
+{0} Perfil: {1}.
+{0} anomalía detectada
+{0} anomalías detectadas
+{0} año
+{0} consultas hoy
+{0} consultas · {1} s
+{0} conversaciones borradas.
+{0} conversación borrada.
+{0} desde caché
+{0} días
+{0} en {1} días
+{0} entrada · {1} salida
+{0} fuentes · {1} fragmentos
+{0} h × {1}
+{0} interpoladas · {1} tramos
+{0} mediciones en los últimos
+{0} mediciones en {1} días
+{0} mediciones · {1} días
+{0} mensajes · {1}
+{0} pagado · {1} asignado
+{0} parámetros
+{0} por {1} días
+{0} resultados para “{1}” · ordenados por relevancia (BM{2})
+{0} sin leer
+{0} veces menos
+{0} veces más
+{0} °C ·
+{0} · Aqua Assistant AI
+{0} · basada en {1} mediciones durante {2} días · R² {3}
+{0} · consultado el {1}
+{0} · pH {1} · puntaje {2}
+{0} · sin límite
+{0} · {1} de prueba
+{0} · {1} · Perfil {2} ({3} - {4})
+{0} · {1} · Próxima medición recomendada en {2} h
+{0} · últimos {1} días
+{0} épocas · {1} s
+{0}. Parte de la hora {1} (pH {2}).
+{0}/{1} cifras verificadas
+{0}/{1} consultas hoy
+{0}: de {1} a {2} (calculadora)
+{0}: escribe un valor entre {1} y {2}.
+{0}: {1} estaciones
+{0}:{1} sin mediciones
+{0}:{1} · pH {2} · {3} mediciones
+{0}–{1} de {2}
+~{0} % más inusual
+¡Hecho! El próximo se cuenta desde ahora.
+¡Hola! Soy Aqua
+«Mi agua» es tu primer lugar
+· Del
+· SIMULADO
+· aviso por
+· cita literal
+· con citas verificadas
+· falló
+· no guardada ({0})
+· no verificado
+· por
+· sesión recordada
+· {0} ms
+· {0} más antiguos fuera de memoria
+· {0} s
+· {0} °C
+· última
+¿Cuándo llegaría?
+¿Cómo calibro un medidor de pH?
+¿Cómo está mi agua esta semana?
+¿Cómo me llegan los avisos?
+¿Cómo quieres medir?
+¿Cómo subo el pH de un acuario sin dañar a los peces?
+¿En qué te puedo ayudar?
+¿No tienes cuenta?
+¿Olvidaste tu contraseña?
+¿Para qué sirve esta pantalla?
+¿Para qué sirven los lugares?
+¿Por qué cambió el pH y debo preocuparme?
+¿Qué agua quieres ver?
+¿Qué aplicaste o hiciste?
+¿Qué debo vigilar en los próximos días?
+¿Qué pH es recomendable para una piscina?
+¿Qué puedo hacer aquí?
+¿Qué quieres ajustar?
+¿Qué significaría este escenario?
+¿Qué te recuerdo?
+¿Y si el pH fuera otro? Mira qué pasaría
+¿Ya tienes cuenta?
+Ác. cianúrico
+Ácida
+Ácido cianúrico
+Ácido cianúrico (estabilizador)
+Ácido cianúrico (mg/L)
+Ácido muriático (baja el pH y la alcalinidad)
+Ácido muriático (baja el pH)
+Ácido muriático {0} %
+Árboles
+Óptimo
+Última conexión
+Última lectura
+Última medición
+Última medición en rango
+Última medición fuera de rango
+Última medición:
+Últimas líneas recibidas del medidor
+Últimas {0} horas y próximas {1}
+Último diagnóstico:
+Último error
+Último error: {0}
+Último ingreso
+Últimos {0} días
+Últimos {0} días (Premium)
+ácido cianúrico (mg/L)
+época {0}
+última lectura
+últimos {0} días
