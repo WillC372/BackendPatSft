@@ -19,14 +19,16 @@ import org.springframework.stereotype.Component;
 /**
  * Keeps every text of the interface translated in advance into each language, so changing the language is immediate
  * and no screen waits for the AI. The texts come from i18n/ui-texts.txt (extracted from the app's code with
- * scripts/extract-ui-texts.mjs). It starts a little after the server does and again every few hours, and only sends
- * what is still missing, slowly, so the free plans of the AI providers are not exceeded.
+ * scripts/extract-ui-texts.mjs). It starts a little after the server does and again every hour, and only sends what
+ * is still missing, slowly (small batches with a pause), so the per-minute limits of the free AI plans are respected.
  */
 @Component
 public class UiTextWarmer {
 
     private static final Logger LOG = LoggerFactory.getLogger(UiTextWarmer.class);
-    static final int BATCH = 60;
+    static final int BATCH = 40;
+    /** Batches in a row that came back empty (the AI is out of quota): the run stops and is tried again later. */
+    static final int GIVE_UP_AFTER = 3;
 
     private final TranslationService translations;
     private final FallbackAiProvider ai;
@@ -36,7 +38,7 @@ public class UiTextWarmer {
 
     public UiTextWarmer(TranslationService translations, FallbackAiProvider ai,
                         @Value("${aquasense.i18n.warm-enabled:true}") boolean enabled,
-                        @Value("${aquasense.i18n.warm-pause-ms:4000}") long pauseMs) {
+                        @Value("${aquasense.i18n.warm-pause-ms:12000}") long pauseMs) {
         this.translations = translations;
         this.ai = ai;
         this.enabled = enabled;
@@ -65,14 +67,17 @@ public class UiTextWarmer {
         }
     }
 
-    @Scheduled(initialDelay = 6 * 3_600_000L, fixedDelay = 6 * 3_600_000L)
+    @Scheduled(initialDelay = 3_600_000L, fixedDelay = 3_600_000L)
     public void again() {
         if (enabled) {
             warm();
         }
     }
 
-    /** Translates what is missing in every language; returns how many texts it translated. */
+    /**
+     * Translates what is missing, one batch per language in turn so every language advances at the same pace; returns
+     * how many texts it translated. When the AI keeps answering nothing (no quota left today) it stops until the next run.
+     */
     public int warm() {
         if (!ai.isAvailable() || !running.compareAndSet(false, true)) {
             return 0;
@@ -80,25 +85,40 @@ public class UiTextWarmer {
         int done = 0;
         try {
             List<String> all = texts();
+            Map<String, List<String>> missing = new java.util.LinkedHashMap<>();
             for (String lang : Languages.codes()) {
                 if (Languages.isOriginal(lang)) {
                     continue;
                 }
                 Map<String, String> known = translations.dictionary(lang);
-                List<String> missing = new ArrayList<>(all.stream().filter(t -> !known.containsKey(t)).toList());
-                if (missing.isEmpty()) {
-                    continue;
+                List<String> left = all.stream().filter(t -> !known.containsKey(t)).toList();
+                if (!left.isEmpty()) {
+                    missing.put(lang, left);
                 }
-                LOG.info("Translating {} interface texts into {} in advance.", missing.size(), lang);
-                int before = done;
-                for (int i = 0; i < missing.size(); i += BATCH) {
-                    List<String> batch = missing.subList(i, Math.min(i + BATCH, missing.size()));
-                    done += (int) translations.translate(lang, batch, TranslationBudget.SERVER).stream()
+            }
+            if (missing.isEmpty()) {
+                return 0;
+            }
+            LOG.info("Translating interface texts in advance: {}", missing.entrySet().stream()
+                .map(e -> e.getKey() + " " + e.getValue().size()).toList());
+            int empty = 0;
+            for (int from = 0; !missing.isEmpty() && empty < GIVE_UP_AFTER; from += BATCH) {
+                final int start = from;
+                missing.entrySet().removeIf(e -> start >= e.getValue().size());
+                for (Map.Entry<String, List<String>> entry : missing.entrySet()) {
+                    List<String> batch = entry.getValue().subList(start, Math.min(start + BATCH, entry.getValue().size()));
+                    int ok = (int) translations.translate(entry.getKey(), batch, TranslationBudget.SERVER).stream()
                         .filter(java.util.Objects::nonNull).count();
+                    done += ok;
+                    empty = ok == 0 ? empty + 1 : 0;
+                    if (empty >= GIVE_UP_AFTER) {
+                        LOG.warn("The AI did not translate the last {} batches (no quota left?); trying again in an hour.", GIVE_UP_AFTER);
+                        break;
+                    }
                     sleep(pauseMs);
                 }
-                LOG.info("{}: {} of {} texts translated in advance.", lang, done - before, missing.size());
             }
+            LOG.info("{} interface texts translated in advance in this run.", done);
         } catch (RuntimeException ex) {
             LOG.warn("Translating in advance stopped: {}", ex.getMessage());
         } finally {

@@ -94,6 +94,8 @@ class TranslationServiceTest {
         verify(ai).complete(prompt.capture());
         assertThat(prompt.getValue().system()).contains("German").contains("<0>");
         assertThat(prompt.getValue().purpose()).isEqualTo("TRANSLATION");
+        // Strict schemas need additionalProperties=false or Groq rejects the request.
+        assertThat(prompt.getValue().responseSchema()).containsEntry("additionalProperties", false);
         assertThat(prompt.getValue().userId()).isNull();
     }
 

@@ -48,10 +48,12 @@ public class TranslationService {
     private static final Pattern MARKER = Pattern.compile("</?\\d{1,2}/?>|\\{\\d{1,2}\\}");
     private static final Duration WAIT = Duration.ofSeconds(110);
 
-    private static final Map<String, Object> SCHEMA = Map.of(
+    /** Strict JSON schema: Groq (and OpenAI) reject a strict schema without additionalProperties=false. */
+    static final Map<String, Object> SCHEMA = Map.of(
         "type", "object",
         "properties", Map.of("t", Map.of("type", "array", "items", Map.of("type", "string"))),
-        "required", List.of("t"));
+        "required", List.of("t"),
+        "additionalProperties", false);
 
     private final UiTranslationRepository repository;
     private final FallbackAiProvider ai;
