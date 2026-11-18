@@ -1,4 +1,4 @@
-# Render Blueprint for the AquaSense AI backend (Docker, free plan).
+# Render Blueprint for the Aqua Assistant AI backend (Docker, free plan).
 # Render -> New -> Blueprint -> select this repository. Values marked "sync: false" are typed in the Render
 # dashboard when the Blueprint is created; they are never stored in the repository.
 services:
