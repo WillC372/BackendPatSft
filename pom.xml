@@ -15,7 +15,7 @@
     <artifactId>aquasense-backend</artifactId>
     <version>1.0.0</version>
     <name>Aqua Assistant AI Backend</name>
-    <description>API REST, lectura de hardware y modulo la IA de Aqua</description>
+    <description>API REST, lectura de hardware y módulo de IA (Aqua)</description>
 
     <properties>
         <java.version>21</java.version>

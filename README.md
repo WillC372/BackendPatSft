@@ -37,7 +37,7 @@ src/main/java/com/aquasense/
 ├── measurement/    Mediciones, cadena de validación, filtros (Specification), iterador y observadores
 ├── device/         Hardware: adaptadores, simulador, fábrica, máquina de estados, comandos, SSE
 ├── alert/          Alertas generadas por anomalías
-├── intelligence/   la IA de Aqua: estadística, reglas, diagnóstico IA, recomendaciones, escenarios, proveedores de IA
+├── intelligence/   La IA de Aqua: estadística, reglas, diagnóstico IA, recomendaciones, escenarios, proveedores de IA
 │   ├── agent/      Agente de informes: herramientas, ciclo, verificación de cifras, trabajos en segundo plano
 │   └── ml/         Isolation Forest propio, variables, escalado robusto, modelo por usuario y regla de anomalías
 ├── vision/         Lectura de pH desde fotos: saneo de imagen, validación, segunda opinión
@@ -161,7 +161,7 @@ Todas las rutas están versionadas bajo `/api/v1`. Grupos: `auth`, `users/me` (i
 - `/api/v1/admin/**` requiere el rol `ADMIN`. Los planes gratuito y Premium se aplican en el servidor: días de análisis histórico, horizonte de predicción y cuota diaria de IA.
 - Límite de 10 intentos por minuto por dirección en registro, inicio de sesión y recuperación, con la dirección real del cliente (detrás de Cloudflare, `CF-Connecting-IP`). Además, una cuenta se bloquea 15 minutos tras 5 inicios de sesión fallidos, venga de donde venga; los intentos correctos no cuentan.
 
-## la IA de Aqua
+## La IA de Aqua
 
 Primero calcula con estadística y reglas de dominio; la IA generativa solo redacta sobre resultados ya calculados.
 
