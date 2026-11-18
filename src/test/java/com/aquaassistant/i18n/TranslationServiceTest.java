@@ -92,7 +92,7 @@ class TranslationServiceTest {
         service.translate("de", List.of("Medir"), "x");
         ArgumentCaptor<AiPrompt> prompt = ArgumentCaptor.forClass(AiPrompt.class);
         verify(ai).complete(prompt.capture());
-        assertThat(prompt.getValue().system()).contains("German").contains("<0>");
+        assertThat(prompt.getValue().system()).contains("German").contains("<0>").contains("never \"Sie\"");
         assertThat(prompt.getValue().purpose()).isEqualTo("TRANSLATION");
         // Strict schemas need additionalProperties=false or Groq rejects the request.
         assertThat(prompt.getValue().responseSchema()).containsEntry("additionalProperties", false);

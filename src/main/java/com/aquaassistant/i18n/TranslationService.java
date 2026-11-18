@@ -55,6 +55,15 @@ public class TranslationService {
         "required", List.of("t"),
         "additionalProperties", false);
 
+    /** How each language addresses the person, the same in every text. */
+    static final Map<String, String> STYLE = Map.of(
+        "en", "Address the person as \"you\".",
+        "fr", "Always address the person with \"tu\" (tutoiement: tu, ton, ta, tes), never \"vous\".",
+        "de", "Always address the person with \"du\" (du, dein, dich, dir), never \"Sie\".",
+        "it", "Always address the person with \"tu\" (tu, tuo, tua), never \"Lei\".",
+        "ja", "Use the polite です/ます form everywhere, never casual endings such as ね, よ or てね; buttons may be short nouns.",
+        "zh-Hans", "Address the person as 你 (never 您) and use Simplified Chinese characters only.");
+
     private final UiTranslationRepository repository;
     private final FallbackAiProvider ai;
     private final ObjectMapper mapper;
@@ -256,9 +265,10 @@ public class TranslationService {
             - Do not translate: numbers, units (pH, mg/L, ppm, °C, mL, L, m³, gal), e-mail addresses, web addresses, \
             the names "Aqua Assistant AI", "Aqua", "Premium", "USGS", "ESP32", product codes, and names of people or places.
             - If a string is not in Spanish, or is only a name, return it unchanged.
-            - Use a friendly, simple tone, short like a phone app, and speak to the person informally when the language \
-            has that form. Use the quotation marks that are usual in that language.
-            """.formatted(Languages.englishName(lang) + " (" + lang + ")", texts.size());
+            - Use a friendly, simple tone, short like a phone app, and the quotation marks usual in that language.
+            - %s
+            - Keep the same words for the same things everywhere (Aqua, Premium, pH, "Medir" = the measure button).
+            """.formatted(Languages.englishName(lang) + " (" + lang + ")", texts.size(), STYLE.getOrDefault(lang, "Address the person as \"you\"."));
         String user;
         try {
             user = mapper.writeValueAsString(texts);
