@@ -192,10 +192,32 @@ public class DeviceService {
             Math.round(request.ph() * 100) / 100.0, request.temperatureC(), Instant.now(), MeasurementSource.REAL, device.getId(), note)));
     }
 
+    private com.aquaassistant.calibration.CalibrationLog calibrationLog;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    void setCalibrationLog(com.aquaassistant.calibration.CalibrationLog calibrationLog) {
+        this.calibrationLog = calibrationLog;
+    }
+
     public String calibrate(Long userId, CalibrateRequest request) {
         requireOwner(userId);
         double buffer = request.bufferValue() == null ? request.point().defaultBuffer() : request.bufferValue();
-        return invoker.run(userId, new CalibrateCommand(request.point(), buffer));
+        DeviceStatusResponse before = status(userId);
+        try {
+            String answer = invoker.run(userId, new CalibrateCommand(request.point(), buffer));
+            logCalibration(userId, before, request, buffer, answer, true);
+            return answer;
+        } catch (RuntimeException e) {
+            logCalibration(userId, before, request, buffer, e.getMessage(), false);
+            throw e;
+        }
+    }
+
+    private void logCalibration(Long userId, DeviceStatusResponse device, CalibrateRequest request, double buffer,
+                                String answer, boolean ok) {
+        if (calibrationLog != null) {
+            calibrationLog.record(userId, device.deviceName(), device.protocol(), request.point().name(), buffer, null, answer, ok);
+        }
     }
 
     public DeviceStatusResponse startLive(Long userId) {
