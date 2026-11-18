@@ -134,18 +134,57 @@ public class TranslationService {
 
     /** One text, for the server's own messages: falls back to Spanish when it cannot be translated now. */
     public String translateOne(String lang, String text) {
-        List<String> out = translate(lang, List.of(text), TranslationBudget.SERVER);
-        return out.get(0) == null ? text : out.get(0);
+        return translateAll(lang, List.of(text)).get(0);
     }
 
-    /** Several texts for the server's own messages; untranslated items keep the Spanish text. */
+    /**
+     * Several texts for the server's own messages (emails, notices, reports); untranslated items keep the Spanish text.
+     * Numbers travel as {0}, {1}, like in the app, so "Mediciones: 4" and "Mediciones: 9" share one translation.
+     */
     public List<String> translateAll(String lang, List<String> texts) {
-        List<String> out = translate(lang, texts, TranslationBudget.SERVER);
+        List<String> keys = new ArrayList<>(texts.size());
+        List<List<String>> numbers = new ArrayList<>(texts.size());
+        for (String text : texts) {
+            List<String> nums = new ArrayList<>();
+            keys.add(text == null ? null : withNumberMarkers(text, nums));
+            numbers.add(nums);
+        }
+        List<String> out = translate(lang, keys, TranslationBudget.SERVER);
         List<String> safe = new ArrayList<>(texts.size());
         for (int i = 0; i < texts.size(); i++) {
-            safe.add(out.get(i) == null ? texts.get(i) : out.get(i));
+            String translated = out.get(i);
+            safe.add(translated == null ? texts.get(i) : fillNumbers(translated, numbers.get(i)));
         }
         return safe;
+    }
+
+    private static final Pattern PROTECTED = Pattern.compile("</?\\d{1,2}/?>|\\{\\d{1,2}\\}");
+    private static final Pattern NUMBER = Pattern.compile("\\d+(?:[.,:/]\\d+)*");
+
+    /** "Mediciones: 4. Promedio: 7.65" -> "Mediciones: {0}. Promedio: {1}" (markers like <0> are left alone). */
+    static String withNumberMarkers(String text, List<String> numbers) {
+        if (PROTECTED.matcher(text).find()) {
+            return text;
+        }
+        Matcher m = NUMBER.matcher(text);
+        StringBuilder out = new StringBuilder();
+        while (m.find()) {
+            numbers.add(m.group());
+            m.appendReplacement(out, Matcher.quoteReplacement("{" + (numbers.size() - 1) + "}"));
+        }
+        m.appendTail(out);
+        return out.toString();
+    }
+
+    static String fillNumbers(String text, List<String> numbers) {
+        Matcher m = Pattern.compile("\\{(\\d{1,2})\\}").matcher(text);
+        StringBuilder out = new StringBuilder();
+        while (m.find()) {
+            int i = Integer.parseInt(m.group(1));
+            m.appendReplacement(out, Matcher.quoteReplacement(i < numbers.size() ? numbers.get(i) : m.group()));
+        }
+        m.appendTail(out);
+        return out.toString();
     }
 
     private void translateNew(String lang, List<String> texts, Map<String, String> dictionary) {

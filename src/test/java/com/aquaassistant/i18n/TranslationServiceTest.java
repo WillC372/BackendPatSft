@@ -64,6 +64,16 @@ class TranslationServiceTest {
     }
 
     @Test
+    void serverTextsShareOneTranslationWhateverTheNumbers() {
+        aiAnswers("{\"t\":[\"Measurements: {0}. Average: {1}.\"]}");
+        assertThat(service.translateAll("en", List.of("Mediciones: 4. Promedio: 7.65.")))
+            .containsExactly("Measurements: 4. Average: 7.65.");
+        assertThat(service.translateAll("en", List.of("Mediciones: 9. Promedio: 6.10.")))
+            .containsExactly("Measurements: 9. Average: 6.10.");
+        verify(ai, times(1)).complete(any(AiPrompt.class));
+    }
+
+    @Test
     void spanishAndUnknownTextsAreNotSentToTheAi() {
         assertThat(service.translate("es", List.of("Hola"), "x")).containsExactly("Hola");
         verify(ai, times(0)).complete(any(AiPrompt.class));

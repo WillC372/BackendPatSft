@@ -306,7 +306,7 @@ public final class PdfWriter implements AutoCloseable {
                 footerStream.lineTo(PDRectangle.A4.getWidth() - MARGIN, 40);
                 footerStream.stroke();
                 writeOn(footerStream, regular, 7.5f, MUTED, MARGIN, 28, fit(footer, regular, 7.5f, width() - 70));
-                String number = "Página " + (i + 1) + " de " + total;
+                String number = t("Página {0} de {1}").replace("{0}", String.valueOf(i + 1)).replace("{1}", String.valueOf(total));
                 writeOn(footerStream, regular, 7.5f, MUTED,
                     PDRectangle.A4.getWidth() - MARGIN - regular.getStringWidth(clean(number, regular)) / 1000 * 7.5f, 28, number);
             }
