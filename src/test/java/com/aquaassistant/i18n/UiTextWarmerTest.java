@@ -26,6 +26,7 @@ class UiTextWarmerTest {
     @Test
     void onlyWhatIsMissingIsSentAndSpanishIsSkipped() {
         TranslationService translations = mock(TranslationService.class);
+        when(translations.aiAvailable(true)).thenReturn(true);
         FallbackAiProvider ai = mock(FallbackAiProvider.class);
         when(ai.isAvailable()).thenReturn(true);
         Map<String, String> known = new java.util.HashMap<>();
@@ -42,6 +43,7 @@ class UiTextWarmerTest {
     @Test
     void withoutAnAiNothingIsTried() {
         TranslationService translations = mock(TranslationService.class);
+        when(translations.aiAvailable(true)).thenReturn(true);
         FallbackAiProvider ai = mock(FallbackAiProvider.class);
         assertThat(new UiTextWarmer(translations, ai, true, 0).warm()).isZero();
         verify(translations, never()).dictionary(anyString());

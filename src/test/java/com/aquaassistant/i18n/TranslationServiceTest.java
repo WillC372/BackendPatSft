@@ -95,6 +95,28 @@ class TranslationServiceTest {
     }
 
     @Test
+    void translationsKeepTheAiQuotaForAquasAnswers() {
+        java.time.Instant[] now = {java.time.Instant.parse("2026-11-18T10:00:00Z")};
+        service.useClock(() -> now[0], 2);
+        aiAnswers("{\"t\":[\"One\"]}");
+        service.translate("en", List.of("Uno"), "1.2.3.4");
+        assertThat(service.aiAvailable(true)).isFalse();   // the advance translation gets part of the share
+        assertThat(service.aiAvailable(false)).isTrue();
+        aiAnswers("{\"t\":[\"Two\"]}");
+        service.translate("en", List.of("Dos"), "1.2.3.4");
+        assertThat(service.translate("en", List.of("Tres"), "1.2.3.4")).containsExactly((String) null);
+        verify(ai, times(2)).complete(any(AiPrompt.class));
+        now[0] = now[0].plus(java.time.Duration.ofDays(1));
+        assertThat(service.aiAvailable(false)).isTrue();
+
+        when(ai.complete(any(AiPrompt.class))).thenThrow(new AiUnavailableException("Groq: límite de uso del plan gratuito alcanzado."));
+        service.translate("en", List.of("Cuatro"), "1.2.3.4");
+        assertThat(service.aiAvailable(false)).isFalse();
+        now[0] = now[0].plus(TranslationService.QUOTA_PAUSE).plusSeconds(1);
+        assertThat(service.aiAvailable(false)).isTrue();
+    }
+
+    @Test
     void spanishAndUnknownTextsAreNotSentToTheAi() {
         assertThat(service.translate("es", List.of("Hola"), "x")).containsExactly("Hola");
         verify(ai, times(0)).complete(any(AiPrompt.class));

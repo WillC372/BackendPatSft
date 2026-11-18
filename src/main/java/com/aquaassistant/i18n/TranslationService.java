@@ -85,12 +85,51 @@ public class TranslationService {
     private final ExecutorService workers = Executors.newVirtualThreadPerTaskExecutor();
     private final java.util.concurrent.Semaphore calls = new java.util.concurrent.Semaphore(PARALLEL_CALLS, true);
 
+    /**
+     * Translations share the AI's free quota with Aqua's answers, which people are waiting for: they may use only some
+     * calls a day, the advance translation (UiTextWarmer) only part of those, and everything stops for a while as soon
+     * as a provider says its free quota is used up.
+     */
+    @org.springframework.beans.factory.annotation.Value("${aquasense.i18n.ai-calls-per-day:60}")
+    private int aiCallsPerDay = 60;
+    static final double BACKGROUND_SHARE = 0.6;
+    static final Duration QUOTA_PAUSE = Duration.ofHours(3);
+    private final java.util.concurrent.atomic.AtomicInteger aiCallsToday = new java.util.concurrent.atomic.AtomicInteger();
+    private volatile java.time.LocalDate aiDay = java.time.LocalDate.now(java.time.ZoneOffset.UTC);
+    private volatile java.time.Instant pausedUntil = java.time.Instant.EPOCH;
+    private java.util.function.Supplier<java.time.Instant> clock = java.time.Instant::now;
+
     public TranslationService(UiTranslationRepository repository, FallbackAiProvider ai, ObjectMapper mapper,
                               TranslationBudget budget) {
         this.repository = repository;
         this.ai = ai;
         this.mapper = mapper;
         this.budget = budget;
+    }
+
+    /** Whether a new translation may use the AI now ({@code background}: the advance translation, which gets less). */
+    public boolean aiAvailable(boolean background) {
+        java.time.Instant now = clock.get();
+        if (now.isBefore(pausedUntil)) {
+            return false;
+        }
+        rollDay(now);
+        int limit = background ? (int) (aiCallsPerDay * BACKGROUND_SHARE) : aiCallsPerDay;
+        return aiCallsToday.get() < limit;
+    }
+
+    private void rollDay(java.time.Instant now) {
+        java.time.LocalDate today = now.atZone(java.time.ZoneOffset.UTC).toLocalDate();
+        if (!today.equals(aiDay)) {
+            aiDay = today;
+            aiCallsToday.set(0);
+        }
+    }
+
+    /** Tests only. */
+    void useClock(java.util.function.Supplier<java.time.Instant> clock, int callsPerDay) {
+        this.clock = clock;
+        this.aiCallsPerDay = callsPerDay;
     }
 
     /** Everything already translated into {@code lang}: the app loads it at once when that language is chosen. */
@@ -251,6 +290,10 @@ public class TranslationService {
         try {
             calls.acquire();
             try {
+                if (!aiAvailable(false)) {
+                    return;
+                }
+                aiCallsToday.incrementAndGet();
                 translated = new ArrayList<>(ask(lang, texts));
                 List<Integer> wrongTone = new ArrayList<>();
                 for (int i = 0; i < texts.size() && i < translated.size(); i++) {
@@ -274,6 +317,10 @@ public class TranslationService {
             return;
         } catch (RuntimeException ex) {
             LOG.warn("The AI could not translate {} texts into {}: {}", texts.size(), lang, ex.getMessage());
+            if (String.valueOf(ex.getMessage()).contains("límite de uso")) {
+                pausedUntil = clock.get().plus(QUOTA_PAUSE);
+                LOG.warn("Translations paused until {}: the free quota of the AI is kept for Aqua's answers.", pausedUntil);
+            }
             return;
         }
         for (int i = 0; i < texts.size(); i++) {

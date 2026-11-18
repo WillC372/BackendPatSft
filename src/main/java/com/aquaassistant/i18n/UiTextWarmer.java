@@ -106,6 +106,11 @@ public class UiTextWarmer {
                 final int start = from;
                 missing.entrySet().removeIf(e -> start >= e.getValue().size());
                 for (Map.Entry<String, List<String>> entry : missing.entrySet()) {
+                    if (!translations.aiAvailable(true)) {
+                        LOG.info("Translating in advance waits: today's share of the AI is used (Aqua's answers come first).");
+                        empty = GIVE_UP_AFTER;
+                        break;
+                    }
                     List<String> batch = entry.getValue().subList(start, Math.min(start + BATCH, entry.getValue().size()));
                     int ok = (int) translations.translate(entry.getKey(), batch, TranslationBudget.SERVER).stream()
                         .filter(java.util.Objects::nonNull).count();
