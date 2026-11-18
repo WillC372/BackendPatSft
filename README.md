@@ -18,6 +18,10 @@ API REST de **Aqua Assistant AI**, un sistema de monitoreo de pH del agua. El ba
 - Hablar con el medidor por puerto serie: búsqueda, conexión, medición estabilizada, calibración y transmisión en vivo (Server-Sent Events).
 - Detectar anomalías, analizar tendencias, predecir y recomendar (la IA de Aqua).
 - Llamar a la IA generativa (Gemini y Groq; Claude como opción de pago) solo desde el servidor, con cuotas por plan y caché. El chat responde **en vivo** (Server-Sent Events).
+- Separar las mediciones por **lugar** (piscina, acuario, tanque...) y **compartir** un lugar con un código (rol solo ver o ver y medir).
+- Guardar **otros parámetros** (cloro libre, alcalinidad, dureza cálcica, ácido cianúrico), **tratamientos**, **recordatorios** e **historial de calibraciones**.
+- Enviar **avisos fuera de la app**: Web Push (cifrado RFC 8291 y VAPID RFC 8292 con el JDK, sin dependencias; las claves se crean solas en `app_keys`) y correo, para alertas y recordatorios vencidos.
+- **Traducir** la interfaz, las respuestas de la IA, los correos, los avisos y los informes al idioma de cada persona (61 idiomas, `i18n/`). Cada texto se traduce una vez por idioma con la IA y se guarda en `ui_translations`; un presupuesto por dirección y por día limita los textos nuevos.
 - Generar informes del periodo en PDF (con gráficas y fuentes normativas) o texto, y exportar mediciones a CSV.
 
 ## Arquitectura
@@ -268,6 +272,7 @@ Dos informes se descargan en PDF desde la interfaz: el del agente de IA (botón 
 
 - Las gráficas se dibujan en el servidor con los mismos datos guardados: franja del rango ideal del perfil, anomalías marcadas y banda de predicción. El eje de tiempo se ajusta al periodo (días, horas o segundos).
 - La fuente va incrustada en el archivo, así las tildes y la "ñ" se ven igual en cualquier equipo.
+- Sale en el idioma de la persona cuando su escritura es latina, griega o cirílica (la fuente DejaVu la dibuja): una primera pasada reúne los textos, se traducen juntos y la segunda los escribe. En chino, japonés, coreano, árabe, hindi y otras escrituras que necesitan otra fuente o dar forma al texto, la app imprime la pantalla ya traducida.
 - Si el periodo incluye lecturas del simulador, el PDF lo advierte en un recuadro "Datos simulados".
 - Cada página lleva el aviso "Informe orientativo basado en el pH; no reemplaza un análisis de laboratorio" y su número.
 - Un usuario solo puede descargar sus propios informes; el de otro usuario responde 404.
