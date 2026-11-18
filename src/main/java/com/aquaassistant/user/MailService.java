@@ -31,6 +31,13 @@ public class MailService {
     private final AppProperties.Mail config;
     private final MailDeliveryProperties delivery;
     private final MailChannel channel;
+    private com.aquaassistant.i18n.MailLocalizer localizer;
+
+    /** Writes each email in the language of the person who receives it (optional). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setLocalizer(@org.springframework.context.annotation.Lazy com.aquaassistant.i18n.MailLocalizer localizer) {
+        this.localizer = localizer;
+    }
 
     public MailService(List<MailChannel> channels, AppProperties properties, MailDeliveryProperties delivery) {
         this.config = properties.mail();
@@ -147,7 +154,8 @@ public class MailService {
             config.from(), delivery.senderName());
     }
 
-    private boolean deliver(OutgoingMail mail, String kind) {
+    private boolean deliver(OutgoingMail original, String kind) {
+        OutgoingMail mail = localizer == null ? original : localizer.localize(original);
         try {
             channel.send(mail, config.from(), delivery.senderName());
             LOG.info("Email ({}) sent via {}.", kind, channel.label());

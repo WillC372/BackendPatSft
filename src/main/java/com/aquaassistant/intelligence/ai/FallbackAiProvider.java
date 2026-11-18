@@ -60,7 +60,7 @@ public class FallbackAiProvider implements AiTextProvider {
     }
 
     /** Interactive requests: the user is waiting on screen, so the fastest models go first. */
-    static final java.util.Set<String> INTERACTIVE = java.util.Set.of("CHAT", "CONCLUSION");
+    static final java.util.Set<String> INTERACTIVE = java.util.Set.of("CHAT", "CONCLUSION", "TRANSLATION");
 
     /**
      * Circuit breaker for live answers: a model that failed or froze while streaming is tried after the others for a

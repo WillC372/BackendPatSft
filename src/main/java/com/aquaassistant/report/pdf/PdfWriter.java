@@ -47,7 +47,17 @@ public final class PdfWriter implements AutoCloseable {
     private PDPageContentStream content;
     private float y;
 
+    /** Translates the texts the report writes (identity when the report is in Spanish). */
+    private final java.util.function.UnaryOperator<String> tr;
+
     public PdfWriter(String title, String footer) throws IOException {
+        this(title, footer, java.util.function.UnaryOperator.identity());
+    }
+
+    public PdfWriter(String title, String footer, java.util.function.UnaryOperator<String> translator) throws IOException {
+        this.tr = translator;
+        title = t(title);
+        footer = t(footer);
         this.regular = load("fonts/DejaVuSans.ttf");
         this.bold = load("fonts/DejaVuSansBold.ttf");
         this.footer = footer;
@@ -56,6 +66,10 @@ public final class PdfWriter implements AutoCloseable {
         info.setAuthor("Aqua Assistant AI");
         info.setCreator("Aqua Assistant AI");
         newPage();
+    }
+
+    private String t(String text) {
+        return text == null ? null : tr.apply(text);
     }
 
     private PDType0Font load(String resource) throws IOException {
@@ -89,6 +103,8 @@ public final class PdfWriter implements AutoCloseable {
 
     /** Header band of the first page: brand, title and subtitle. */
     public PdfWriter banner(String eyebrow, String title, String subtitle) throws IOException {
+        eyebrow = t(eyebrow);
+        title = t(title);
         float top = PDRectangle.A4.getHeight();
         float height = 118;
         content.setNonStrokingColor(INK);
@@ -114,6 +130,7 @@ public final class PdfWriter implements AutoCloseable {
     }
 
     public PdfWriter heading(String text) throws IOException {
+        text = t(text);
         ensure(48);
         y -= 12;
         content.setNonStrokingColor(ACCENT);
@@ -125,6 +142,7 @@ public final class PdfWriter implements AutoCloseable {
     }
 
     public PdfWriter paragraph(String text, float size, Color color) throws IOException {
+        text = t(text);
         for (String block : text.split("\n")) {
             for (String line : wrap(block, regular, size, width())) {
                 ensure(size * 1.5f);
@@ -142,6 +160,7 @@ public final class PdfWriter implements AutoCloseable {
 
     /** List with markers; {@code markers} allows numbering (priority) or bullets. */
     public PdfWriter list(List<String> items, List<String> markers, List<Color> colors) throws IOException {
+        items = items.stream().map(this::t).toList();
         for (int i = 0; i < items.size(); i++) {
             String marker = markers == null ? "•" : markers.get(i);
             Color color = colors == null ? ACCENT : colors.get(i);
@@ -167,6 +186,7 @@ public final class PdfWriter implements AutoCloseable {
 
     /** Fila de cifras clave en recuadros. */
     public PdfWriter metrics(List<String[]> items) throws IOException {
+        items = items.stream().map(i -> new String[] {t(i[0]), t(i[1])}).toList();
         if (items.isEmpty()) {
             return this;
         }
@@ -207,6 +227,8 @@ public final class PdfWriter implements AutoCloseable {
 
     /** Box with a colored left border: notices, verification, limitations. */
     public PdfWriter callout(String title, List<String> lines, Color color) throws IOException {
+        title = t(title);
+        lines = lines.stream().map(this::t).toList();
         List<String> wrapped = new ArrayList<>();
         for (String line : lines) {
             wrapped.addAll(wrap(line, regular, 9.5f, width() - 24));
@@ -231,6 +253,7 @@ public final class PdfWriter implements AutoCloseable {
 
     /** Guideline citation: organization and section, literal text in its language and summary in Spanish. */
     public PdfWriter citation(int number, String source, String quote, String summary, String url) throws IOException {
+        summary = t(summary);
         List<String> quoteLines = wrap("“" + quote + "”", regular, 9, width() - 30);
         List<String> summaryLines = wrap("Resumen en español (no es traducción oficial): " + summary, regular, 9, width() - 30);
         float height = 34 + (quoteLines.size() + summaryLines.size()) * 12.5f;

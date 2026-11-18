@@ -47,6 +47,46 @@ public class ReportPdfService {
     private final ProfileService profileService;
     private final AnomalyDetector anomalyDetector;
     private final Forecaster forecaster;
+    private com.aquaassistant.i18n.UserLanguage language;
+    private com.aquaassistant.i18n.TranslationService translations;
+
+    /** Reports in the person's language (optional: without it, in Spanish). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setTranslation(com.aquaassistant.i18n.UserLanguage language, com.aquaassistant.i18n.TranslationService translations) {
+        this.language = language;
+        this.translations = translations;
+    }
+
+    /** Builds a report with a translator for its texts. */
+    @FunctionalInterface
+    private interface Builder {
+        byte[] build(java.util.function.UnaryOperator<String> tr) throws IOException;
+    }
+
+    /**
+     * The report in the person's language: a first pass collects every text it writes, they are translated together
+     * and the second pass writes them translated. Scripts this PDF engine cannot draw (Chinese, Arabic, Hindi...) stay
+     * in Spanish; the app offers to print the translated report from the browser instead.
+     */
+    private byte[] localized(Long userId, Builder builder) throws IOException {
+        String lang = language == null ? com.aquaassistant.i18n.Languages.ORIGINAL : language.of(userId);
+        if (com.aquaassistant.i18n.Languages.isOriginal(lang) || !com.aquaassistant.i18n.Languages.drawableInPdf(lang)
+            || translations == null) {
+            return builder.build(java.util.function.UnaryOperator.identity());
+        }
+        java.util.Set<String> texts = new java.util.LinkedHashSet<>();
+        builder.build(text -> {
+            texts.add(text);
+            return text;
+        });
+        List<String> sources = new ArrayList<>(texts);
+        List<String> targets = translations.translateAll(lang, sources);
+        java.util.Map<String, String> map = new java.util.HashMap<>();
+        for (int i = 0; i < sources.size(); i++) {
+            map.put(sources.get(i), targets.get(i));
+        }
+        return builder.build(text -> map.getOrDefault(text, text));
+    }
 
     public ReportPdfService(AgentJobService agentJobs, ReportService reportService, MeasurementService measurementService,
                             ProfileService profileService, AnomalyDetector anomalyDetector, Forecaster forecaster) {
@@ -63,7 +103,16 @@ public class ReportPdfService {
         AgentReportResponse r = agentJobs.get(userId, reportId);
         AgentReport rep = r.report();
         ChartData data = chartData(userId, r.createdAt(), r.periodDays());
-        try (PdfWriter pdf = new PdfWriter(rep.title(), FOOTER)) {
+        try {
+            return localized(userId, tr -> agentPdf(r, rep, data, tr));
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
+    }
+
+    private byte[] agentPdf(AgentReportResponse r, AgentReport rep, ChartData data, java.util.function.UnaryOperator<String> tr)
+            throws IOException {
+        try (PdfWriter pdf = new PdfWriter(rep.title(), FOOTER, tr)) {
             pdf.banner("Informe del agente de IA · últimos " + r.periodDays() + " días", rep.title(),
                 "Elaborado el " + DATE.format(r.createdAt()) + " · " + r.sourceLabel()
                     + (r.provider() == null ? "" : " (" + r.provider() + " · " + r.model() + ")") + " · Perfil: " + data.profile().getName());
@@ -82,7 +131,7 @@ public class ReportPdfService {
             }
             for (AgentReport.Section s : rep.sections()) {
                 pdf.heading(s.heading()).paragraph(s.body());
-                BufferedImage chart = chart(s.chart(), data);
+                BufferedImage chart = chart(s.chart(), data, tr);
                 if (chart != null) {
                     pdf.image(chart, caption(s.chart(), data));
                 }
@@ -101,8 +150,6 @@ public class ReportPdfService {
             }
             pdf.paragraph(r.disclaimer(), 8.5f, PdfWriter.MUTED);
             return pdf.finish();
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
         }
     }
 
@@ -111,7 +158,15 @@ public class ReportPdfService {
         Report report = reportService.build(userId, days, includeAi);
         long period = Math.max(1, Duration.between(report.periodStart(), report.periodEnd()).toDays());
         ChartData data = chartData(userId, report.periodEnd(), (int) period);
-        try (PdfWriter pdf = new PdfWriter(report.title(), FOOTER)) {
+        try {
+            return localized(userId, tr -> rulePdf(report, period, data, tr));
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
+    }
+
+    private byte[] rulePdf(Report report, long period, ChartData data, java.util.function.UnaryOperator<String> tr) throws IOException {
+        try (PdfWriter pdf = new PdfWriter(report.title(), FOOTER, tr)) {
             pdf.banner("Informe de calidad del agua", report.title(),
                 "Generado el " + DATE.format(report.generatedAt()) + " · Del " + DATE.format(report.periodStart()) + " al "
                     + DATE.format(report.periodEnd()) + " · Perfil: " + report.profileName());
@@ -138,12 +193,12 @@ public class ReportPdfService {
                     case "forecast" -> AgentReport.ChartKind.FORECAST;
                     default -> AgentReport.ChartKind.NONE;
                 };
-                BufferedImage chart = chart(kind, data);
+                BufferedImage chart = chart(kind, data, tr);
                 if (chart != null) {
                     pdf.image(chart, caption(kind, data));
                 }
                 if ("summary".equals(s.key())) {
-                    BufferedImage bars = chart(AgentReport.ChartKind.DISTRIBUTION, data);
+                    BufferedImage bars = chart(AgentReport.ChartKind.DISTRIBUTION, data, tr);
                     if (bars != null) {
                         pdf.image(bars, caption(AgentReport.ChartKind.DISTRIBUTION, data));
                     }
@@ -151,8 +206,6 @@ public class ReportPdfService {
             }
             pdf.paragraph(report.disclaimer(), 8.5f, PdfWriter.MUTED);
             return pdf.finish();
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
         }
     }
 
@@ -174,7 +227,7 @@ public class ReportPdfService {
             forecaster.forecast(measurements, 3, end));
     }
 
-    private static BufferedImage chart(AgentReport.ChartKind kind, ChartData d) {
+    private static BufferedImage chart(AgentReport.ChartKind kind, ChartData d, java.util.function.UnaryOperator<String> tr) {
         if (kind == null || kind == AgentReport.ChartKind.NONE || d.measurements().size() < 2) {
             return null;
         }
@@ -192,7 +245,7 @@ public class ReportPdfService {
                 for (PhStatus s : PhStatus.values()) {
                     counts.add((int) d.measurements().stream().filter(m -> m.getStatus() == s).count());
                 }
-                yield ChartPainter.bars(List.of("En rango", "Precaución", "Crítico"), counts,
+                yield ChartPainter.bars(List.of(tr.apply("En rango"), tr.apply("Precaución"), tr.apply("Crítico")), counts,
                     List.of(PdfWriter.OK, new Color(0xe0, 0x9a, 0x2a), PdfWriter.CRIT));
             }
             default -> null;

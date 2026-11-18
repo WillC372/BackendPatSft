@@ -35,6 +35,29 @@ public class Notifier {
     private final UserSettingsRepository settings;
     private final Map<String, Instant> lastEmail = new ConcurrentHashMap<>();
     private final ExecutorService background = Executors.newVirtualThreadPerTaskExecutor();
+    private com.aquaassistant.i18n.UserLanguage language;
+    private com.aquaassistant.i18n.TranslationService translations;
+
+    /** Notices to the phone go in the person's language (optional: without it, in Spanish). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setTranslation(com.aquaassistant.i18n.UserLanguage language,
+                               @org.springframework.context.annotation.Lazy com.aquaassistant.i18n.TranslationService translations) {
+        this.language = language;
+        this.translations = translations;
+    }
+
+    /** Title and text of a notice in the person's language; Spanish if the translation is not available now. */
+    private String[] localized(Long userId, String title, String body) {
+        if (language == null || translations == null) {
+            return new String[] {title, body};
+        }
+        String lang = language.of(userId);
+        if (com.aquaassistant.i18n.Languages.isOriginal(lang)) {
+            return new String[] {title, body};
+        }
+        List<String> out = translations.translateAll(lang, List.of(title, body));
+        return new String[] {out.get(0), out.get(1)};
+    }
 
     public Notifier(PushService push, MailService mail, UserRepository users, UserSettingsRepository settings) {
         this.push = push;
@@ -58,14 +81,16 @@ public class Notifier {
 
     /** Sends right away and tells how many devices got it (used by "Probar aviso"). */
     public int testPush(Long userId) {
-        return push.send(userId, "Aqua Assistant AI", "Así se verán los avisos en este dispositivo.", "/#/settings");
+        String[] text = localized(userId, "Aqua Assistant AI", "Así se verán los avisos en este dispositivo.");
+        return push.send(userId, text[0], text[1], "/#/settings");
     }
 
     private void send(Long userId, Message message, boolean byPush, boolean byEmail, String kind) {
         background.submit(() -> {
             try {
                 if (byPush) {
-                    push.send(userId, message.title(), message.body(), message.url());
+                    String[] text = localized(userId, message.title(), message.body());
+                    push.send(userId, text[0], text[1], message.url());
                 }
                 if (byEmail && allowEmail(userId, kind)) {
                     users.findById(userId).filter(User::isEnabled).filter(u -> !u.isDemo())

@@ -41,6 +41,27 @@ public class AiProviderProxy implements AiTextProvider, AiCallListener {
     private final Map<String, CacheEntry> cache = new HashMap<>();
     private final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
+    private com.aquaassistant.i18n.UserLanguage language;
+
+    /** The person's language, so the AI writes in it (optional: without it everything stays in Spanish). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setUserLanguage(com.aquaassistant.i18n.UserLanguage language) {
+        this.language = language;
+    }
+
+    /** The same request with the instruction to write in the person's language (unchanged for Spanish). */
+    AiPrompt localized(AiPrompt prompt) {
+        if (language == null || prompt.userId() == null || "TRANSLATION".equals(prompt.purpose())) {
+            return prompt;
+        }
+        String extra = language.instruction(prompt.userId());
+        if (extra.isEmpty()) {
+            return prompt;
+        }
+        return new AiPrompt(prompt.userId(), prompt.purpose(), prompt.system() + extra, prompt.user(), prompt.schemaName(),
+            prompt.responseSchema(), prompt.image(), prompt.excludedModels(), prompt.history());
+    }
+
     @org.springframework.beans.factory.annotation.Autowired
     public AiProviderProxy(FallbackAiProvider realProvider, AiUsageRepository usageRepository,
                            UserRepository userRepository, AppProperties properties, AiPricing pricing,
@@ -95,7 +116,8 @@ public class AiProviderProxy implements AiTextProvider, AiCallListener {
     }
 
     @Override
-    public AiAnswer complete(AiPrompt prompt) {
+    public AiAnswer complete(AiPrompt original) {
+        AiPrompt prompt = localized(original);
         if (!realProvider.isAvailable()) {
             throw new AiUnavailableException("La IA generativa no está configurada en el servidor (GEMINI_API_KEY, GROQ_API_KEY o ANTHROPIC_API_KEY).");
         }
@@ -119,7 +141,8 @@ public class AiProviderProxy implements AiTextProvider, AiCallListener {
     }
 
     /** Streaming version of {@link #complete(AiPrompt)} with the same cache, quota and usage log. */
-    public AiAnswer stream(AiPrompt prompt, java.util.function.Consumer<String> onDelta) {
+    public AiAnswer stream(AiPrompt original, java.util.function.Consumer<String> onDelta) {
+        AiPrompt prompt = localized(original);
         if (!realProvider.isAvailable()) {
             throw new AiUnavailableException("La IA generativa no está configurada en el servidor (GEMINI_API_KEY, GROQ_API_KEY o ANTHROPIC_API_KEY).");
         }
