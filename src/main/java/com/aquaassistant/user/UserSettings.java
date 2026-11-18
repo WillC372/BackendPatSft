@@ -35,6 +35,9 @@ public class UserSettings {
     @Column(name = "email_alerts")
     private boolean emailAlerts = true;
 
+    @Column(name = "voice_enabled")
+    private boolean voiceEnabled = true;
+
     protected UserSettings() {
     }
 
@@ -72,6 +75,12 @@ public class UserSettings {
     public String getLanguage() { return language; }
     public Long getActivePlaceId() { return activePlaceId; }
     public boolean isEmailAlerts() { return emailAlerts; }
+
+    public boolean isVoiceEnabled() { return voiceEnabled; }
+
+    public void setVoiceEnabled(boolean voiceEnabled) {
+        this.voiceEnabled = voiceEnabled;
+    }
 
     public void setEmailAlerts(boolean emailAlerts) {
         this.emailAlerts = emailAlerts;

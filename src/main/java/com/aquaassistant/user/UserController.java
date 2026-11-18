@@ -94,9 +94,13 @@ public class UserController {
         Long userId = CurrentUser.id();
         UserSettings settings = settingsFor(userId);
         settings.update(request.theme(), request.notificationsEnabled(), request.autoSave(),
-            request.language() == null ? "es" : request.language());
+            request.language() == null ? "es" : java.util.Objects.requireNonNullElse(
+                com.aquaassistant.i18n.Languages.normalize(request.language()), "es"));
         if (request.emailAlerts() != null) {
             settings.setEmailAlerts(request.emailAlerts());
+        }
+        if (request.voiceEnabled() != null) {
+            settings.setVoiceEnabled(request.voiceEnabled());
         }
         if (request.activeProfileId() != null) {
             settings.activateProfile(profileService.getVisible(userId, request.activeProfileId()).getId());
