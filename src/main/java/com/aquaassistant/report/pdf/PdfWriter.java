@@ -319,7 +319,7 @@ public final class PdfWriter implements AutoCloseable {
     public PdfWriter citation(int number, String source, String quote, String summary, String url) throws IOException {
         summary = t(summary);
         List<String> quoteLines = wrap("“" + quote + "”", regular, 9, width() - 30);
-        List<String> summaryLines = wrap("Resumen en español (no es traducción oficial): " + summary, regular, 9, width() - 30);
+        List<String> summaryLines = wrap(t("Resumen (no es traducción oficial)") + ": " + summary, regular, 9, width() - 30);
         float height = 34 + (quoteLines.size() + summaryLines.size()) * 12.5f;
         ensure(Math.min(height, 260));
         text(bold, 9.5f, ACCENT, MARGIN, y, number + ".");

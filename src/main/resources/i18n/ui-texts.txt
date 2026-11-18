@@ -227,6 +227,7 @@ Cada llamada queda registrada con su proveedor, tokens, latencia y costo estimad
 Cada lugar guarda sus propias mediciones. Elige uno y toda la app cambia a ese lugar.
 Cada sitio con agua que mides, por separado.
 Cada vez que calibras un punto queda aquí: con qué solución buffer, qué marcaba el medidor antes y si el medidor lo aceptó. Si la diferencia crece mucho, es hora de revisar o cambiar la sonda.
+Cada vez que entras queda una sesión: cuándo empezó, desde qué equipo y qué hiciste. Desde aquí cierras las sesiones abiertas en otros equipos.
 Cada vez que inicias sesión empieza una sesión nueva. Aquí queda lo que hiciste en cada una, desde que entraste hasta que la cerraste.
 Cada {0}
 Calcula cuánto producto echar, anota lo que le haces al agua y crea recordatorios.
@@ -301,6 +302,7 @@ Cerró sesión
 Cerró sus otras sesiones
 Chat con memoria y normas oficiales
 Chatear conmigo
+Chinese
 Chrome
 Chrome en Windows
 Chunk
@@ -456,7 +458,6 @@ Datos insuficientes
 Datos oficiales
 Datos oficiales actualizados.
 Datos oficiales de pH
-Datos oficiales, sesiones, tu plan y la configuración también están aquí. En el celular, desliza la barra hacia los lados.
 Datos para entrenar
 Datos que mejorarían el diagnóstico
 Datos simulados
@@ -498,6 +499,7 @@ Detención temprana: se guardan los pesos de la época con menor error de valida
 Detener
 Detener continuo
 Detener vivo
+Deutsch
 Diagnóstico IA
 Diagnóstico generado con reglas.
 Diagnóstico generado con {0}.
@@ -595,6 +597,7 @@ El pH máximo es {0}.
 El pH mínimo es {0}.
 El pH por sí solo no confirma ni descarta contaminación.
 El pH por sí solo no demuestra que el agua sea potable ni que esté libre de contaminantes.
+El pH real que miden hoy las estaciones del Servicio Geológico de EE. UU., para comparar tu agua con ríos de referencia.
 El pH va de {0} a {1}.
 El pago está en proceso en PayU. Verifica de nuevo en unos minutos.
 El pago informado por PayU no coincide con el pedido (valor, moneda o comercio). No se activó Premium.
@@ -675,6 +678,7 @@ En {0} ventanas de prueba la red tuvo un error medio de {1} pH y no superó en a
 En {0} ventanas de prueba que la red no vio, su error medio fue {1} pH: {2} %% menor
 Encuadra aquí la pantalla del medidor
 Enfocada y sin reflejos.
+English
 Enjuaga la sonda con agua destilada, sumérgela en la solución buffer indicada y espera a que la lectura se estabilice. Empieza siempre por pH {0}.
 Enlace de confirmación de administrador enviado
 Enlace inválido
@@ -821,6 +825,7 @@ Foto desenfocada
 Fragmentos aplicables a la última medición, seleccionados por el recuperador.
 Fragmentos aplicables a la última medición.
 Fragmentos que la IA citó en este diagnóstico. El sistema verificó que cada id existiera entre los fragmentos que le entregó.
+French
 Frente al periodo anterior: {0}.
 From
 Fuente con alto contenido de carbonatos.
@@ -847,6 +852,7 @@ Generando informe por reglas
 Generar conclusión
 Generar diagnóstico
 Generó un informe
+German
 Gestionar
 Gestionar cuenta
 Gestionar {0}
@@ -947,8 +953,11 @@ Iones H+ frente a hoy
 Ir a iniciar sesión
 Isolation Forest ({0} árboles) sobre pH, cambio, velocidad de cambio,
 Isolation Forest entrenado con tus datos
+Italian
+Italiano
 JPEG o PNG, hasta {0} MB. La foto no se guarda.
 Jacuzzi o spa
+Japanese
 Knowledge base is empty
 La IA devolvió una lectura inválida (
 La IA está analizando el escenario...
@@ -1505,10 +1514,9 @@ Restableció la contraseña
 Resultado
 Resultado de la medición
 Resumen
+Resumen (no es traducción oficial)
 Resumen del periodo
 Resumen ejecutivo
-Resumen en español (no es traducción oficial)
-Resumen en español (no es traducción oficial):
 Reuniendo mediciones
 Revisa el cloro
 Revisa el filtro y retira restos de comida.
@@ -1649,6 +1657,7 @@ Sobre {0}
 Solicitar enlace
 Solicitud de restablecimiento
 Solo hay
+Solo para administradores: cuentas, planes, actividad y el consumo de la IA.
 Solo puedes ver este lugar
 Solo puedo responder preguntas sobre la calidad del agua, el pH y el uso de Aqua Assistant. Esa pregunta está fuera de ese tema.
 Solo quien creó el lugar puede borrarlo. Puedes salir de él.
@@ -1684,6 +1693,7 @@ Te escribo a tu correo cuando una medición sale del rango (como mucho uno por h
 Te llevamos a la página segura de PayU...
 Tema
 Tema actualizado.
+Tema claro u oscuro, idioma, voz de Aqua, avisos al celular o por correo y tu cuenta. En el celular, desliza la barra hacia los lados para ver todo.
 Temperatura
 Temperatura fuera de rango.
 Temperatura fuera de {0}-{1} °C: la compensación de pH puede no ser confiable.
@@ -1718,7 +1728,6 @@ Todas tus mediciones con gráficas, filtros y descarga.
 Todavía nadie ha iniciado un pago.
 Todavía no se ha unido nadie.
 Todo
-Todo está en la barra
 Todo listo. Tócame si quieres un análisis completo.
 Todos los estados
 Todos los orígenes
@@ -1756,6 +1765,7 @@ Tu nombre
 Tu pH según la hora del día
 Tu plan
 Tu plan Premium vence el
+Tu plan actual y lo que incluye Premium: más días de análisis, predicciones más largas y más consultas de IA.
 Tu plan de Aqua Assistant AI cambió
 Tu rol en Aqua Assistant AI cambió
 Tu última medición y si tu agua está bien para el uso que elegiste.
