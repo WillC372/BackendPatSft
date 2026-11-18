@@ -38,21 +38,38 @@ public class MlModelService implements MeasurementListener {
     private final com.aquaassistant.common.ExpiringCache<CacheKey, Training> cache =
         new com.aquaassistant.common.ExpiringCache<>(MODEL_IDLE, MAX_MODELS);
 
-    public MlModelService(MeasurementRepository repository) {
+    /** Which place a person is looking at: the models are trained per place (its measurements). */
+    private final java.util.function.UnaryOperator<Long> activePlace;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public MlModelService(MeasurementRepository repository, com.aquaassistant.place.PlaceAccess places) {
         this.repository = repository;
+        this.activePlace = places::activeId;
     }
 
+    /** For tests: the place id is the same number as the user id. */
+    public MlModelService(MeasurementRepository repository) {
+        this.repository = repository;
+        this.activePlace = userId -> userId;
+    }
+
+    /** Model of the person's active place. */
     public Training model(Long userId, boolean includeSimulated) {
-        return cache.get(new CacheKey(userId, includeSimulated), key -> train(userId, includeSimulated));
+        return modelForPlace(activePlace.apply(userId), includeSimulated);
+    }
+
+    private Training modelForPlace(Long placeId, boolean includeSimulated) {
+        return cache.get(new CacheKey(placeId, includeSimulated), key -> train(placeId, includeSimulated));
     }
 
     @Override
     public void onMeasurementRecorded(Measurement measurement, WaterProfile profile) {
-        cache.removeIf(key -> key.userId().equals(measurement.getUserId()));
+        cache.removeIf(key -> key.placeId().equals(measurement.getPlaceId()));
     }
 
     public void invalidate(Long userId) {
-        cache.removeIf(key -> key.userId().equals(userId));
+        Long placeId = activePlace.apply(userId);
+        cache.removeIf(key -> key.placeId().equals(placeId));
     }
 
     /** Every 10 minutes the models nobody used in the last 30 are freed. */
@@ -71,7 +88,7 @@ public class MlModelService implements MeasurementListener {
      * the model is retrained including it (milliseconds) and the point is scored in-sample, as the algorithm assumes.
      */
     public Optional<Evaluation> evaluate(Measurement candidate) {
-        Training training = model(candidate.getUserId(), false);
+        Training training = modelForPlace(candidate.getPlaceId(), false);
         if (!training.trained()) {
             return Optional.empty();
         }
@@ -82,7 +99,7 @@ public class MlModelService implements MeasurementListener {
             List<Measurement> extended = new java.util.ArrayList<>(data);
             extended.add(candidate);
             extended.sort(java.util.Comparator.comparing(Measurement::getMeasuredAt));
-            Training adhoc = fit(candidate.getUserId(), extended);
+            Training adhoc = fit(candidate.getPlaceId(), extended);
             if (!adhoc.trained()) {
                 return Optional.empty();
             }
@@ -109,13 +126,13 @@ public class MlModelService implements MeasurementListener {
         }
     }
 
-    Training train(Long userId, boolean includeSimulated) {
+    Training train(Long placeId, boolean includeSimulated) {
         Instant now = Instant.now();
-        List<Measurement> data = repository.findTop2000ByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(userId,
+        List<Measurement> data = repository.findTop2000ByPlaceIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(placeId,
                 now.minus(Duration.ofDays(TRAINING_DAYS)), now).stream()
             .filter(m -> includeSimulated || m.getSource() != MeasurementSource.SIMULATED)
             .toList();
-        return fit(userId, data);
+        return fit(placeId, data);
     }
 
     private Training fit(Long userId, List<Measurement> data) {
@@ -159,6 +176,6 @@ public class MlModelService implements MeasurementListener {
         }
     }
 
-    private record CacheKey(Long userId, boolean includeSimulated) {
+    private record CacheKey(Long placeId, boolean includeSimulated) {
     }
 }

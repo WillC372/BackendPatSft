@@ -15,17 +15,34 @@ public class ProfileService {
     private final WaterProfileRepository repository;
     private final UserSettingsRepository settingsRepository;
     private final AuditService auditService;
+    private final com.aquaassistant.place.PlaceAccess places;
+    private final com.aquaassistant.place.PlaceRepository placeRepository;
 
     public ProfileService(WaterProfileRepository repository, UserSettingsRepository settingsRepository,
-                          AuditService auditService) {
+                          AuditService auditService, com.aquaassistant.place.PlaceAccess places,
+                          com.aquaassistant.place.PlaceRepository placeRepository) {
         this.repository = repository;
         this.settingsRepository = settingsRepository;
         this.auditService = auditService;
+        this.places = places;
+        this.placeRepository = placeRepository;
     }
 
+    /** Profiles the person can use, plus the one of their active place when it belongs to whoever shared it. */
     @Transactional(readOnly = true)
     public List<WaterProfile> listFor(Long userId) {
-        return repository.findVisibleTo(userId);
+        List<WaterProfile> visible = new java.util.ArrayList<>(repository.findVisibleTo(userId));
+        WaterProfile active = activeProfile(userId);
+        if (visible.stream().noneMatch(p -> p.getId().equals(active.getId()))) {
+            visible.add(active);
+        }
+        return visible;
+    }
+
+    /** Gives a new account its first place, "Mi agua". */
+    @Transactional
+    public void provisionFirstPlace(Long userId) {
+        places.provision(userId);
     }
 
     @Transactional(readOnly = true)
@@ -35,13 +52,10 @@ public class ProfileService {
             .orElseThrow(() -> BusinessException.notFound("El perfil no existe."));
     }
 
+    /** The profile of the active place: it classifies new measurements and guides the analyses. */
     @Transactional(readOnly = true)
     public WaterProfile activeProfile(Long userId) {
-        Long activeId = settingsRepository.findById(userId).map(UserSettings::getActiveProfileId).orElse(null);
-        if (activeId != null) {
-            return repository.findById(activeId).filter(p -> p.isVisibleTo(userId)).orElseGet(this::defaultProfile);
-        }
-        return defaultProfile();
+        return places.activeProfile(userId);
     }
 
     @Transactional(readOnly = true)
@@ -81,6 +95,8 @@ public class ProfileService {
         settingsRepository.findById(userId)
             .filter(settings -> profileId.equals(settings.getActiveProfileId()))
             .ifPresent(settings -> settings.activateProfile(defaultProfile().getId()));
+        // Places that used it go back to the general profile; their measurements keep the profile they were taken with.
+        placeRepository.findUsingProfile(profileId).forEach(place -> place.useProfile(defaultProfile().getId()));
         try {
             repository.delete(profile);
             repository.flush();
@@ -93,10 +109,12 @@ public class ProfileService {
     @Transactional
     public WaterProfile activate(Long userId, Long profileId) {
         WaterProfile profile = getVisible(userId, profileId);
+        com.aquaassistant.place.Place place = places.editable(userId, places.activeId(userId));
+        place.useProfile(profile.getId());
         UserSettings settings = settingsRepository.findById(userId)
             .orElseGet(() -> settingsRepository.save(UserSettings.defaultsFor(userId, profile.getId())));
         settings.activateProfile(profile.getId());
-        auditService.record(userId, "PROFILE_ACTIVATED", "Perfil " + profile.getName());
+        auditService.record(userId, "PROFILE_ACTIVATED", "Perfil " + profile.getName() + " en " + place.getName());
         return profile;
     }
 

@@ -17,6 +17,10 @@ public final class MeasurementSpecifications {
         return (root, query, cb) -> cb.equal(root.get("userId"), userId);
     }
 
+    public static Specification<Measurement> inPlace(Long placeId) {
+        return (root, query, cb) -> cb.equal(root.get("placeId"), placeId);
+    }
+
     public static Specification<Measurement> measuredFrom(Instant from) {
         return (root, query, cb) -> from == null ? null : cb.greaterThanOrEqualTo(root.get("measuredAt"), from);
     }

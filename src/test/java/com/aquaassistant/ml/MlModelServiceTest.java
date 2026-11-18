@@ -35,7 +35,7 @@ class MlModelServiceTest {
 
     private Measurement m(long id, double ph, Instant at, MeasurementSource source) {
         var c = classifier.classify(ph, pool);
-        Measurement m = new Measurement(5L, null, 1L, ph, null, at, source, c.nature(), c.status(), ValidationStatus.VALID, null, null);
+        Measurement m = new Measurement(5L, null, 1L, ph, null, at, source, c.nature(), c.status(), ValidationStatus.VALID, null, null).in(5L, null);
         try {
             Field f = Measurement.class.getDeclaredField("id");
             f.setAccessible(true);
@@ -63,7 +63,7 @@ class MlModelServiceTest {
     @Test
     void doesNotTrainWithoutEnoughHistory() {
         MeasurementRepository repo = mock(MeasurementRepository.class);
-        when(repo.findTop2000ByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any())).thenReturn(history().subList(0, 10));
+        when(repo.findTop2000ByPlaceIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any())).thenReturn(history().subList(0, 10));
         MlModelService.Training training = new MlModelService(repo).model(5L, false);
         assertThat(training.trained()).isFalse();
         assertThat(training.reason()).contains("30");
@@ -73,7 +73,7 @@ class MlModelServiceTest {
     void learnsTheUsualBehaviourAndFlagsAnUnusualReading() {
         MeasurementRepository repo = mock(MeasurementRepository.class);
         List<Measurement> history = history();
-        when(repo.findTop2000ByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any())).thenReturn(history);
+        when(repo.findTop2000ByPlaceIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any())).thenReturn(history);
         MlModelService service = new MlModelService(repo);
         MlAnomalyRule rule = new MlAnomalyRule(service);
 
@@ -92,12 +92,12 @@ class MlModelServiceTest {
 
         Measurement simulated = m(1001, 4.0, last.getMeasuredAt().plus(Duration.ofMinutes(30)), MeasurementSource.SIMULATED);
         assertThat(rule.evaluate(simulated, history, pool)).isEmpty();
-        verify(repo, times(1)).findTop2000ByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any());
+        verify(repo, times(1)).findTop2000ByPlaceIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any());
         assertThat(anomaly.get().message()).contains("Valor de pH");
 
         service.onMeasurementRecorded(spike, pool);
         service.model(5L, false);
-        verify(repo, times(2)).findTop2000ByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any());
+        verify(repo, times(2)).findTop2000ByPlaceIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any());
     }
 
     @Test
@@ -106,7 +106,7 @@ class MlModelServiceTest {
         List<Measurement> history = new ArrayList<>(history());
         Measurement last = history.get(history.size() - 1);
         history.add(m(500, 6.3, last.getMeasuredAt().plus(Duration.ofMinutes(15)), MeasurementSource.MANUAL));
-        when(repo.findTop2000ByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any())).thenReturn(history);
+        when(repo.findTop2000ByPlaceIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(eq(5L), any(), any())).thenReturn(history);
         var insights = new MlInsightsService(new MlModelService(repo)).insights(5L, 30, false);
         assertThat(insights.trained()).isTrue();
         assertThat(insights.treeCount()).isEqualTo(100);

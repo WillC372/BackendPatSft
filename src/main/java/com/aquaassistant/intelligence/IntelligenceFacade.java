@@ -117,6 +117,8 @@ public class IntelligenceFacade {
     private final com.aquaassistant.intelligence.ml.MlInsightsService mlInsightsService;
     private final GuidelineRetriever guidelines;
 
+    private final com.aquaassistant.place.PlaceAccess places;
+
     public IntelligenceFacade(MeasurementService measurementService, ProfileService profileService,
                               PhClassifier classifier, AnomalyDetector anomalyDetector, TrendAnalyzer trendAnalyzer,
                               Forecaster forecaster, AdviceStrategyResolver adviceResolver,
@@ -124,7 +126,8 @@ public class IntelligenceFacade {
                               UserRepository userRepository,
                               com.aquaassistant.intelligence.diagnosis.DiagnosisService diagnosisService,
                               com.aquaassistant.intelligence.ml.MlInsightsService mlInsightsService,
-                              GuidelineRetriever guidelines) {
+                              GuidelineRetriever guidelines, com.aquaassistant.place.PlaceAccess places) {
+        this.places = places;
         this.measurementService = measurementService;
         this.profileService = profileService;
         this.classifier = classifier;
@@ -363,6 +366,9 @@ public class IntelligenceFacade {
         WaterProfile profile = profileService.activeProfile(userId);
         List<Measurement> measurements = window(userId, days);
         StringBuilder facts = new StringBuilder();
+        com.aquaassistant.place.Place place = places.active(userId);
+        facts.append(String.format(Locale.US, "Place: %s (%s)%s.%n", place.getName(), place.getKind().label(),
+            place.getVolumeLiters() == null ? "" : String.format(Locale.US, ", volume %.0f liters", place.getVolumeLiters())));
         facts.append(String.format(Locale.US, "Profile: %s. Recommended range %.1f-%.1f; caution %.1f-%.1f.%n",
             profile.getName(), profile.getIdealMin(), profile.getIdealMax(), profile.getCautionMin(), profile.getCautionMax()));
         if (measurements.isEmpty()) {
@@ -374,6 +380,11 @@ public class IntelligenceFacade {
         facts.append(recent.stream().map(m -> String.format(Locale.US, "- %s, %.2f, %s, %s", m.getMeasuredAt(),
             m.getPh(), m.getStatus(), m.getSource())).collect(Collectors.joining("\n"))).append('\n');
         facts.append("Total measurements in ").append(days).append(" days: ").append(measurements.size()).append('\n');
+        List<Measurement> newestFirst = new java.util.ArrayList<>(measurements);
+        java.util.Collections.reverse(newestFirst);
+        com.aquaassistant.place.ParameterGuide.latest(place.getKind(), newestFirst).stream().filter(r -> r.value() != null)
+            .forEach(r -> facts.append(String.format(Locale.US, "Latest %s: %.1f mg/L (%s)%s%n", r.label(), r.value(), r.measuredAt(),
+                r.range() == null ? "" : String.format(Locale.US, ", orientative range %.1f-%.1f, status %s", r.range().low(), r.range().high(), r.status()))));
         if (measurements.stream().anyMatch(m -> m.getSource().name().equals("SIMULATED"))) {
             facts.append("Warning: part of the data comes from the simulator and does not represent real water.\n");
         }

@@ -153,6 +153,7 @@ public class AuthService {
         User user = userRepository.save(new User(email, request.fullName().trim(),
             passwordEncoder.encode(request.password()), Role.USER));
         settingsRepository.save(UserSettings.defaultsFor(user.getId(), profileService.defaultProfile().getId()));
+        profileService.provisionFirstPlace(user.getId());
         return openSession(user, false, userAgent, "USER_REGISTERED", "Cuenta creada")
             .withNotice(requestAdminVerification(user));
     }

@@ -31,7 +31,7 @@ public class MlAnomalyRule implements AnomalyRule {
 
     @Override
     public Optional<Anomaly> evaluate(Measurement current, List<Measurement> previous, WaterProfile profile) {
-        if (current.getSource() == MeasurementSource.SIMULATED || current.getUserId() == null) {
+        if (current.getSource() == MeasurementSource.SIMULATED || current.getPlaceId() == null) {
             return Optional.empty();
         }
         Optional<MlModelService.Evaluation> evaluation = modelService.evaluate(current);

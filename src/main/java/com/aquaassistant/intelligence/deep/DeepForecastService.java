@@ -52,18 +52,24 @@ public class DeepForecastService implements MeasurementListener {
     private final com.aquaassistant.common.ExpiringCache<Key, Model> cache =
         new com.aquaassistant.common.ExpiringCache<>(java.time.Duration.ofMinutes(30), 200);
 
-    public DeepForecastService(MeasurementRepository repository, ProfileService profileService) {
+    private final com.aquaassistant.place.PlaceAccess places;
+
+    public DeepForecastService(MeasurementRepository repository, ProfileService profileService,
+                               com.aquaassistant.place.PlaceAccess places) {
         this.repository = repository;
         this.profileService = profileService;
+        this.places = places;
     }
 
     @Override
     public void onMeasurementRecorded(Measurement measurement, WaterProfile profile) {
-        cache.removeIf(key -> key.userId().equals(measurement.getUserId()));
+        cache.removeIf(key -> key.placeId().equals(measurement.getPlaceId()));
     }
 
+    /** Forecast for the person's active place (the network is trained with that place's measurements). */
     public DeepForecastResponse forecast(Long userId, boolean includeSimulated) {
-        Model model = cache.get(new Key(userId, includeSimulated), key -> train(userId, includeSimulated));
+        Long placeId = places.activeId(userId);
+        Model model = cache.get(new Key(placeId, includeSimulated), key -> train(placeId, includeSimulated));
         return model.toResponse(profileService.activeProfile(userId));
     }
 
@@ -73,12 +79,12 @@ public class DeepForecastService implements MeasurementListener {
         cache.evictExpired();
     }
 
-    Model train(Long userId, boolean includeSimulated) {
+    Model train(Long placeId, boolean includeSimulated) {
         Instant now = Instant.now();
-        List<Measurement> data = repository.findTop2000ByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(userId,
+        List<Measurement> data = repository.findTop2000ByPlaceIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(placeId,
                 now.minus(Duration.ofDays(TRAINING_DAYS)), now).stream()
             .filter(m -> includeSimulated || m.getSource() != MeasurementSource.SIMULATED).toList();
-        return fit(data, userId, includeSimulated, now);
+        return fit(data, placeId, includeSimulated, now);
     }
 
     static Model fit(List<Measurement> data, long seed, boolean includeSimulated, Instant now) {
@@ -225,7 +231,7 @@ public class DeepForecastService implements MeasurementListener {
         return Math.round(v * s) / s;
     }
 
-    record Key(Long userId, boolean includeSimulated) {
+    record Key(Long placeId, boolean includeSimulated) {
     }
 
     record Model(boolean trained, String reason, DeepForecastResponse.DataSummary data, boolean simulated,

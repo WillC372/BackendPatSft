@@ -29,6 +29,9 @@ public class UserSettings {
 
     private String language;
 
+    @Column(name = "active_place_id")
+    private Long activePlaceId;
+
     protected UserSettings() {
     }
 
@@ -54,10 +57,15 @@ public class UserSettings {
         this.activeProfileId = profileId;
     }
 
+    public void activatePlace(Long placeId) {
+        this.activePlaceId = placeId;
+    }
+
     public Long getUserId() { return userId; }
     public Long getActiveProfileId() { return activeProfileId; }
     public Theme getTheme() { return theme; }
     public boolean isNotificationsEnabled() { return notificationsEnabled; }
     public boolean isAutoSave() { return autoSave; }
     public String getLanguage() { return language; }
+    public Long getActivePlaceId() { return activePlaceId; }
 }

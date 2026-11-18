@@ -22,6 +22,17 @@ public interface MeasurementRepository extends JpaRepository<Measurement, Long>,
 
     long countByMeasuredAtAfter(Instant after);
 
+    // ---- Per place (what the app shows: the active place of the person) ----
+    Optional<Measurement> findTopByPlaceIdOrderByMeasuredAtDesc(Long placeId);
+
+    Page<Measurement> findByPlaceIdAndMeasuredAtBetween(Long placeId, Instant from, Instant to, Pageable pageable);
+
+    List<Measurement> findTop2000ByPlaceIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(Long placeId, Instant from, Instant to);
+
+    List<Measurement> findTop50ByPlaceIdOrderByMeasuredAtDesc(Long placeId);
+
+    long countByPlaceId(Long placeId);
+
     /** Measurements per user for one page of the administration list (one query, not one per row). */
     @org.springframework.data.jpa.repository.Query("select m.userId, count(m) from Measurement m where m.userId in :userIds group by m.userId")
     List<Object[]> countByUserIds(java.util.Collection<Long> userIds);

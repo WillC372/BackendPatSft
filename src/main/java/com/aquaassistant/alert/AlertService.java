@@ -33,7 +33,7 @@ public class AlertService implements MeasurementListener {
 
     @Override
     public void onMeasurementRecorded(Measurement measurement, WaterProfile profile) {
-        List<Measurement> previous = new ArrayList<>(measurementRepository.findTop50ByUserIdOrderByMeasuredAtDesc(measurement.getUserId())
+        List<Measurement> previous = new ArrayList<>(measurementRepository.findTop50ByPlaceIdOrderByMeasuredAtDesc(measurement.getPlaceId())
             .stream()
             .filter(m -> !m.getId().equals(measurement.getId()))
             .filter(m -> !m.getMeasuredAt().isAfter(measurement.getMeasuredAt()))

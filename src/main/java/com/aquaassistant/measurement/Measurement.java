@@ -56,6 +56,21 @@ public class Measurement {
 
     private String note;
 
+    @Column(name = "place_id", nullable = false)
+    private Long placeId;
+
+    @Column(name = "free_chlorine")
+    private Double freeChlorine;
+
+    @Column(name = "total_alkalinity")
+    private Double totalAlkalinity;
+
+    @Column(name = "calcium_hardness")
+    private Double calciumHardness;
+
+    @Column(name = "cyanuric_acid")
+    private Double cyanuricAcid;
+
     protected Measurement() {
     }
 
@@ -76,6 +91,20 @@ public class Measurement {
         this.note = note;
     }
 
+    /** Place where it was measured and the other optional parameters (mg/L). */
+    public Measurement in(Long placeId, WaterParams params) {
+        this.placeId = placeId;
+        if (params != null) {
+            this.freeChlorine = params.freeChlorine();
+            this.totalAlkalinity = params.totalAlkalinity();
+            this.calciumHardness = params.calciumHardness();
+            this.cyanuricAcid = params.cyanuricAcid();
+        }
+        return this;
+    }
+
+    public Long getPlaceId() { return placeId; }
+    public WaterParams getParams() { return new WaterParams(freeChlorine, totalAlkalinity, calciumHardness, cyanuricAcid); }
     public Long getId() { return id; }
     public Long getUserId() { return userId; }
     public Long getDeviceId() { return deviceId; }

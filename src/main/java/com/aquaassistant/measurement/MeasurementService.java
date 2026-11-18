@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.aquaassistant.measurement.MeasurementSpecifications.fromSource;
 import static com.aquaassistant.measurement.MeasurementSpecifications.measuredFrom;
 import static com.aquaassistant.measurement.MeasurementSpecifications.measuredUntil;
-import static com.aquaassistant.measurement.MeasurementSpecifications.ownedBy;
+import static com.aquaassistant.measurement.MeasurementSpecifications.inPlace;
 import static com.aquaassistant.measurement.MeasurementSpecifications.withStatus;
 
 /**
@@ -53,11 +53,13 @@ public class MeasurementService {
     private final MeasurementPublisher publisher;
     private final DeviceDirectory deviceDirectory;
     private final AuditService auditService;
+    private final com.aquaassistant.place.PlaceAccess places;
 
     public MeasurementService(MeasurementRepository repository, MeasurementValidationChain validationChain,
                               PhClassifier classifier, ProfileService profileService,
                               WaterProfileRepository profileRepository, MeasurementPublisher publisher,
-                              DeviceDirectory deviceDirectory, AuditService auditService) {
+                              DeviceDirectory deviceDirectory, AuditService auditService,
+                              com.aquaassistant.place.PlaceAccess places) {
         this.repository = repository;
         this.validationChain = validationChain;
         this.classifier = classifier;
@@ -66,6 +68,7 @@ public class MeasurementService {
         this.publisher = publisher;
         this.deviceDirectory = deviceDirectory;
         this.auditService = auditService;
+        this.places = places;
     }
 
     @Transactional(readOnly = true)
@@ -77,6 +80,7 @@ public class MeasurementService {
 
     @Transactional
     public Measurement record(Long userId, NewReading reading) {
+        com.aquaassistant.place.Place place = places.editable(userId, places.activeId(userId));
         WaterProfile profile = profileService.activeProfile(userId);
         ValidationReport report = validationChain.validate(contextFor(userId, reading));
         if (report.isRejected()) {
@@ -85,8 +89,9 @@ public class MeasurementService {
         Classification classification = classifier.classify(reading.ph(), profile);
         Measurement saved = repository.save(new Measurement(userId, reading.deviceId(), profile.getId(), reading.ph(),
             reading.temperatureC(), reading.measuredAt(), reading.source(), classification.nature(),
-            classification.status(), report.status(), report.notes().isBlank() ? null : report.notes(), reading.note()));
-        auditService.record(userId, "MEASUREMENT_SAVED", reading.source() + " pH " + saved.getPh());
+            classification.status(), report.status(), report.notes().isBlank() ? null : report.notes(), reading.note())
+            .in(place.getId(), reading.params()));
+        auditService.record(userId, "MEASUREMENT_SAVED", reading.source() + " pH " + saved.getPh() + " en " + place.getName());
         publisher.publish(saved, profile);
         return saved;
     }
@@ -95,7 +100,7 @@ public class MeasurementService {
     public PageResponse<MeasurementResponse> page(Long userId, Instant from, Instant to, MeasurementSource source,
                                                   PhStatus status, int page, int size) {
         int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
-        Specification<Measurement> spec = Specification.where(ownedBy(userId))
+        Specification<Measurement> spec = Specification.where(inPlace(places.activeId(userId)))
             .and(measuredFrom(from)).and(measuredUntil(to)).and(fromSource(source)).and(withStatus(status));
         Page<Measurement> result = repository.findAll(spec,
             PageRequest.of(Math.max(page, 0), safeSize, Sort.by("measuredAt").descending()));
@@ -105,12 +110,12 @@ public class MeasurementService {
 
     @Transactional(readOnly = true)
     public Optional<MeasurementResponse> latest(Long userId) {
-        return repository.findTopByUserIdOrderByMeasuredAtDesc(userId).map(m -> toResponses(userId, List.of(m)).get(0));
+        return repository.findTopByPlaceIdOrderByMeasuredAtDesc(places.activeId(userId)).map(m -> toResponses(userId, List.of(m)).get(0));
     }
 
     @Transactional(readOnly = true)
     public List<Measurement> between(Long userId, Instant from, Instant to) {
-        return repository.findTop2000ByUserIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(userId, from, to);
+        return repository.findTop2000ByPlaceIdAndMeasuredAtBetweenOrderByMeasuredAtAsc(places.activeId(userId), from, to);
     }
 
     @Transactional(readOnly = true)
@@ -122,7 +127,7 @@ public class MeasurementService {
 
     @Transactional(readOnly = true)
     public Iterator<Measurement> iterate(Long userId, Instant from, Instant to) {
-        return new MeasurementIterator(repository, userId, from, to);
+        return new MeasurementIterator(repository, places.activeId(userId), from, to);
     }
 
     @Transactional(readOnly = true)
@@ -133,6 +138,7 @@ public class MeasurementService {
     @Transactional
     public void delete(Long userId, Long id) {
         Measurement measurement = owned(userId, id);
+        places.editable(userId, measurement.getPlaceId());
         repository.delete(measurement);
         auditService.record(userId, "MEASUREMENT_DELETED", "Medición " + id);
     }
@@ -158,18 +164,19 @@ public class MeasurementService {
                 m.getStatus().name(), m.getStatus().label(), m.getValidationStatus().name(),
                 m.getValidationStatus().label(), m.getValidationNotes(), explanation, profile.getId(),
                 profile.getName(), m.getDeviceId(), m.getDeviceId() == null ? null : deviceNames.get(m.getDeviceId()),
-                m.getNote());
+                m.getNote(), m.getPlaceId(), m.getParams());
         }).toList();
     }
 
     private Measurement owned(Long userId, Long id) {
-        return repository.findById(id).filter(m -> m.getUserId().equals(userId))
+        return repository.findById(id).filter(m -> m.getUserId().equals(userId)
+                || places.roleIn(userId, places.visible(userId, m.getPlaceId())).isPresent())
             .orElseThrow(() -> BusinessException.notFound("La medición no existe."));
     }
 
     private ReadingContext contextFor(Long userId, NewReading reading) {
         return new ReadingContext(reading.ph(), reading.temperatureC(), reading.measuredAt(), reading.source(),
-            repository.findTopByUserIdOrderByMeasuredAtDesc(userId));
+            repository.findTopByPlaceIdOrderByMeasuredAtDesc(places.activeId(userId)));
     }
 
     public record Preview(Classification classification, ValidationReport report, WaterProfile profile) {

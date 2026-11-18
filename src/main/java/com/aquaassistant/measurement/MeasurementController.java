@@ -79,7 +79,7 @@ public class MeasurementController {
         Long userId = CurrentUser.id();
         Instant measuredAt = request.measuredAt() == null ? Instant.now() : request.measuredAt();
         Measurement saved = service.record(userId, new NewReading(request.ph(), request.temperatureC(), measuredAt,
-            MeasurementSource.MANUAL, null, request.note()));
+            MeasurementSource.MANUAL, null, request.note(), request.params()));
         return service.toResponse(userId, saved);
     }
 

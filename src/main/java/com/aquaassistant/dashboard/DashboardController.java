@@ -31,10 +31,16 @@ public class DashboardController {
     private final ProfileService profileService;
     private final DeviceService deviceService;
     private final AlertService alertService;
+    private final com.aquaassistant.place.PlaceAccess places;
+    private final com.aquaassistant.place.PlaceService placeService;
 
     public DashboardController(UserRepository userRepository, MeasurementService measurementService,
                                MeasurementRepository measurementRepository, ProfileService profileService,
-                               DeviceService deviceService, AlertService alertService) {
+                               DeviceService deviceService, AlertService alertService,
+                               com.aquaassistant.place.PlaceAccess places,
+                               com.aquaassistant.place.PlaceService placeService) {
+        this.places = places;
+        this.placeService = placeService;
         this.userRepository = userRepository;
         this.measurementService = measurementService;
         this.measurementRepository = measurementRepository;
@@ -49,11 +55,15 @@ public class DashboardController {
         Long userId = CurrentUser.id();
         User user = userRepository.findById(userId).orElseThrow(() -> BusinessException.notFound("La cuenta no existe."));
         WaterProfile profile = profileService.activeProfile(userId);
+        Long placeId = places.activeId(userId);
+        com.aquaassistant.place.dto.PlaceDtos.PlaceResponse place = placeService.get(userId, placeId);
         String tip = String.format(Locale.US, "Para %s, mantén el pH entre %.1f y %.1f.", profile.getName(),
             profile.getIdealMin(), profile.getIdealMax());
         return new DashboardResponse(user.getFullName(), user.getPlan().name(),
             measurementService.latest(userId).orElse(null), ProfileResponse.from(profile, profile.getId()),
             deviceService.status(userId), alertService.unreadCount(userId), alertService.list(userId, true, 3),
-            measurementRepository.countByUserId(userId), tip, IntelligenceFacade.PH_DISCLAIMER);
+            measurementRepository.countByPlaceId(placeId), tip, IntelligenceFacade.PH_DISCLAIMER, place,
+            com.aquaassistant.place.ParameterGuide.latest(com.aquaassistant.place.PlaceKind.valueOf(place.kind()),
+                measurementRepository.findTop50ByPlaceIdOrderByMeasuredAtDesc(placeId)));
     }
 }

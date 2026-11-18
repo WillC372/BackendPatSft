@@ -16,23 +16,23 @@ public class MeasurementIterator implements Iterator<Measurement> {
     private static final int PAGE_SIZE = 500;
 
     private final MeasurementRepository repository;
-    private final Long userId;
+    private final Long placeId;
     private final Instant from;
     private final Instant to;
     private int pageNumber;
     private Iterator<Measurement> current;
     private boolean lastPage;
 
-    public MeasurementIterator(MeasurementRepository repository, Long userId, Instant from, Instant to) {
+    public MeasurementIterator(MeasurementRepository repository, Long placeId, Instant from, Instant to) {
         this.repository = repository;
-        this.userId = userId;
+        this.placeId = placeId;
         this.from = from;
         this.to = to;
         loadPage();
     }
 
     private void loadPage() {
-        Page<Measurement> page = repository.findByUserIdAndMeasuredAtBetween(userId, from, to,
+        Page<Measurement> page = repository.findByPlaceIdAndMeasuredAtBetween(placeId, from, to,
             PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("measuredAt").ascending().and(Sort.by("id"))));
         current = page.getContent().iterator();
         lastPage = page.isLast();

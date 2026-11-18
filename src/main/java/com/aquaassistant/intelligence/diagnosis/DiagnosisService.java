@@ -125,7 +125,7 @@ public class DiagnosisService {
             note = "La IA generativa no está configurada; se muestra el diagnóstico por reglas.";
         } else {
             try {
-                AiAnswer answer = aiProvider.complete(new AiPrompt(userId, "DIAGNOSIS", SYSTEM_PROMPT, factsJson(facts),
+                AiAnswer answer = aiProvider.complete(new AiPrompt(userId, "DIAGNOSIS", SYSTEM_PROMPT, factsJson(userId, facts),
                     DiagnosisSchema.NAME, DiagnosisSchema.forSources(facts.guidelineIds())));
                 DiagnosisValidator.Result result = validator.validate(answer.text(), facts);
                 diagnosis = result.diagnosis();
@@ -188,7 +188,7 @@ public class DiagnosisService {
             count(current, MeasurementSource.MANUAL), guidelines.forReading(profile, latest, DIAGNOSIS_SOURCES));
     }
 
-    String factsJson(DiagnosisFacts facts) {
+    String factsJson(Long userId, DiagnosisFacts facts) {
         Map<String, Object> root = new LinkedHashMap<>();
         WaterProfile p = facts.profile();
         root.put("profile", Map.of("name", p.getName(), "type", p.getType().label(),
@@ -246,7 +246,7 @@ public class DiagnosisService {
             if (facts.measurements().isEmpty()) {
                 throw new IllegalStateException("no measurements");
             }
-            var neural = deepForecast.forecast(facts.measurements().get(0).getUserId(), false);
+            var neural = deepForecast.forecast(userId, false);
             if (neural.trained() && neural.forecast() != null) {
                 root.put("neuralNetworkForecast", Map.of("modelUsed", neural.evaluation().chosenLabel(),
                     "improvementVsBaselinePct", neural.evaluation().skillPercent(),

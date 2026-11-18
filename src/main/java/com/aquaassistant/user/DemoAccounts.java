@@ -108,6 +108,7 @@ public class DemoAccounts implements ApplicationRunner {
             User user = found.orElseGet(() -> {
                 User created = users.save(new User(kind.email, kind.fullName, encoder.encode(password), Role.USER));
                 settings.save(UserSettings.defaultsFor(created.getId(), profiles.defaultProfile().getId()));
+                profiles.provisionFirstPlace(created.getId());
                 return created;
             });
             user.markDemo();

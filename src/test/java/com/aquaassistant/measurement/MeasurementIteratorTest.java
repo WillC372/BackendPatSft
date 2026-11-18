@@ -23,7 +23,7 @@ class MeasurementIteratorTest {
         MeasurementRepository repository = mock(MeasurementRepository.class);
         List<Measurement> all = IntStream.range(0, 1200)
             .mapToObj(i -> TestData.measurement(i, 7.0, Instant.now(), TestData.pool())).toList();
-        when(repository.findByUserIdAndMeasuredAtBetween(eq(1L), any(), any(), any(Pageable.class))).thenAnswer(inv -> {
+        when(repository.findByPlaceIdAndMeasuredAtBetween(eq(1L), any(), any(), any(Pageable.class))).thenAnswer(inv -> {
             Pageable page = inv.getArgument(3);
             int from = (int) page.getOffset();
             int to = Math.min(from + page.getPageSize(), all.size());

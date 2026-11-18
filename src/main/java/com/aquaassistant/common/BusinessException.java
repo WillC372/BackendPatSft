@@ -23,6 +23,10 @@ public class BusinessException extends RuntimeException {
         return new BusinessException(HttpStatus.BAD_REQUEST, message);
     }
 
+    public static BusinessException forbidden(String message) {
+        return new BusinessException(org.springframework.http.HttpStatus.FORBIDDEN, message);
+    }
+
     public static BusinessException conflict(String message) {
         return new BusinessException(HttpStatus.CONFLICT, message);
     }

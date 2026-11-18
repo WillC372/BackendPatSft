@@ -6,5 +6,6 @@ public record MeasurementResponse(Long id, double ph, Double temperatureC, Insta
                                   String sourceLabel, String nature, String natureLabel, String status,
                                   String statusLabel, String validationStatus, String validationLabel,
                                   String validationNotes, String explanation, Long profileId, String profileName,
-                                  Long deviceId, String deviceName, String note) {
+                                  Long deviceId, String deviceName, String note, Long placeId,
+                                  com.aquaassistant.measurement.WaterParams params) {
 }
