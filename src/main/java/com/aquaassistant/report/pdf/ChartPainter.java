@@ -25,9 +25,9 @@ public final class ChartPainter {
     private static final int R = 24;
     private static final int T = 24;
     private static final int B = 52;
-    private static final DateTimeFormatter DAY = DateTimeFormatter.ofPattern("d MMM", Locale.forLanguageTag("es-CO"))
+    private static final DateTimeFormatter DAY = DateTimeFormatter.ofPattern("dd/MM")
         .withZone(ZoneId.of("America/Bogota"));
-    private static final DateTimeFormatter DAY_HOUR = DateTimeFormatter.ofPattern("d MMM HH:mm", Locale.forLanguageTag("es-CO"))
+    private static final DateTimeFormatter DAY_HOUR = DateTimeFormatter.ofPattern("dd/MM HH:mm")
         .withZone(ZoneId.of("America/Bogota"));
     private static final DateTimeFormatter HOUR = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.of("America/Bogota"));
     private static final DateTimeFormatter SECOND = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.of("America/Bogota"));
@@ -36,6 +36,16 @@ public final class ChartPainter {
     private static final Font BOLD = load("fonts/DejaVuSansBold.ttf");
 
     private ChartPainter() {
+    }
+
+    /** Chinese and Japanese labels (loaded the first time a label needs it). */
+    private static final class Cjk {
+        static final Font FONT = load("fonts/WqyZenHeiCjk.ttf");
+    }
+
+    /** The same font, or the CJK one when the text has characters DejaVu cannot draw. */
+    static Font forText(Font base, String text) {
+        return base.canDisplayUpTo(text) == -1 ? base : Cjk.FONT.deriveFont(base.getStyle(), base.getSize2D());
     }
 
     /** Font bundled with the project: the charts do not depend on the fonts installed on the server. */
@@ -161,7 +171,7 @@ public final class ChartPainter {
             String v = String.valueOf(values.get(i));
             g.drawString(v, x + slot / 4 - g.getFontMetrics().stringWidth(v) / 2, 300 - 70 - bh);
             g.setColor(PdfWriter.MUTED);
-            g.setFont(FONT.deriveFont(20f));
+            g.setFont(forText(FONT.deriveFont(20f), labels.get(i)));
             g.drawString(labels.get(i), x + slot / 4 - g.getFontMetrics().stringWidth(labels.get(i)) / 2, 300 - 26);
             g.setFont(BOLD.deriveFont(22f));
         }

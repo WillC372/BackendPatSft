@@ -72,6 +72,70 @@ public final class PdfWriter implements AutoCloseable {
         return text == null ? null : tr.apply(text);
     }
 
+    /** Chinese and Japanese characters, which DejaVu does not have. Loaded only when a text needs them. */
+    private PDType0Font cjk;
+    private boolean cjkTried;
+
+    private PDType0Font cjk() {
+        if (!cjkTried) {
+            cjkTried = true;
+            try {
+                cjk = load("fonts/WqyZenHeiCjk.ttf");
+            } catch (IOException ex) {
+                cjk = null;
+            }
+        }
+        return cjk;
+    }
+
+    private boolean has(PDType0Font font, int cp) {
+        Map<Integer, Boolean> known = glyphs.computeIfAbsent(font, f -> new HashMap<>());
+        return known.computeIfAbsent(cp, c -> {
+            try {
+                font.encode(new String(Character.toChars(c)));
+                return true;
+            } catch (IOException | IllegalArgumentException ex) {
+                return false;
+            }
+        });
+    }
+
+    /** A piece of text and the font that can draw it. */
+    private record Run(PDType0Font font, String text) {
+    }
+
+    /**
+     * Splits a text into pieces by font: what DejaVu has goes in DejaVu and the rest (Chinese, Japanese) in the CJK
+     * font. A character neither has (an emoji) becomes "?" so the PDF never fails.
+     */
+    private List<Run> runs(String text, PDType0Font base) {
+        List<Run> out = new ArrayList<>();
+        PDType0Font current = null;
+        StringBuilder piece = new StringBuilder();
+        for (int cp : text.replace('\t', ' ').replace('\r', ' ').codePoints().toArray()) {
+            PDType0Font font = base;
+            String ch = new String(Character.toChars(cp));
+            if (!has(base, cp)) {
+                PDType0Font other = cjk();
+                if (other != null && has(other, cp)) {
+                    font = other;
+                } else {
+                    ch = "?";
+                }
+            }
+            if (font != current && piece.length() > 0) {
+                out.add(new Run(current, piece.toString()));
+                piece.setLength(0);
+            }
+            current = font;
+            piece.append(ch);
+        }
+        if (piece.length() > 0) {
+            out.add(new Run(current, piece.toString()));
+        }
+        return out;
+    }
+
     private PDType0Font load(String resource) throws IOException {
         try (InputStream in = PdfWriter.class.getClassLoader().getResourceAsStream(resource)) {
             if (in == null) {
@@ -308,7 +372,7 @@ public final class PdfWriter implements AutoCloseable {
                 writeOn(footerStream, regular, 7.5f, MUTED, MARGIN, 28, fit(footer, regular, 7.5f, width() - 70));
                 String number = t("Página {0} de {1}").replace("{0}", String.valueOf(i + 1)).replace("{1}", String.valueOf(total));
                 writeOn(footerStream, regular, 7.5f, MUTED,
-                    PDRectangle.A4.getWidth() - MARGIN - regular.getStringWidth(clean(number, regular)) / 1000 * 7.5f, 28, number);
+                    PDRectangle.A4.getWidth() - MARGIN - measure(number, regular, 7.5f), 28, number);
             }
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -328,10 +392,12 @@ public final class PdfWriter implements AutoCloseable {
     private void writeOn(PDPageContentStream stream, PDType0Font font, float size, Color color, float x, float baseline,
                          String text) throws IOException {
         stream.beginText();
-        stream.setFont(font, size);
         stream.setNonStrokingColor(color);
         stream.newLineAtOffset(x, baseline);
-        stream.showText(clean(text, font));
+        for (Run run : runs(text, font)) {
+            stream.setFont(run.font(), size);
+            stream.showText(run.text());
+        }
         stream.endText();
     }
 
@@ -355,7 +421,11 @@ public final class PdfWriter implements AutoCloseable {
 
     private float measure(String text, PDType0Font font, float size) {
         try {
-            return font.getStringWidth(clean(text, font)) / 1000 * size;
+            float width = 0;
+            for (Run run : runs(text, font)) {
+                width += run.font().getStringWidth(run.text()) / 1000 * size;
+            }
+            return width;
         } catch (IOException ex) {
             return text.length() * size * 0.55f;
         }
