@@ -161,10 +161,13 @@ public class AiProviderProxy implements AiTextProvider, AiCallListener {
         return usageRepository.countByUserIdAndCachedFalseAndSuccessTrueAndCreatedAtAfter(userId, startOfDay);
     }
 
+    /** Daily AI queries allowed; administrators have no limit ({@link #UNLIMITED}). */
     public int quotaFor(Long userId) {
-        Plan plan = userRepository.findById(userId).map(user -> user.getPlan()).orElse(Plan.FREE);
-        return plan == Plan.PREMIUM ? config.dailyQuotaPremium() : config.dailyQuotaFree();
+        return userRepository.findById(userId).map(user -> user.isUnlimited() ? UNLIMITED
+            : user.getPlan() == Plan.PREMIUM ? config.dailyQuotaPremium() : config.dailyQuotaFree()).orElse(config.dailyQuotaFree());
     }
+
+    public static final int UNLIMITED = Integer.MAX_VALUE;
 
     private AiAnswer readCache(String key) {
         cacheLock.readLock().lock();

@@ -175,6 +175,9 @@ public class AdminUserService {
         if (user.isDemo()) {
             throw BusinessException.conflict(DEMO_LOCKED);
         }
+        if (user.isUnlimited()) {
+            throw BusinessException.conflict("Los administradores no tienen límites: su plan es Premium permanente y no se cambia.");
+        }
         Instant until = change.plan() == Plan.PREMIUM && change.days() != null
             ? Instant.now().plus(Duration.ofDays(change.days())) : null;
         String before = planText(user.getPlan(), user.getPremiumUntil());

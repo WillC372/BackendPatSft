@@ -84,7 +84,14 @@ public class User {
     }
 
     /** Activates the administrator role and closes the open sessions so the new role takes effect. */
+    /** Administrators have no limits: unlimited AI queries and history, and a permanent Premium plan. */
+    public boolean isUnlimited() {
+        return role == Role.ADMIN;
+    }
+
     public void promoteToAdmin() {
+        this.plan = Plan.PREMIUM;
+        this.premiumUntil = null;
         this.role = Role.ADMIN;
         revokeTokens();
     }

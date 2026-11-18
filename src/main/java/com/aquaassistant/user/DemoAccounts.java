@@ -37,8 +37,8 @@ public class DemoAccounts implements ApplicationRunner {
     public enum Kind {
         PREMIUM("premium@demo.aquaassistant", "Usuario Premium Demo", "Usuario Premium",
             "Plan Premium: 200 consultas de IA al día y análisis de hasta 365 días.", Role.USER, Plan.PREMIUM),
-        ADMIN("admin@demo.aquaassistant", "Administración Demo", "Administrador",
-            "Panel de administración en modo de solo lectura.", Role.ADMIN, Plan.FREE);
+        ADMIN("admin@demo.aquaassistant", "Administrador Demo", "Administrador",
+            "Panel de administración en modo de solo lectura, sin límites de IA ni de historial.", Role.ADMIN, Plan.PREMIUM);
 
         final String email;
         final String fullName;
@@ -111,6 +111,9 @@ public class DemoAccounts implements ApplicationRunner {
                 return created;
             });
             user.markDemo();
+            if (!kind.fullName.equals(user.getFullName())) {
+                user.rename(kind.fullName);
+            }
             if (!encoder.matches(password, user.getPasswordHash())) {
                 user.changePassword(encoder.encode(password));
             }

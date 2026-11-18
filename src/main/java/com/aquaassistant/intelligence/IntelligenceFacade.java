@@ -56,6 +56,8 @@ public class IntelligenceFacade {
     private static final int PREMIUM_MAX_DAYS = 365;
     private static final int FREE_MAX_HORIZON = 3;
     private static final int PREMIUM_MAX_HORIZON = 7;
+    /** Administrators analyze their whole history (ten years). */
+    private static final int UNLIMITED_DAYS = 3650;
     private static final int RECOMMENDATION_SOURCES = 3;
     private static final int CHAT_SOURCES = 4;
     private static final String CHAT_CITATION_RULES = """
@@ -405,6 +407,9 @@ public class IntelligenceFacade {
     }
 
     private int maxDays(Long userId) {
+        if (userRepository.findById(userId).map(u -> u.isUnlimited()).orElse(false)) {
+            return UNLIMITED_DAYS;
+        }
         return isPremium(userId) ? PREMIUM_MAX_DAYS : FREE_MAX_DAYS;
     }
 
