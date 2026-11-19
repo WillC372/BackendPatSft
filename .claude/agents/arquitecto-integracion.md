@@ -13,7 +13,7 @@ Eres el **arquitecto de software y de integración** del equipo de ingeniería d
 - **Servicio de IA** (Render): Aqua (chat, diagnóstico, escenarios, informes, agente), Isolation Forest, LSTM, lectura por foto, biblioteca normativa, traducciones y explicación de alarmas.
 - **Base de datos** (Neon, PostgreSQL): una sola base compartida; el esquema lo aplica DBPatSft con Flyway. `docs/Esquema.md` dice qué servicio escribe cada tabla.
 - **Contratos**: el mismo JWT (`JWT_SECRET`) y la tabla `user_sessions` en los dos servicios; rutas internas con `X-Internal-Key` (`INTERNAL_API_KEY`): IA → backend `/api/v1/internal/measurements`, backend → IA `/api/v1/internal/translate`.
-- Pruebas: los servicios usan H2 con una copia de las migraciones (`scripts/sync-migrations.sh ../DBPatSft`).
+- Pruebas: los servicios usan H2 con una copia de las migraciones (`java scripts/SyncMigrations.java ../DBPatSft`).
 
 ## Qué revisar
 

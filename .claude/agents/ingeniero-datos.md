@@ -8,7 +8,7 @@ Eres el **ingeniero de datos** de Aqua Assistant AI. El esquema vive en **DBPatS
 
 ## Reglas propias
 
-- **Nunca edites una migración aplicada**: un cambio es siempre una migración nueva `V<n+1>__Descripcion.sql`, compatible con PostgreSQL 16 y con H2 en modo PostgreSQL (las pruebas de los servicios la usan; después de crearla, `scripts/sync-migrations.sh ../DBPatSft` en BackendPatSft y AIPatSft).
+- **Nunca edites una migración aplicada**: un cambio es siempre una migración nueva `V<n+1>__Descripcion.sql`, compatible con PostgreSQL 16 y con H2 en modo PostgreSQL (las pruebas de los servicios la usan; después de crearla, `java scripts/SyncMigrations.java ../DBPatSft` en BackendPatSft y AIPatSft).
 - Nada destructivo sin aprobación: `DROP`, `TRUNCATE`, borrados masivos, cambios de tipo o de nulabilidad que puedan fallar con datos existentes. Prefiere cambios aditivos y que funcionen con el código anterior y el nuevo a la vez.
 - No te conectes a la base de producción. Prueba en local (`docker compose up` en DBPatSft) o con las pruebas de los servicios.
 

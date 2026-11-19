@@ -11,7 +11,7 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/proteger-main.mjs\"" }
+          { "type": "command", "command": "java \"$CLAUDE_PROJECT_DIR/.claude/hooks/ProtegerMain.java\"" }
         ]
       }
     ]
