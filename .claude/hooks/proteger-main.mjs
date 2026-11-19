@@ -26,18 +26,28 @@ for (const raw of command.split(/&&|\|\||;|\n/)) {
   const part = raw.trim();
   const cd = part.match(/^cd\s+("([^"]+)"|'([^']+)'|(\S+))/);
   if (cd) { const target = cd[2] || cd[3] || cd[4]; dir = path.resolve(dir, target.replace(/^~(?=\/|$)/, process.env.HOME || "~")); continue; }
-  const git = part.match(/\bgit\b(?:\s+-C\s+("[^"]+"|'[^']+'|\S+))?\s+(.*)$/);
+  const git = part.match(/\bgit\s+(.*)$/);
   if (!git) continue;
-  const where = git[1] ? path.resolve(dir, git[1].replace(/^["']|["']$/g, "")) : dir;
-  const args = git[2];
+  // Global options before the subcommand (-C dir, -c key=value, --no-pager, --git-dir=...) are skipped; -C changes the folder.
+  let rest = git[1];
+  let where = dir;
+  for (;;) {
+    const opt = rest.match(/^(-C|-c|--git-dir|--work-tree|--namespace)(?:\s+|=)("[^"]+"|'[^']+'|\S+)\s+/) || rest.match(/^(--[\w-]+(?:=\S+)?|-[pP])\s+/);
+    if (!opt) break;
+    if (opt[1] === "-C") where = path.resolve(where, opt[2].replace(/^["']|["']$/g, ""));
+    rest = rest.slice(opt[0].length);
+  }
+  const args = rest;
   const onMain = () => ["main", "master"].includes(branchIn(where));
-  const sw = args.match(/^(?:switch|checkout)\s+(?:-[cCbB]\s+)?([^\s-][^\s]*)/);
+  const sw = args.match(/^(?:switch|checkout)\s+(?:(?:-[cCbB]|--create|--force-create)\s+)?([^\s-][^\s]*)/);
   if (sw && !/^checkout\s+--\s/.test(args)) { switched.set(where, sw[1].replace(/^origin\//, "")); continue; }
   if (/^push\b/.test(args)) {
     if (/(^|\s)(-f|--force|--force-with-lease|--mirror|--delete|-d)(\s|=|$)/.test(args)) block("push forzado o que borra ramas");
     if (/(^|[\s:+])(refs\/heads\/)?(main|master)(\s|$)/.test(args)) block("push a main");
     const refs = args.replace(/^push\s*/, "").split(/\s+/).filter((a) => a && !a.startsWith("-"));
-    if (refs.length < 2 && onMain()) block("push desde main");
+    if (refs.slice(1).some((r) => r.startsWith("+"))) block("push forzado o que borra ramas");
+    // Without a branch, or with HEAD, the push goes to the branch you are on.
+    if ((refs.length < 2 || refs.slice(1).some((r) => /^HEAD(:|$)/.test(r))) && onMain()) block("push desde main");
   }
   if (/^commit\b/.test(args) && onMain()) block("commit en main");
   if (/^merge\b/.test(args) && onMain()) block("merge en main");
