@@ -22,7 +22,7 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
-  # The schema belongs to the database repository (DatabasePatSft), which applies the migrations to Neon.
+  # The schema belongs to the database repository (DBPatSft), which applies the migrations to Neon.
   flyway:
     enabled: ${FLYWAY_ENABLED:false}
   servlet:
@@ -66,7 +66,7 @@ springdoc:
     enabled: ${API_DOCS_ENABLED:false}
 
 aquasense:
-  # The AI service (AiPatSft): the emails and notices ask it for the translations they do not find in the shared table.
+  # The AI service (AIPatSft): the emails and notices ask it for the translations they do not find in the shared table.
   # INTERNAL_API_KEY is the key both services share for their calls to each other (photo readings, translations).
   ai-service:
     url: ${AI_SERVICE_URL:http://localhost:8081}

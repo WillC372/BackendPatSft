@@ -7,7 +7,7 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none
-  # Tests build the schema with a copy of the migrations of DatabasePatSft (scripts/sync-migrations.sh).
+  # Tests build the schema with a copy of the migrations of DBPatSft (scripts/sync-migrations.sh).
   flyway:
     enabled: true
   mail:

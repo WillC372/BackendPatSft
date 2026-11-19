@@ -1,13 +1,13 @@
 # Despliegue en internet
 
-> **Separación en servicios (19 nov 2026).** La IA (los paquetes `intelligence`, `knowledge`, `vision` y `report`, y la traducción de la interfaz) se movió al servicio [AiPatSft](https://github.com/WillC372/AiPatSft), y el esquema de la base de datos al repositorio [DatabasePatSft](https://github.com/WillC372/DatabasePatSft). Lo que este documento dice de esos paquetes ahora vale para AiPatSft.
+> **Separación en servicios (19 nov 2026).** La IA (los paquetes `intelligence`, `knowledge`, `vision` y `report`, y la traducción de la interfaz) se movió al servicio [AIPatSft](https://github.com/WillC372/AIPatSft), y el esquema de la base de datos al repositorio [DBPatSft](https://github.com/WillC372/DBPatSft). Lo que este documento dice de esos paquetes ahora vale para AIPatSft.
 
 ## Servicio de IA y base de datos
 
 Desde la separación, la aplicación son tres despliegues más la base de datos:
 
-1. **Base de datos (DatabasePatSft).** En el repositorio, *Settings → Secrets and variables → Actions → New repository secret*: `DATABASE_URL` con la misma cadena de Neon que usa el backend. El flujo *Migraciones* prueba las migraciones en una base vacía y las aplica a Neon en cada cambio de `main` (también se corre a mano desde *Actions*). Las 24 migraciones actuales ya están aplicadas en Neon, así que la primera ejecución solo las valida.
-2. **Servicio de IA (AiPatSft).** En Render, *New → Blueprint* y elegir el repositorio. Pide `DATABASE_URL` (la misma), `JWT_SECRET` (copiarla del backend: *Environment* del servicio del backend), `INTERNAL_API_KEY` (una clave nueva de 16 caracteres o más, por ejemplo la salida de `openssl rand -hex 32`) y las claves `GEMINI_API_KEY` y `GROQ_API_KEY` (las que tenía el backend). No se mantiene despierto: el plan gratuito tiene 750 horas al mes para todos los servicios y el backend las usa.
+1. **Base de datos (DBPatSft).** En el repositorio, *Settings → Secrets and variables → Actions → New repository secret*: `DATABASE_URL` con la misma cadena de Neon que usa el backend. El flujo *Migraciones* prueba las migraciones en una base vacía y las aplica a Neon en cada cambio de `main` (también se corre a mano desde *Actions*). Las 24 migraciones actuales ya están aplicadas en Neon, así que la primera ejecución solo las valida.
+2. **Servicio de IA (AIPatSft).** En Render, *New → Blueprint* y elegir el repositorio. Pide `DATABASE_URL` (la misma), `JWT_SECRET` (copiarla del backend: *Environment* del servicio del backend), `INTERNAL_API_KEY` (una clave nueva de 16 caracteres o más, por ejemplo la salida de `openssl rand -hex 32`) y las claves `GEMINI_API_KEY` y `GROQ_API_KEY` (las que tenía el backend). No se mantiene despierto: el plan gratuito tiene 750 horas al mes para todos los servicios y el backend las usa.
 3. **Backend.** En *Environment* agregar `INTERNAL_API_KEY` con el mismo valor del paso 2 y `AI_SERVICE_URL=https://aquasense-ai-willc372.onrender.com`. Las claves de Gemini y Groq ya no hacen falta aquí.
 4. **Frontend.** No necesita cambios: `Config.js` ya apunta al servicio de IA para todo lo de Aqua.
 
