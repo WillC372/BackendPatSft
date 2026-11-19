@@ -269,12 +269,13 @@ El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENAB
 mvn test
 ```
 
-104 pruebas automatizadas (las de la IA están en AIPatSft). Cubren:
+111 pruebas automatizadas (las de la IA están en AIPatSft). Cubren:
 
 - Patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados.
 - El flujo completo de la API: registro, aislamiento entre usuarios, simulador, cierre de sesión y roles.
 - El historial de sesiones y las cuentas de demostración con sus límites.
 - La importación de datos oficiales con respuestas grabadas del USGS.
+- La alarma por alteración del pH: caída en una piscina (peligroso, salir del agua), cambio que crece con un medidor cada 10 s, consejo por tipo de agua, entrada en nivel crítico, y una sola alerta para varias lecturas seguidas.
 - Las rutas internas con la clave compartida y la traducción de correos: primero la tabla compartida, luego el servicio de IA, y en español si no responde.
 
 Se ejecutan con H2 en modo PostgreSQL y una copia de las migraciones de DBPatSft (`scripts/sync-migrations.sh ../DBPatSft` la actualiza); para correrlas contra PostgreSQL real:
@@ -284,7 +285,7 @@ mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test
   -Dspring.datasource.username=aquasense -Dspring.datasource.password=TU_CLAVE
 ```
 
-Último resultado (19 nov 2026): 104/104 aprobadas.
+GitHub Actions las corre en cada cambio de `main` (`.github/workflows/Tests.yml`). Último resultado (19 nov 2026): 111/111 aprobadas, en local y en GitHub Actions.
 
 ## Despliegue
 
