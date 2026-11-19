@@ -24,9 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlaceController {
 
     private final PlaceService service;
+    private final OfficialDataService officialData;
 
-    public PlaceController(PlaceService service) {
+    public PlaceController(PlaceService service, OfficialDataService officialData) {
         this.service = service;
+        this.officialData = officialData;
     }
 
     @GetMapping
@@ -54,6 +56,20 @@ public class PlaceController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(CurrentUser.id(), id);
+    }
+
+    /** Loads the official readings of a USGS station into the place (one per hour, labeled «Dato oficial del USGS»). */
+    @PostMapping("/{id}/official-data")
+    public OfficialDataService.Result loadOfficial(@PathVariable Long id, @RequestBody OfficialRequest request) {
+        return officialData.load(CurrentUser.id(), id, request.stationId(), request.days() == null ? 30 : request.days());
+    }
+
+    @DeleteMapping("/{id}/official-data")
+    public java.util.Map<String, Integer> removeOfficial(@PathVariable Long id) {
+        return java.util.Map.of("removed", officialData.remove(CurrentUser.id(), id));
+    }
+
+    public record OfficialRequest(String stationId, Integer days) {
     }
 
     @PostMapping("/{id}/activate")

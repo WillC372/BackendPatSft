@@ -33,6 +33,11 @@ public interface MeasurementRepository extends JpaRepository<Measurement, Long>,
 
     long countByPlaceId(Long placeId);
 
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("delete from Measurement m where m.placeId = :placeId and m.source = :source")
+    int deleteByPlaceIdAndSource(@org.springframework.data.repository.query.Param("placeId") Long placeId,
+                                 @org.springframework.data.repository.query.Param("source") MeasurementSource source);
+
     /** Measurements per user for one page of the administration list (one query, not one per row). */
     @org.springframework.data.jpa.repository.Query("select m.userId, count(m) from Measurement m where m.userId in :userIds group by m.userId")
     List<Object[]> countByUserIds(java.util.Collection<Long> userIds);

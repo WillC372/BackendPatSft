@@ -28,6 +28,7 @@ Los dos servicios usan la misma base de datos y la misma sesión: el servicio de
 - Validar cada lectura (cadena de validación) y clasificarla según el perfil de agua activo.
 - Hablar con el medidor por puerto serie: búsqueda, conexión, medición estabilizada, calibración y transmisión en vivo (Server-Sent Events).
 - Generar **alertas** al guardar cada medición con reglas fijas: fuera del rango del perfil, **alteración del pH** y valor atípico (`alert/analysis`). El Isolation Forest y el resto de análisis están en el servicio de IA.
+- **Datos oficiales del USGS en un lugar** (`place/OfficialDataService`, `POST/DELETE /api/v1/places/{id}/official-data`): carga en un lugar las lecturas reales de una estación del USGS que ya se importan (una por hora, hasta 30 días) con origen `OFFICIAL` («Dato oficial del USGS»), sin alertas ni validación de lecturas nuevas y sin repetir horas ya cargadas. Sirven para ver los análisis con días de datos reales antes de tener mediciones propias; nunca se presentan como mediciones de la persona y se pueden quitar.
 - **Alteración del pH** (`PhAlterationRule`): si el pH cambia 0,5 o más frente a cualquier medición de la última hora (también con un medidor que mide cada 10 s y un cambio que crece en varios minutos), o si entra en nivel crítico, se crea la alerta «Alteración del pH en el agua» (`kind` = `PH_ALTERATION`). El mensaje dice si es peligroso según los rangos del perfil (crítico = peligroso) y qué hacer según el tipo de agua (piscina: salir del agua; acuario: los peces corren peligro; agua potable: no tomarla; riego: no regar). El aviso al celular o computador va como urgente (`Urgency: high`), queda en pantalla y vibra; la app hace sonar la alarma y Aqua lo dice en voz alta. La misma alerta no se repite en el mismo lugar durante 30 minutos (salvo que se vuelva peligrosa).
 - Separar las mediciones por **lugar** (piscina, acuario, tanque...) y **compartir** un lugar con un código (rol solo ver o ver y medir).
 - Guardar **otros parámetros** (cloro libre, alcalinidad, dureza cálcica, ácido cianúrico), **tratamientos**, **recordatorios** e **historial de calibraciones**.
@@ -269,7 +270,7 @@ El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENAB
 mvn test
 ```
 
-111 pruebas automatizadas (las de la IA están en AIPatSft). Cubren:
+112 pruebas automatizadas (las de la IA están en AIPatSft). Cubren:
 
 - Patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados.
 - El flujo completo de la API: registro, aislamiento entre usuarios, simulador, cierre de sesión y roles.
@@ -285,7 +286,7 @@ mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test
   -Dspring.datasource.username=aquasense -Dspring.datasource.password=TU_CLAVE
 ```
 
-GitHub Actions las corre en cada cambio de `main` (`.github/workflows/Tests.yml`). Último resultado (19 nov 2026): 111/111 aprobadas, en local y en GitHub Actions.
+GitHub Actions las corre en cada cambio de `main` (`.github/workflows/Tests.yml`). Último resultado (19 nov 2026): 112/112 aprobadas, en local y en GitHub Actions.
 
 ## Despliegue
 
