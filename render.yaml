@@ -31,7 +31,7 @@ services:
         value: https://frontendpatsft.vercel.app/#/billing
       - key: PAYMENTS_CONFIRMATION_URL
         value: https://aquasense-backend-willc372.onrender.com/api/v1/payments/payu/confirmation
-      # The AI service (AiPatSft) and the key both services share for their internal calls (photo readings and
+      # The AI service (AIPatSft) and the key both services share for their internal calls (photo readings and
       # translations). INTERNAL_API_KEY must have the same value here and in the AI service (e.g. openssl rand -hex 32).
       - key: AI_SERVICE_URL
         value: https://aquasense-ai-willc372.onrender.com

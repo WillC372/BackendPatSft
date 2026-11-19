@@ -1,6 +1,6 @@
 # Arquitectura · Aqua Assistant AI
 
-> **Separación en servicios (19 nov 2026).** La IA (los paquetes `intelligence`, `knowledge`, `vision` y `report`, y la traducción de la interfaz) se movió al servicio [AiPatSft](https://github.com/WillC372/AiPatSft), y el esquema de la base de datos al repositorio [DatabasePatSft](https://github.com/WillC372/DatabasePatSft). Lo que este documento dice de esos paquetes ahora vale para AiPatSft.
+> **Separación en servicios (19 nov 2026).** La IA (los paquetes `intelligence`, `knowledge`, `vision` y `report`, y la traducción de la interfaz) se movió al servicio [AIPatSft](https://github.com/WillC372/AIPatSft), y el esquema de la base de datos al repositorio [DBPatSft](https://github.com/WillC372/DBPatSft). Lo que este documento dice de esos paquetes ahora vale para AIPatSft.
 
 ## Vista general
 

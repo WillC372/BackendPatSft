@@ -8,8 +8,8 @@ El proyecto está en cuatro repositorios:
 |---|---|---|
 | [FrontendPatSft](https://github.com/WillC372/FrontendPatSft) | La aplicación web | Vercel |
 | **BackendPatSft** (este) | API principal | Render |
-| [AiPatSft](https://github.com/WillC372/AiPatSft) | Servicio de IA: Aqua (chat), diagnóstico, anomalías, predicción, LSTM, Isolation Forest, simulador, agente de informes, informes PDF, lectura de fotos, biblioteca normativa y traducciones | Render |
-| [DatabasePatSft](https://github.com/WillC372/DatabasePatSft) | Esquema y migraciones de la base de datos | Neon (PostgreSQL) |
+| [AIPatSft](https://github.com/WillC372/AIPatSft) | Servicio de IA: Aqua (chat), diagnóstico, anomalías, predicción, LSTM, Isolation Forest, simulador, agente de informes, informes PDF, lectura de fotos, biblioteca normativa y traducciones | Render |
+| [DBPatSft](https://github.com/WillC372/DBPatSft) | Esquema y migraciones de la base de datos | Neon (PostgreSQL) |
 
 Los dos servicios usan la misma base de datos y la misma sesión: el servicio de IA acepta el token que entrega este backend (misma `JWT_SECRET`) y comprueba en la base que la sesión siga abierta. Entre ellos hablan por dos rutas internas protegidas con la clave compartida `INTERNAL_API_KEY`: el servicio de IA envía aquí las mediciones leídas de una foto (para que se validen y generen alertas como cualquier otra) y este backend le pide la traducción de los correos y avisos que todavía no estén en la tabla compartida.
 
@@ -56,7 +56,7 @@ src/main/java/com/aquaassistant/
 └── dashboard/      Consulta agregada para la pantalla de inicio
 src/main/resources/
 └── application.yml
-src/test/resources/db/migration/   Copia de las migraciones de DatabasePatSft para las pruebas (scripts/sync-migrations.sh)
+src/test/resources/db/migration/   Copia de las migraciones de DBPatSft para las pruebas (scripts/sync-migrations.sh)
 hardware/Esp32PhSensor/    Medidor casero ESP32 + PH-4502C: firmware, pruebas, proyecto KiCad (esquemático, PCB, 3D), protoboard y Wokwi
 docs/                        Documentación técnica
 ```
@@ -76,7 +76,7 @@ Una base de datos creada antes del cambio de nombre de las migraciones necesita 
 |---|---|
 | Lenguaje | Java 21 |
 | Framework | Spring Boot 3.4.5 (Web, Data JPA, Security, Validation, Mail, Actuator) |
-| Base de datos | PostgreSQL 16 (Neon); el esquema lo aplica el repositorio DatabasePatSft con Flyway |
+| Base de datos | PostgreSQL 16 (Neon); el esquema lo aplica el repositorio DBPatSft con Flyway |
 | Seguridad | JWT HS256 (jjwt 0.12.6), contraseñas con Argon2id (Bouncy Castle) |
 | Hardware | jSerialComm 2.11.0 (USB serie y Bluetooth clásico SPP) |
 | Documentación de la API | springdoc-openapi 2.8.6 (Swagger UI) |
@@ -126,7 +126,7 @@ docker compose --env-file .env up --build
 | `DB_URL`, `DB_USER`, `DB_PASSWORD` | Sí | Conexión a PostgreSQL (o `DATABASE_URL` con la cadena de Neon) |
 | `AI_SERVICE_URL` | No | Dirección del servicio de IA, para traducir correos y avisos (`http://localhost:8081`) |
 | `INTERNAL_API_KEY` | No | Clave que comparten este backend y el servicio de IA para sus llamadas internas (16 caracteres o más, la misma en los dos). Sin ella no se guardan las lecturas por foto |
-| `FLYWAY_ENABLED` | No | `false`: el esquema lo aplica DatabasePatSft. Ponlo en `true` solo para crear una base local vacía con la copia de las pruebas |
+| `FLYWAY_ENABLED` | No | `false`: el esquema lo aplica DBPatSft. Ponlo en `true` solo para crear una base local vacía con la copia de las pruebas |
 | `JWT_SECRET` | Sí | Clave de firma de tokens, mínimo 32 caracteres. Sin ella el servidor no arranca |
 | `PORT` | No | Puerto HTTP (8080) |
 | `CORS_ORIGINS` | No | Orígenes permitidos para el frontend |
@@ -169,7 +169,7 @@ Todas las rutas están versionadas bajo `/api/v1`. Grupos: `auth`, `users/me` (i
 
 ## La IA de Aqua
 
-Está en su propio servicio, [AiPatSft](https://github.com/WillC372/AiPatSft): chat con memoria y citas, diagnóstico, anomalías, tendencias y predicción, recomendaciones con respaldo normativo, simulador de escenarios, Isolation Forest y red LSTM por lugar, agente de informes, informes en PDF, lectura de pH por foto, biblioteca normativa, consumo y costos, y las traducciones de la interfaz. Su README explica cada función.
+Está en su propio servicio, [AIPatSft](https://github.com/WillC372/AIPatSft): chat con memoria y citas, diagnóstico, anomalías, tendencias y predicción, recomendaciones con respaldo normativo, simulador de escenarios, Isolation Forest y red LSTM por lugar, agente de informes, informes en PDF, lectura de pH por foto, biblioteca normativa, consumo y costos, y las traducciones de la interfaz. Su README explica cada función.
 
 ## Historial de sesiones
 
@@ -232,7 +232,7 @@ Cada cambio queda dos veces en la auditoría: como acción del administrador y e
 
 ## Informes en PDF
 
-Los genera el servicio de IA ([AiPatSft](https://github.com/WillC372/AiPatSft#informes-en-pdf)).
+Los genera el servicio de IA ([AIPatSft](https://github.com/WillC372/AIPatSft#informes-en-pdf)).
 
 ## Pagos
 
@@ -268,7 +268,7 @@ El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENAB
 mvn test
 ```
 
-104 pruebas automatizadas (las de la IA están en AiPatSft). Cubren:
+104 pruebas automatizadas (las de la IA están en AIPatSft). Cubren:
 
 - Patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados.
 - El flujo completo de la API: registro, aislamiento entre usuarios, simulador, cierre de sesión y roles.
@@ -276,7 +276,7 @@ mvn test
 - La importación de datos oficiales con respuestas grabadas del USGS.
 - Las rutas internas con la clave compartida y la traducción de correos: primero la tabla compartida, luego el servicio de IA, y en español si no responde.
 
-Se ejecutan con H2 en modo PostgreSQL y una copia de las migraciones de DatabasePatSft (`scripts/sync-migrations.sh ../DatabasePatSft` la actualiza); para correrlas contra PostgreSQL real:
+Se ejecutan con H2 en modo PostgreSQL y una copia de las migraciones de DBPatSft (`scripts/sync-migrations.sh ../DBPatSft` la actualiza); para correrlas contra PostgreSQL real:
 
 ```bash
 mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test \
@@ -287,13 +287,13 @@ mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test
 
 ## Despliegue
 
-Publicado en **Render** (backend y servicio de IA con Docker, plan gratuito), **Neon** (PostgreSQL, esquema aplicado por DatabasePatSft) y **Vercel** (frontend). La guía paso a paso está en [`docs/Deployment.md`](docs/Deployment.md).
+Publicado en **Render** (backend y servicio de IA con Docker, plan gratuito), **Neon** (PostgreSQL, esquema aplicado por DBPatSft) y **Vercel** (frontend). La guía paso a paso está en [`docs/Deployment.md`](docs/Deployment.md).
 
 | Parte | Dirección |
 |---|---|
 | Aplicación | https://frontendpatsft.vercel.app |
 | API | https://aquasense-backend-willc372.onrender.com/api/v1 (salud: `/actuator/health`; para pings que la mantengan despierta: `/actuator/health/liveness`) |
-| Servicio de IA | https://aquasense-ai-willc372.onrender.com/api/v1 ([AiPatSft](https://github.com/WillC372/AiPatSft)) |
+| Servicio de IA | https://aquasense-ai-willc372.onrender.com/api/v1 ([AIPatSft](https://github.com/WillC372/AIPatSft)) |
 
 Verificado en producción: el formulario de registro y el de medición de la página de Vercel llaman a la API de Render y guardan en Neon; CORS acepta solo el dominio de Vercel (otro origen recibe 403); el correo está configurado.
 
