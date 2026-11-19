@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 class DeviceConnectionStateTest {
 
-    private final DeviceConnection connection = new DeviceConnection(TestData.properties(null, 5));
+    private final DeviceConnection connection = new DeviceConnection(TestData.properties());
     private final ConnectionSession session = new ConnectionSession(1L, 10L, "Simulador");
 
     @AfterEach

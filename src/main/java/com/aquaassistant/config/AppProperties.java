@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Spring creates it only once (singleton managed by the container).
  */
 @ConfigurationProperties(prefix = "aquasense")
-public record AppProperties(Security security, Cors cors, Mail mail, Ai ai, Device device) {
+public record AppProperties(Security security, Cors cors, Mail mail, Device device) {
 
     public record Security(String jwtSecret, int accessTokenHours, int rememberMeDays, String adminEmail,
                            int rateLimitPerMinute) {
@@ -27,33 +27,6 @@ public record AppProperties(Security security, Cors cors, Mail mail, Ai ai, Devi
             if (frontendAdminVerifyUrl == null || frontendAdminVerifyUrl.isBlank()) {
                 frontendAdminVerifyUrl = frontendResetUrl == null ? null : frontendResetUrl.replace("reset-password", "verify-admin");
             }
-        }
-    }
-
-    public record Ai(String apiKey, String model, String effort, long maxTokens,
-                     int dailyQuotaFree, int dailyQuotaPremium, int cacheMinutes, List<Provider> providers) {
-
-        public Ai {
-            providers = providers == null ? List.of() : List.copyOf(providers);
-        }
-
-        public boolean isConfigured() {
-            return apiKey != null && !apiKey.isBlank();
-        }
-    }
-
-    /**
-     * Provider with an OpenAI-compatible API (Gemini, Groq or another). The list order is the fallback order.
-     */
-    /**
-     * {@code fast}: the model answers in a few seconds, so it goes first for interactive requests (chat, conclusion).
-     * {@code reasoningEffort}: optional "reasoning_effort" sent to models that think before answering (for example "low").
-     */
-    public record Provider(String id, String label, String baseUrl, String apiKey, String model, int timeoutSeconds,
-                           boolean vision, boolean tools, boolean fast, String reasoningEffort) {
-
-        public boolean isConfigured() {
-            return apiKey != null && !apiKey.isBlank() && model != null && !model.isBlank();
         }
     }
 

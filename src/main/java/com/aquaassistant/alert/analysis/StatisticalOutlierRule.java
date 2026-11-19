@@ -1,0 +1,43 @@
+package com.aquaassistant.alert.analysis;
+
+import com.aquaassistant.measurement.Measurement;
+import com.aquaassistant.profile.WaterProfile;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+/**
+ * Robust z-score (Iglewicz and Hoaglin): z = 0.6745 * (x - median) / MAD.
+ * With |z| > 3.5 the value is an outlier compared with the user's recent history.
+ */
+@Component
+@Order(3)
+public class StatisticalOutlierRule implements AnomalyRule {
+
+    static final int MIN_HISTORY = 10;
+    static final int WINDOW = 50;
+    private static final double THRESHOLD = 3.5;
+    private static final double MIN_MAD = 0.02;
+
+    @Override
+    public Optional<Anomaly> evaluate(Measurement current, List<Measurement> previous, WaterProfile profile) {
+        if (previous.size() < MIN_HISTORY) {
+            return Optional.empty();
+        }
+        double[] values = previous.subList(Math.max(0, previous.size() - WINDOW), previous.size()).stream()
+            .mapToDouble(Measurement::getPh).toArray();
+        double median = Statistics.median(values);
+        double mad = Math.max(Statistics.medianAbsoluteDeviation(values), MIN_MAD);
+        double score = 0.6745 * (current.getPh() - median) / mad;
+        if (Math.abs(score) <= THRESHOLD) {
+            return Optional.empty();
+        }
+        String message = String.format(Locale.US,
+            "pH %.2f es inusual frente a tus últimas %d mediciones (mediana %.2f, puntaje z robusto %.1f).",
+            current.getPh(), values.length, median, score);
+        return Optional.of(new Anomaly("STATISTICAL_OUTLIER", Anomaly.Severity.CAUTION, "Valor atípico",
+            message, current.getId(), current.getMeasuredAt(), current.getPh()));
+    }
+}

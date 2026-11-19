@@ -2,7 +2,6 @@ package com.aquaassistant.user;
 
 import com.aquaassistant.audit.AuditService;
 import com.aquaassistant.common.BusinessException;
-import com.aquaassistant.vision.ImageSanitizer;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;

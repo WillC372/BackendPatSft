@@ -1,5 +1,7 @@
 # Catálogo de patrones de diseño · Aqua Assistant AI
 
+> **Separación en servicios (19 nov 2026).** La IA (los paquetes `intelligence`, `knowledge`, `vision` y `report`, y la traducción de la interfaz) se movió al servicio [AiPatSft](https://github.com/WillC372/AiPatSft), y el esquema de la base de datos al repositorio [DatabasePatSft](https://github.com/WillC372/DatabasePatSft). Lo que este documento dice de esos paquetes ahora vale para AiPatSft.
+
 Cada patrón resuelve un problema concreto del producto y tiene una prueba que lo ejercita. Los nombres de las pruebas corresponden a `src/test/java`.
 
 | Patrón | Categoría | Problema que resuelve | Clases | Prueba |

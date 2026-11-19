@@ -25,9 +25,9 @@ public class MailLocalizer {
 
     private final UserRepository users;
     private final UserLanguage language;
-    private final TranslationService translations;
+    private final TranslationClient translations;
 
-    public MailLocalizer(UserRepository users, UserLanguage language, TranslationService translations) {
+    public MailLocalizer(UserRepository users, UserLanguage language, TranslationClient translations) {
         this.users = users;
         this.language = language;
         this.translations = translations;

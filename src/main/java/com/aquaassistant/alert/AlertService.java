@@ -1,8 +1,8 @@
 package com.aquaassistant.alert;
 
 import com.aquaassistant.common.BusinessException;
-import com.aquaassistant.intelligence.analysis.Anomaly;
-import com.aquaassistant.intelligence.analysis.AnomalyDetector;
+import com.aquaassistant.alert.analysis.Anomaly;
+import com.aquaassistant.alert.analysis.AnomalyDetector;
 import com.aquaassistant.measurement.Measurement;
 import com.aquaassistant.measurement.MeasurementListener;
 import com.aquaassistant.measurement.MeasurementRepository;

@@ -31,12 +31,11 @@ public final class TestData {
         return m;
     }
 
-    public static AppProperties properties(String apiKey, int freeQuota) {
+    public static AppProperties properties() {
         return new AppProperties(
             new AppProperties.Security("test-secret-key-that-is-long-enough-for-hs256-signing", 8, 30, null, 10),
             new AppProperties.Cors(List.of("http://localhost:5500")),
             new AppProperties.Mail("test@aquasense.local", "http://localhost:5500/#/reset-password", false, null),
-            new AppProperties.Ai(apiKey, "claude-opus-5-5", "low", 16000, freeQuota, 100, 10, java.util.List.of()),
             new AppProperties.Device(20, 3, true));
     }
 

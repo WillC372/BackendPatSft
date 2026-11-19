@@ -3,7 +3,6 @@ package com.aquaassistant.dashboard;
 import com.aquaassistant.alert.AlertService;
 import com.aquaassistant.common.BusinessException;
 import com.aquaassistant.device.DeviceService;
-import com.aquaassistant.intelligence.IntelligenceFacade;
 import com.aquaassistant.measurement.MeasurementRepository;
 import com.aquaassistant.measurement.MeasurementService;
 import com.aquaassistant.profile.ProfileService;
@@ -24,6 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/dashboard")
 public class DashboardController {
+
+    /** The same notice the AI service shows next to its analyses. */
+    public static final String PH_DISCLAIMER =
+        "El pH por sí solo no demuestra que el agua sea potable ni que esté libre de contaminantes.";
 
     private final UserRepository userRepository;
     private final MeasurementService measurementService;
@@ -62,7 +65,7 @@ public class DashboardController {
         return new DashboardResponse(user.getFullName(), user.getPlan().name(),
             measurementService.latest(userId).orElse(null), ProfileResponse.from(profile, profile.getId()),
             deviceService.status(userId), alertService.unreadCount(userId), alertService.list(userId, true, 3),
-            measurementRepository.countByPlaceId(placeId), tip, IntelligenceFacade.PH_DISCLAIMER, place,
+            measurementRepository.countByPlaceId(placeId), tip, PH_DISCLAIMER, place,
             com.aquaassistant.place.ParameterGuide.latest(com.aquaassistant.place.PlaceKind.valueOf(place.kind()),
                 measurementRepository.findTop50ByPlaceIdOrderByMeasuredAtDesc(placeId)));
     }

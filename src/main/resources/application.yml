@@ -22,8 +22,9 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+  # The schema belongs to the database repository (DatabasePatSft), which applies the migrations to Neon.
   flyway:
-    enabled: true
+    enabled: ${FLYWAY_ENABLED:false}
   servlet:
     multipart:
       max-file-size: 10MB
@@ -65,6 +66,11 @@ springdoc:
     enabled: ${API_DOCS_ENABLED:false}
 
 aquasense:
+  # The AI service (AiPatSft): the emails and notices ask it for the translations they do not find in the shared table.
+  # INTERNAL_API_KEY is the key both services share for their calls to each other (photo readings, translations).
+  ai-service:
+    url: ${AI_SERVICE_URL:http://localhost:8081}
+  internal-key: ${INTERNAL_API_KEY:}
   reference:
     enabled: ${REFERENCE_DATA_ENABLED:true}
     base-url: https://api.waterdata.usgs.gov/ogcapi/v0
@@ -91,56 +97,6 @@ aquasense:
     frontend-admin-verify-url: ${FRONTEND_ADMIN_VERIFY_URL:http://localhost:5500/#/verify-admin}
     # DEVELOPMENT ONLY: without an email channel, writes the recovery link to the log. Never enable it in production.
     log-reset-links: ${MAIL_LOG_RESET_LINKS:false}
-  ai:
-    api-key: ${ANTHROPIC_API_KEY:}
-    model: ${AI_MODEL:claude-opus-5-5}
-    effort: ${AI_EFFORT:low}
-    max-tokens: 16000
-    daily-quota-free: ${AI_DAILY_QUOTA_FREE:20}
-    daily-quota-premium: ${AI_DAILY_QUOTA_PREMIUM:200}
-    cache-minutes: 10
-    # Fallback chain: every provider is tried in order; if all fail, the built-in rules are used.
-    providers:
-      - id: gemini
-        label: Google Gemini
-        base-url: https://generativelanguage.googleapis.com/v1beta/openai
-        api-key: ${GEMINI_API_KEY:}
-        model: ${GEMINI_MODEL:gemini-3.5-flash}
-        timeout-seconds: 45
-        vision: true
-        tools: true
-      - id: gemini-lite
-        label: Google Gemini
-        base-url: https://generativelanguage.googleapis.com/v1beta/openai
-        api-key: ${GEMINI_API_KEY:}
-        model: ${GEMINI_FALLBACK_MODEL:gemini-3.5-flash-lite}
-        timeout-seconds: 30
-        vision: true
-        tools: true
-        fast: true
-      - id: groq
-        label: Groq
-        base-url: https://api.groq.com/openai/v1
-        api-key: ${GROQ_API_KEY:}
-        model: ${GROQ_MODEL:openai/gpt-oss-120b}
-        timeout-seconds: 45
-        vision: false
-        tools: true
-        fast: true
-        reasoning-effort: low
-      - id: groq-vision
-        label: Groq
-        base-url: https://api.groq.com/openai/v1
-        api-key: ${GROQ_API_KEY:}
-        model: ${GROQ_VISION_MODEL:qwen/qwen3.8-27b}
-        timeout-seconds: 45
-        vision: true
-        tools: false
-  # Prices per million tokens (USD) to estimate costs. With billing FREE the real charge is 0 (free plan).
-  # Reference values published by third-party aggregators (anotherwrapper.com, pricepertoken.com, morphllm.com),
-  # checked on Nov 7, 2026. They were NOT verified on the official pages: ai.google.dev/gemini-api/docs/pricing and groq.com/pricing.
-  # Premium payments with PayU. By default, the sandbox with the public PayU test credentials
-  # (merchant 508029, account 512321 Colombia): it moves no real money. Production: PAYU_TEST=false and your own credentials.
   payments:
     enabled: ${PAYMENTS_ENABLED:true}
     price: ${PREMIUM_PRICE:49900}
@@ -170,34 +126,6 @@ aquasense:
       secret-key: ${MAILJET_SECRET_KEY:}
       base-url: ${MAILJET_BASE_URL:https://api.mailjet.com}
       timeout-seconds: 15
-  ai-pricing:
-    billing: ${AI_BILLING:FREE}
-    note: Precios de referencia de terceros, no verificados en la página oficial del proveedor. Revisa y ajusta antes de usarlos para facturar.
-    models:
-      - model: gemini-3.5-flash
-        input-per-million: ${PRICE_GEMINI_FLASH_IN:1.50}
-        output-per-million: ${PRICE_GEMINI_FLASH_OUT:9.00}
-        source: Agregadores de terceros (anotherwrapper.com, pricepertoken.com)
-        checked-on: "2026-11-07"
-        verified: false
-      - model: gemini-3.5-flash-lite
-        input-per-million: ${PRICE_GEMINI_LITE_IN:0.30}
-        output-per-million: ${PRICE_GEMINI_LITE_OUT:2.50}
-        source: Agregadores de terceros (anotherwrapper.com, pricepertoken.com)
-        checked-on: "2026-11-07"
-        verified: false
-      - model: openai/gpt-oss-120b
-        input-per-million: ${PRICE_GROQ_OSS_IN:0.15}
-        output-per-million: ${PRICE_GROQ_OSS_OUT:0.60}
-        source: Agregadores de terceros (morphllm.com, flexprice.io)
-        checked-on: "2026-11-07"
-        verified: false
-      - model: qwen/qwen3.8-27b
-        input-per-million: ${PRICE_GROQ_QWEN_IN:0.80}
-        output-per-million: ${PRICE_GROQ_QWEN_OUT:4.00}
-        source: Agregador de terceros (morphllm.com); modelo en vista previa
-        checked-on: "2026-11-07"
-        verified: false
   device:
     sample-interval-ms: 1000
     measure-samples: 5

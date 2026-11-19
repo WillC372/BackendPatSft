@@ -35,12 +35,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(503).body(ApiError.of(503, "Service Unavailable", ex.getMessage()));
     }
 
-    @ExceptionHandler(com.aquaassistant.intelligence.ai.AiUnavailableException.class)
-    public ResponseEntity<ApiError> handleAi(com.aquaassistant.intelligence.ai.AiUnavailableException ex) {
-        LOG.warn("AI provider unavailable: {}", ex.getMessage());
-        return ResponseEntity.status(503).body(ApiError.of(503, "Service Unavailable", ex.getMessage()));
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> fields = new LinkedHashMap<>();
