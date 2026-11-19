@@ -29,25 +29,6 @@ class I18nIntegrationTest {
     private ObjectMapper mapper;
 
     @Test
-    void theLanguagesAreOpenBeforeSigningIn() throws Exception {
-        JsonNode list = json(mvc.perform(get("/api/v1/i18n/languages")).andExpect(status().isOk()).andReturn());
-        assertThat(list.findValuesAsText("code")).containsExactly("es", "en", "fr", "de", "it", "zh-Hans", "ja");
-        mvc.perform(get("/api/v1/i18n/dictionary/fr")).andExpect(status().isOk());
-        mvc.perform(get("/api/v1/i18n/dictionary/xx")).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void withoutAnAiTheTextsComeBackEmptyAndSpanishIsReturnedAsIs() throws Exception {
-        mvc.perform(post("/api/v1/i18n/translate").contentType(MediaType.APPLICATION_JSON)
-                .content("{\"lang\":\"fr\",\"texts\":[\"Medir\",\"7.2\"]}"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.lang").value("fr"))
-            .andExpect(jsonPath("$.translations[0]").doesNotExist()).andExpect(jsonPath("$.translations[1]").value("7.2"));
-        mvc.perform(post("/api/v1/i18n/translate").contentType(MediaType.APPLICATION_JSON)
-                .content("{\"lang\":\"es\",\"texts\":[\"Medir\"]}"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.translations[0]").value("Medir"));
-    }
-
-    @Test
     void theLanguageAndTheVoiceAreSavedInTheSettings() throws Exception {
         String token = register();
         mvc.perform(put("/api/v1/users/me/settings").header("Authorization", "Bearer " + token)

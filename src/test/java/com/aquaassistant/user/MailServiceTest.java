@@ -46,9 +46,9 @@ class MailServiceTest {
     }
 
     private static MailService service(String provider, boolean logLinks, MailChannel... channels) {
-        AppProperties base = TestData.properties("", 10);
+        AppProperties base = TestData.properties();
         AppProperties props = new AppProperties(base.security(), base.cors(),
-            new AppProperties.Mail("no-reply@aquasense.test", "http://localhost:5500/#/reset-password", logLinks, null), base.ai(),
+            new AppProperties.Mail("no-reply@aquasense.test", "http://localhost:5500/#/reset-password", logLinks, null),
             base.device());
         return new MailService(List.of(channels), props, new MailDeliveryProperties(provider, "Aqua Assistant AI", null, null));
     }

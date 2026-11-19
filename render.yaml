@@ -14,6 +14,7 @@ services:
       # Neon connection string: postgresql://user:password@host/neondb?sslmode=require
       - key: DATABASE_URL
         sync: false
+      # The AI service needs the SAME value to accept the sessions: copy it there from this service's Environment.
       - key: JWT_SECRET
         generateValue: true
       - key: FORWARD_HEADERS_STRATEGY
@@ -30,9 +31,11 @@ services:
         value: https://frontendpatsft.vercel.app/#/billing
       - key: PAYMENTS_CONFIRMATION_URL
         value: https://aquasense-backend-willc372.onrender.com/api/v1/payments/payu/confirmation
-      - key: GEMINI_API_KEY
-        sync: false
-      - key: GROQ_API_KEY
+      # The AI service (AiPatSft) and the key both services share for their internal calls (photo readings and
+      # translations). INTERNAL_API_KEY must have the same value here and in the AI service (e.g. openssl rand -hex 32).
+      - key: AI_SERVICE_URL
+        value: https://aquasense-ai-willc372.onrender.com
+      - key: INTERNAL_API_KEY
         sync: false
       - key: MAILJET_API_KEY
         sync: false

@@ -36,12 +36,12 @@ public class Notifier {
     private final Map<String, Instant> lastEmail = new ConcurrentHashMap<>();
     private final ExecutorService background = Executors.newVirtualThreadPerTaskExecutor();
     private com.aquaassistant.i18n.UserLanguage language;
-    private com.aquaassistant.i18n.TranslationService translations;
+    private com.aquaassistant.i18n.TranslationClient translations;
 
     /** Notices to the phone go in the person's language (optional: without it, in Spanish). */
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     public void setTranslation(com.aquaassistant.i18n.UserLanguage language,
-                               @org.springframework.context.annotation.Lazy com.aquaassistant.i18n.TranslationService translations) {
+                               @org.springframework.context.annotation.Lazy com.aquaassistant.i18n.TranslationClient translations) {
         this.language = language;
         this.translations = translations;
     }

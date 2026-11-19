@@ -15,7 +15,6 @@ import com.aquaassistant.audit.AuditEntry;
 import com.aquaassistant.audit.AuditRepository;
 import com.aquaassistant.audit.AuditService;
 import com.aquaassistant.common.BusinessException;
-import com.aquaassistant.intelligence.ai.AiUsageRepository;
 import com.aquaassistant.measurement.Measurement;
 import com.aquaassistant.measurement.MeasurementRepository;
 import com.aquaassistant.measurement.MeasurementSource;
@@ -75,7 +74,8 @@ public class AdminUserService {
     private final MeasurementRepository measurements;
     private final WaterProfileRepository profiles;
     private final PaymentRepository payments;
-    private final AiUsageRepository aiUsage;
+    /** AI calls are recorded by the AI service in the shared table ai_usage; here they are only counted. */
+    private final org.springframework.jdbc.core.JdbcTemplate jdbc;
     private final AuditRepository auditRepository;
     private final com.aquaassistant.user.SessionHistoryService sessions;
     private final AuditService audit;
@@ -85,7 +85,7 @@ public class AdminUserService {
     private final com.aquaassistant.user.AccountDeletionService accountDeletion;
 
     public AdminUserService(UserRepository users, MeasurementRepository measurements, WaterProfileRepository profiles,
-                            PaymentRepository payments, AiUsageRepository aiUsage, AuditRepository auditRepository,
+                            PaymentRepository payments, org.springframework.jdbc.core.JdbcTemplate jdbc, AuditRepository auditRepository,
                             AuditService audit, AuthService authService, PaymentProperties paymentProperties,
                             ApplicationEventPublisher events, com.aquaassistant.user.AccountDeletionService accountDeletion,
                             com.aquaassistant.user.SessionHistoryService sessions) {
@@ -95,7 +95,7 @@ public class AdminUserService {
         this.measurements = measurements;
         this.profiles = profiles;
         this.payments = payments;
-        this.aiUsage = aiUsage;
+        this.jdbc = jdbc;
         this.auditRepository = auditRepository;
         this.audit = audit;
         this.authService = authService;
@@ -157,9 +157,9 @@ public class AdminUserService {
         }
         long total = bySource.values().stream().mapToLong(Long::longValue).sum();
         Instant last = measurements.findTopByUserIdOrderByMeasuredAtDesc(userId).map(Measurement::getMeasuredAt).orElse(null);
-        long aiCalls = aiUsage.countByUserIdAndCachedFalseAndSuccessTrueAndCreatedAtAfter(userId,
-            Instant.now().minus(Duration.ofDays(30)));
-        Stats stats = new Stats(profiles.countByOwnerId(userId), total, bySource, last, aiCalls);
+        Long aiCalls = jdbc.queryForObject("SELECT COUNT(*) FROM ai_usage WHERE user_id = ? AND cached = FALSE AND success = TRUE"
+            + " AND created_at > ?", Long.class, userId, java.sql.Timestamp.from(Instant.now().minus(Duration.ofDays(30))));
+        Stats stats = new Stats(profiles.countByOwnerId(userId), total, bySource, last, aiCalls == null ? 0 : aiCalls);
         List<PaymentRow> pays = payments.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(0, 10)).stream()
             .map(p -> paymentRow(p, user.getEmail())).toList();
         List<ActivityRow> activity = auditRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(0, 15)).stream()
