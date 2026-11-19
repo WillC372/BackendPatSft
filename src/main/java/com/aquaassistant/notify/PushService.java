@@ -55,20 +55,25 @@ public class PushService {
 
     /** Sends to every device of the person; devices the push service no longer knows are removed. Returns how many got it. */
     public int send(Long userId, String title, String body, String url) {
+        return send(userId, title, body, url, false);
+    }
+
+    /** {@code alarm}: urgent delivery, and the device keeps the notice on screen with sound and vibration. */
+    public int send(Long userId, String title, String body, String url, boolean alarm) {
         List<PushSubscription> targets = subscriptions.findByUserId(userId);
         if (targets.isEmpty()) {
             return 0;
         }
         byte[] payload;
         try {
-            payload = mapper.writeValueAsString(Map.of("title", title, "body", body, "url", url == null ? "/" : url))
+            payload = mapper.writeValueAsString(Map.of("title", title, "body", body, "url", url == null ? "/" : url, "alarm", alarm))
                 .getBytes(StandardCharsets.UTF_8);
         } catch (Exception e) {
             return 0;
         }
         int delivered = 0;
         for (PushSubscription target : targets) {
-            int status = deliver(target, payload);
+            int status = deliver(target, payload, alarm);
             if (status >= 200 && status < 300) {
                 delivered++;
                 transactions.executeWithoutResult(t -> subscriptions.findById(target.getId()).ifPresent(PushSubscription::sent));
@@ -79,7 +84,7 @@ public class PushService {
         return delivered;
     }
 
-    private int deliver(PushSubscription target, byte[] payload) {
+    private int deliver(PushSubscription target, byte[] payload, boolean alarm) {
         try {
             URI endpoint = URI.create(target.getEndpoint());
             String audience = endpoint.getScheme() + "://" + endpoint.getHost() + (endpoint.getPort() > 0 ? ":" + endpoint.getPort() : "");
@@ -88,7 +93,7 @@ public class PushService {
                 Instant.now().plus(Duration.ofHours(12)).getEpochSecond());
             byte[] body = WebPushCrypto.encrypt(payload, target.getP256dh(), target.getAuth());
             HttpRequest request = HttpRequest.newBuilder(endpoint).timeout(Duration.ofSeconds(20))
-                .header("Authorization", vapid).header("TTL", "86400").header("Urgency", "normal")
+                .header("Authorization", vapid).header("TTL", "86400").header("Urgency", alarm ? "high" : "normal")
                 .header("Content-Encoding", "aes128gcm").header("Content-Type", "application/octet-stream")
                 .POST(HttpRequest.BodyPublishers.ofByteArray(body)).build();
             int status = http.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();

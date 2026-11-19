@@ -48,7 +48,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | POST | `/devices/calibrate` | `{ point: MID \| LOW \| HIGH, bufferValue }` |
 | POST | `/devices/live/start` · `/devices/live/stop` | Modo en tiempo real |
 | GET | `/devices/live` | Server-Sent Events: `reading`, `status`, `ping` |
-| GET | `/alerts` | Alertas (`unreadOnly`, `limit`) |
+| GET | `/alerts` | Alertas (`unreadOnly`, `limit`); `kind` dice qué regla la creó (`PH_ALTERATION` hace sonar la alarma) |
 | PATCH | `/alerts/{id}/read` · POST `/alerts/read-all` | Marcar como leídas |
 | GET | `/intelligence/overview` | Resumen de IA del dashboard |
 | GET | `/intelligence/anomalies?days=` | Anomalías del periodo |

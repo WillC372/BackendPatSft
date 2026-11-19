@@ -26,7 +26,13 @@ public class Notifier {
     private static final Logger log = LoggerFactory.getLogger(Notifier.class);
     private static final Duration EMAIL_GAP = Duration.ofHours(1);
 
-    public record Message(String title, String body, String url, String emailSubject, List<String> emailParagraphs) {
+    /** {@code alarm}: an alteration of the pH; the notice is urgent, stays on screen and vibrates. */
+    public record Message(String title, String body, String url, String emailSubject, List<String> emailParagraphs,
+                          boolean alarm) {
+
+        public Message(String title, String body, String url, String emailSubject, List<String> emailParagraphs) {
+            this(title, body, url, emailSubject, emailParagraphs, false);
+        }
     }
 
     private final PushService push;
@@ -90,7 +96,7 @@ public class Notifier {
             try {
                 if (byPush) {
                     String[] text = localized(userId, message.title(), message.body());
-                    push.send(userId, text[0], text[1], message.url());
+                    push.send(userId, text[0], text[1], message.url(), message.alarm());
                 }
                 if (byEmail && allowEmail(userId, kind)) {
                     users.findById(userId).filter(User::isEnabled).filter(u -> !u.isDemo())

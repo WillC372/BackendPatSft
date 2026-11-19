@@ -14,6 +14,11 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
 
     long countByUserIdAndReadFalse(Long userId);
 
+    /** Alerts of this kind for the person in the same place since a moment, among the given severities. */
+    @Query("select count(a) from Alert a, Measurement m where m.id = a.measurementId and a.userId = :userId"
+        + " and a.kind = :kind and m.placeId = :placeId and a.createdAt > :since and a.severity in :severities")
+    long countRecent(Long userId, String kind, Long placeId, java.time.Instant since, java.util.Collection<String> severities);
+
     @Modifying
     @Query("update Alert a set a.read = true where a.userId = :userId and a.read = false")
     int markAllRead(Long userId);

@@ -23,6 +23,9 @@ public class Alert {
     private Long measurementId;
 
     private String severity;
+
+    /** Which rule created it (PH_ALTERATION, OUT_OF_RANGE...); empty in alerts older than V26. */
+    private String kind;
     private String title;
     private String message;
 
@@ -36,6 +39,11 @@ public class Alert {
     }
 
     public Alert(Long userId, Long measurementId, String severity, String title, String message) {
+        this(userId, measurementId, severity, title, message, null);
+    }
+
+    public Alert(Long userId, Long measurementId, String severity, String title, String message, String kind) {
+        this.kind = kind;
         this.userId = userId;
         this.measurementId = measurementId;
         this.severity = severity;
@@ -52,6 +60,7 @@ public class Alert {
     public Long getUserId() { return userId; }
     public Long getMeasurementId() { return measurementId; }
     public String getSeverity() { return severity; }
+    public String getKind() { return kind; }
     public String getTitle() { return title; }
     public String getMessage() { return message; }
     public boolean isRead() { return read; }

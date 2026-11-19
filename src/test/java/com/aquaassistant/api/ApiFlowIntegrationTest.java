@@ -74,6 +74,23 @@ class ApiFlowIntegrationTest {
     }
 
     @Test
+    void anAlterationOfThePhIsOneAlarmNotARepeatEveryReading() throws Exception {
+        String token = register(uniqueEmail());
+        java.time.Instant now = java.time.Instant.now();
+        for (Object[] reading : new Object[][] {{7.5, 300}, {7.4, 120}, {3.0, 60}, {2.9, 30}, {2.8, 0}}) {
+            mvc.perform(post("/api/v1/measurements").header("Authorization", bearer(token)).contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"ph\":" + reading[0] + ",\"measuredAt\":\"" + now.minusSeconds((int) reading[1]) + "\"}"))
+                .andExpect(status().isCreated());
+        }
+        JsonNode alerts = json(mvc.perform(get("/api/v1/alerts").header("Authorization", bearer(token))).andReturn());
+        assertThat(alerts).hasSize(1);
+        assertThat(alerts.get(0).get("kind").asText()).isEqualTo("PH_ALTERATION");
+        assertThat(alerts.get(0).get("severity").asText()).isEqualTo("CRITICAL");
+        assertThat(alerts.get(0).get("title").asText()).isEqualTo("Alteración del pH en el agua");
+        assertThat(alerts.get(0).get("message").asText()).startsWith("El pH bajó de 7.50 a 3.00").contains("Es peligroso");
+    }
+
+    @Test
     void manualMeasurementsAreClassifiedAndIsolatedPerUser() throws Exception {
         String alice = register(uniqueEmail());
         String bob = register(uniqueEmail());
