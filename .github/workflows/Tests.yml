@@ -1,0 +1,28 @@
+# Runs the automated tests (JUnit with H2 and a copy of the DBPatSft migrations) on every change.
+# They need no secrets: the AI providers and the other service are replaced by local test servers.
+name: Pruebas
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "docs/**", "hardware/**"]
+  pull_request:
+    paths-ignore: ["**.md", "docs/**", "hardware/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Pruebas automáticas
+        run: mvn -B -ntp test
