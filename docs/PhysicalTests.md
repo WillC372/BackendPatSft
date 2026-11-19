@@ -5,8 +5,8 @@ relacionado con hardware y fotos está probado solo con simulaciones, y así se 
 
 ## 1. Medidor físico
 
-- [ ] Armar el medidor casero ESP32 + PH-4502C con los planos de `hardware/Esp32PhSensor/planos/` y cargar su firmware.
-- [ ] Conectar un medidor por USB o Bluetooth SPP (Atlas Scientific EZO-pH o el firmware ESP32 de `hardware/`).
+- [ ] Armar el medidor casero ESP32 + PH-4502C con los planos de `hardware/Esp32PhSensor/planos/` (en FrontendPatSft) y cargar su firmware.
+- [ ] Conectar un medidor por USB o Bluetooth SPP (Atlas Scientific EZO-pH o el firmware ESP32 de `hardware/` en FrontendPatSft).
 - [ ] Verificar la detección del puerto, la conexión, la lectura en vivo (SSE) y la medición promediada.
 - [ ] Calibrar con soluciones tampón (4.00 y 6.86 o 7.00; opcional 9.18 o 10.00) y anotar el error frente a cada una.
 - [ ] Probar la desconexión del cable durante una lectura: el sistema debe pasar a "desconectado" sin guardar datos falsos.

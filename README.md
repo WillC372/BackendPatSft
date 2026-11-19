@@ -58,8 +58,7 @@ src/main/java/com/aquaassistant/
 └── dashboard/      Consulta agregada para la pantalla de inicio
 src/main/resources/
 └── application.yml
-src/test/resources/db/migration/   Copia de las migraciones de DBPatSft para las pruebas (scripts/sync-migrations.sh)
-hardware/Esp32PhSensor/    Medidor casero ESP32 + PH-4502C: firmware, pruebas, proyecto KiCad (esquemático, PCB, 3D), protoboard y Wokwi
+src/test/resources/db/migration/   Copia de las migraciones de DBPatSft para las pruebas (java scripts/SyncMigrations.java ../DBPatSft)
 docs/                        Documentación técnica
 ```
 
@@ -258,7 +257,7 @@ Un medidor se conecta de tres formas:
 - **Al servidor**, cuando Aqua Assistant corre en el mismo computador del medidor: interfaz `PhMeter` con los adaptadores `AquaAssistantFirmwareAdapter` (firmware ESP32 incluido), `AtlasEzoPhAdapter` (Atlas Scientific EZO-pH por UART) y `TextMeterAdapter` (medidores de laboratorio que envían el valor como texto por USB o RS-232).
 - **Por cámara**, para medidores sin cable de datos (ver `docs/Hardware.md`).
 
-**Medidor casero.** [`hardware/Esp32PhSensor/`](hardware/Esp32PhSensor/) tiene todo para armar uno con un ESP32 y el módulo PH-4502C: el firmware (calibración de 1 a 3 puntos con el valor real de cada sobre, por ejemplo 6.86), el esquemático, el cableado y el plano de la baquelita, y el proyecto para simularlo en Wokwi. El firmware se compiló y se probó en el computador (31 pruebas, también en GitHub Actions); falta probarlo con el sensor físico.
+**Medidor casero.** [`hardware/Esp32PhSensor/`](https://github.com/WillC372/FrontendPatSft/tree/main/hardware/Esp32PhSensor), en FrontendPatSft, tiene todo para armar uno con un ESP32 y el módulo PH-4502C: el firmware (calibración de 1 a 3 puntos con el valor real de cada sobre, por ejemplo 6.86), el esquemático, el cableado y el plano de la baquelita, y el proyecto para simularlo en Wokwi. El firmware se compiló y se probó en el computador (31 pruebas, también en GitHub Actions); falta probarlo con el sensor físico.
 
 El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENABLED=false` por defecto): la app publicada no muestra lecturas falsas.
 
@@ -279,7 +278,7 @@ mvn test
 - La alarma por alteración del pH: caída en una piscina (peligroso, salir del agua), cambio que crece con un medidor cada 10 s, consejo por tipo de agua, entrada en nivel crítico, y una sola alerta para varias lecturas seguidas.
 - Las rutas internas con la clave compartida y la traducción de correos: primero la tabla compartida, luego el servicio de IA, y en español si no responde.
 
-Se ejecutan con H2 en modo PostgreSQL y una copia de las migraciones de DBPatSft (`scripts/sync-migrations.sh ../DBPatSft` la actualiza); para correrlas contra PostgreSQL real:
+Se ejecutan con H2 en modo PostgreSQL y una copia de las migraciones de DBPatSft (`java scripts/SyncMigrations.java ../DBPatSft` la actualiza); para correrlas contra PostgreSQL real:
 
 ```bash
 mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test \

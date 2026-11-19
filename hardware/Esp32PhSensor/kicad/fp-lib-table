@@ -1,3 +1,0 @@
-(fp_lib_table
-  (lib (name "AquaAssistant")(type "KiCad")(uri "${KIPRJMOD}/AquaAssistant.pretty")(options "")(descr "Huellas del proyecto"))
-)

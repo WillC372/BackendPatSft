@@ -1,0 +1,2 @@
+# Render builds the service with this Dockerfile; it is deployment configuration, not application code.
+Dockerfile linguist-detectable=false
