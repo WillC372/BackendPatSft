@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.Locale;
 
 /**
- * Adapter for the Aqua Assistant ESP32 firmware included in hardware/Esp32PhSensor.
+ * Adapter for the Aqua Assistant ESP32 firmware kept in FrontendPatSft (hardware/Esp32PhSensor).
  * Text protocol: "READ" answers "PH:7.12;T:24.5"; "CAL:MID:7.00" answers "OK" or "ERR:reason".
  */
 public class AquaAssistantFirmwareAdapter implements PhMeter {
