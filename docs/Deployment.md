@@ -25,7 +25,7 @@ flowchart LR
 
 | Parte | Servicio | Dirección |
 |---|---|---|
-| Frontend | Vercel | `https://frontendpatsft.vercel.app` (publicado el 8 nov 2026) |
+| Frontend | Vercel | `https://aquaassistantai.vercel.app` (publicado el 8 nov 2026) |
 | Backend | Render (plan gratuito, Docker) | `https://aquasense-backend-willc372.onrender.com` |
 | Base de datos | Neon (PostgreSQL gratuito, no vence) | la entrega Neon |
 
@@ -66,7 +66,7 @@ Si Render asigna otra dirección (por ejemplo, porque el nombre ya existía), ha
 
 1. Entra a https://vercel.com con tu cuenta de GitHub.
 2. Si el proyecto **frontendpatsft** ya existe, cada `git push` lo publica solo. Si no: **Add New → Project**, elige **FrontendPatSft**, deja *Framework Preset* en **Other**, sin comando de construcción, y pulsa **Deploy**.
-3. Abre `https://frontendpatsft.vercel.app`, crea una cuenta y registra una medición.
+3. Abre `https://aquaassistantai.vercel.app`, crea una cuenta y registra una medición.
 
 Si Vercel asigna otra dirección, hay que cambiarla en `CORS_ORIGINS`, `FRONTEND_RESET_URL`, `FRONTEND_ADMIN_VERIFY_URL` y `PAYMENTS_RESPONSE_URL` en Render.
 

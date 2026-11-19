@@ -21,14 +21,15 @@ services:
         value: native
       - key: DB_POOL_SIZE
         value: "5"
+      # The app's address and its previous one (it redirects to the new one).
       - key: CORS_ORIGINS
-        value: https://frontendpatsft.vercel.app
+        value: https://aquaassistantai.vercel.app,https://frontendpatsft.vercel.app
       - key: FRONTEND_RESET_URL
-        value: https://frontendpatsft.vercel.app/#/reset-password
+        value: https://aquaassistantai.vercel.app/#/reset-password
       - key: FRONTEND_ADMIN_VERIFY_URL
-        value: https://frontendpatsft.vercel.app/#/verify-admin
+        value: https://aquaassistantai.vercel.app/#/verify-admin
       - key: PAYMENTS_RESPONSE_URL
-        value: https://frontendpatsft.vercel.app/#/billing
+        value: https://aquaassistantai.vercel.app/#/billing
       - key: PAYMENTS_CONFIRMATION_URL
         value: https://aquasense-backend-willc372.onrender.com/api/v1/payments/payu/confirmation
       # The AI service (AIPatSft) and the key both services share for their internal calls (photo readings and

@@ -40,7 +40,7 @@ public class PushService {
     private volatile KeyPair keyPair;
 
     public PushService(AppKeyRepository keys, PushSubscriptionRepository subscriptions, TransactionTemplate transactions,
-                       ObjectMapper mapper, @Value("${aquasense.push.subject:https://frontendpatsft.vercel.app}") String subject) {
+                       ObjectMapper mapper, @Value("${aquasense.push.subject:https://aquaassistantai.vercel.app}") String subject) {
         this.keys = keys;
         this.subscriptions = subscriptions;
         this.transactions = transactions;

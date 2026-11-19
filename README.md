@@ -291,7 +291,7 @@ Publicado en **Render** (backend y servicio de IA con Docker, plan gratuito), **
 
 | Parte | Dirección |
 |---|---|
-| Aplicación | https://frontendpatsft.vercel.app |
+| Aplicación | https://aquaassistantai.vercel.app |
 | API | https://aquasense-backend-willc372.onrender.com/api/v1 (salud: `/actuator/health`; para pings que la mantengan despierta: `/actuator/health/liveness`) |
 | Servicio de IA | https://aquasense-ai-willc372.onrender.com/api/v1 ([AIPatSft](https://github.com/WillC372/AIPatSft)) |
 
