@@ -102,7 +102,7 @@ public class PaymentService {
     /** The user came back from PayU: the order is queried in PayU; the URL parameters are never trusted. */
     @Transactional
     public PaymentDtos.PaymentView verify(Long userId, String referenceCode) {
-        Payment payment = repository.findByReferenceCode(referenceCode).filter(p -> p.getUserId().equals(userId))
+        Payment payment = repository.findForUpdate(referenceCode).filter(p -> p.getUserId().equals(userId))
             .orElseThrow(() -> BusinessException.notFound("El pago no existe."));
         return PaymentDtos.PaymentView.of(payment, reconcile(payment));
     }
@@ -114,7 +114,7 @@ public class PaymentService {
             LOG.warn("PayU confirmation rejected: invalid signature for reference {}", params.get("reference_sale"));
             return false;
         }
-        repository.findByReferenceCode(params.getOrDefault("reference_sale", "")).ifPresent(this::reconcile);
+        repository.findForUpdate(params.getOrDefault("reference_sale", "")).ifPresent(this::reconcile);
         return true;
     }
 
