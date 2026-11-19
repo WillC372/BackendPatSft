@@ -1,5 +1,6 @@
 package com.aquaassistant.api;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,6 +29,9 @@ class PlacesIntegrationTest {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbc;
 
     @Test
     void everyAccountStartsWithMiAguaAndMeasurementsFollowTheActivePlace() throws Exception {
@@ -110,6 +114,50 @@ class PlacesIntegrationTest {
 
     private org.springframework.test.web.servlet.ResultActions measure(String token, String body) throws Exception {
         return mvc.perform(auth(post("/api/v1/measurements"), token).contentType(MediaType.APPLICATION_JSON).content(body));
+    }
+
+
+    /**
+     * H-002: an editor of a shared place can rename it while it keeps the owner's custom profile, cannot put a private
+     * profile of their own on it, and can delete their account even if one of their profiles was left on the place.
+     */
+    @Test
+    void editorKeepsTheOwnersProfileCannotUseAPrivateOneAndCanDeleteTheAccount() throws Exception {
+        String owner = register();
+        String editor = register();
+        String profileJson = "{\"name\":\"Mi rango\",\"idealMin\":7.0,\"idealMax\":7.6,\"cautionMin\":6.8,\"cautionMax\":7.9,"
+            + "\"description\":\"Prueba\",\"source\":\"Prueba\"}";
+        long ownerProfile = json(mvc.perform(auth(post("/api/v1/profiles"), owner).contentType(MediaType.APPLICATION_JSON)
+            .content(profileJson)).andExpect(status().isCreated()).andReturn()).get("id").asLong();
+        long place = json(mvc.perform(auth(post("/api/v1/places"), owner).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"name\":\"Piscina\",\"kind\":\"POOL\",\"profileId\":" + ownerProfile + "}"))
+            .andExpect(status().isCreated()).andReturn()).get("id").asLong();
+        String code = json(mvc.perform(auth(post("/api/v1/places/" + place + "/share"), owner).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"role\":\"EDITOR\"}")).andExpect(status().isOk()).andReturn()).get("shareCode").asText();
+        mvc.perform(auth(post("/api/v1/places/join"), editor).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"code\":\"" + code + "\"}")).andExpect(status().isOk());
+
+        // Renaming with the owner's profile (as the form sends it) works and keeps that profile.
+        mvc.perform(auth(put("/api/v1/places/" + place), editor).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Piscina grande\",\"kind\":\"POOL\",\"profileId\":" + ownerProfile + "}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.profileId").value(ownerProfile));
+
+        // A private profile of the editor is refused.
+        long editorProfile = json(mvc.perform(auth(post("/api/v1/profiles"), editor).contentType(MediaType.APPLICATION_JSON)
+            .content(profileJson)).andExpect(status().isCreated()).andReturn()).get("id").asLong();
+        mvc.perform(auth(put("/api/v1/places/" + place), editor).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Piscina grande\",\"kind\":\"POOL\",\"profileId\":" + editorProfile + "}"))
+            .andExpect(status().isBadRequest());
+
+        // Data left by the earlier behavior: the place and one of the owner's measurements use the editor's profile.
+        jdbc.update("update places set profile_id = ? where id = ?", editorProfile, place);
+        mvc.perform(auth(post("/api/v1/places/" + place + "/activate"), owner)).andExpect(status().isOk());
+        mvc.perform(auth(post("/api/v1/measurements"), owner).contentType(MediaType.APPLICATION_JSON).content("{\"ph\":7.3}"))
+            .andExpect(status().isCreated());
+        mvc.perform(auth(delete("/api/v1/users/me"), editor).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"password\":\"Clave1234\"}")).andExpect(status().isNoContent());
+        assertThat(jdbc.queryForObject("select count(*) from water_profiles where id = ?", Integer.class, editorProfile)).isZero();
+        assertThat(jdbc.queryForObject("select count(*) from measurements where place_id = ?", Integer.class, place)).isEqualTo(1);
     }
 
     private MockHttpServletRequestBuilder auth(MockHttpServletRequestBuilder request, String token) {

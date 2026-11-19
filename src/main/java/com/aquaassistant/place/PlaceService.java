@@ -72,7 +72,7 @@ public class PlaceService {
             throw BusinessException.conflict("Puedes tener hasta " + MAX_OWN_PLACES + " lugares propios.");
         }
         Place place = places.save(new Place(userId, request.name().trim(), request.kind(), request.volumeLiters(),
-            profileFor(userId, request)));
+            profileFor(userId, request, null)));
         audit.record(userId, "PLACE_CREATED", "Lugar " + place.getName());
         return activate(userId, place.getId());
     }
@@ -80,7 +80,7 @@ public class PlaceService {
     @Transactional
     public PlaceResponse update(Long userId, Long placeId, PlaceRequest request) {
         Place place = access.editable(userId, placeId);
-        place.update(request.name().trim(), request.kind(), request.volumeLiters(), profileFor(userId, request));
+        place.update(request.name().trim(), request.kind(), request.volumeLiters(), profileFor(place.getOwnerId(), request, place.getProfileId()));
         audit.record(userId, "PLACE_UPDATED", "Lugar " + place.getName());
         return toResponse(userId, place, access.activeId(userId));
     }
@@ -203,10 +203,18 @@ public class PlaceService {
         return code.toString();
     }
 
-    /** The profile chosen, if the person can use it; otherwise the system profile that matches the kind of water. */
-    private Long profileFor(Long userId, PlaceRequest request) {
+    /**
+     * The profile chosen, if the place can use it; otherwise the system profile that matches the kind of water.
+     * {@code ownerId} is the owner of the place: in a shared place an editor may keep its current profile or choose a
+     * system one or one of the owner's, never a private profile of their own that the owner could not see or edit
+     * (H-002: it also blocked deleting the editor's account).
+     */
+    private Long profileFor(Long ownerId, PlaceRequest request, Long currentProfileId) {
         if (request.profileId() != null) {
-            return profiles.findById(request.profileId()).filter(p -> p.isVisibleTo(userId))
+            if (request.profileId().equals(currentProfileId)) {
+                return currentProfileId;
+            }
+            return profiles.findById(request.profileId()).filter(p -> p.isVisibleTo(ownerId))
                 .orElseThrow(() -> BusinessException.badRequest("El perfil elegido no existe.")).getId();
         }
         ProfileType type = switch (request.kind()) {
