@@ -72,28 +72,21 @@ Si Vercel asigna otra dirección, hay que cambiarla en `CORS_ORIGINS`, `FRONTEND
 
 ## Límites de los planes gratuitos
 
-- **Render** apaga el backend tras 15 minutos sin uso. La primera visita después tarda alrededor de un minuto; la interfaz avisa que el servidor se está activando. Para evitarlo, ver [Mantener la API despierta](#mantener-la-api-despierta).
+- **Render** apaga el backend tras 15 minutos sin uso (se deja dormir a propósito, ver abajo). La primera visita después tarda alrededor de un minuto; la interfaz avisa que el servidor se está activando.
 - La instancia gratuita tiene 512 MB de memoria. El contenedor se probó con ese límite: unos 335 MB después de generar PDF, el análisis con aprendizaje automático y el entrenamiento de la red LSTM.
 - **Neon** suspende la base tras unos minutos sin uso y la reactiva en la siguiente consulta.
 - No hay medidor físico conectado a un servidor en la nube: en el despliegue se usan el simulador, el registro manual y la lectura por foto.
 
-## Mantener la API despierta
+## El backend se duerme cuando nadie lo usa
 
-Render apaga la instancia gratuita tras 15 minutos sin peticiones. Si algo la consulta cada pocos minutos, no se apaga. La dirección para eso es `/actuator/health/liveness`: responde `{"status":"UP"}` sin iniciar sesión y **sin consultar la base de datos**, así Neon puede seguir suspendiéndose cuando nadie usa la app (la base solo despierta con el uso real y con las tareas programadas, que corren cada 1 a 6 horas).
+Render apaga una instancia gratuita tras 15 minutos sin peticiones y da **750 horas gratis al mes por cuenta**, compartidas por el backend y el servicio de IA. Un backend despierto todo el mes usaría unas 730, así que **se deja dormir** (desde el 19 nov 2026):
 
-**Dentro del servidor: `KeepAwake`.** Con la instancia encendida, el propio backend pide `/actuator/health/liveness` a su dirección pública cada 10 minutos (Render le da esa dirección en `RENDER_EXTERNAL_URL`; en un computador está vacía y no hace nada). La petición sale a internet y vuelve a entrar por Render, así que cuenta como tráfico y la instancia no llega a los 15 minutos sin peticiones. No despierta una instancia ya dormida ni evita los reinicios que Render hace cuando quiere: para eso sigue sirviendo UptimeRobot. Render recomienda los planes de pago para tener la instancia siempre encendida; el plan Starter es el único que lo garantiza. Para apagar este comportamiento, define `AQUASENSE_KEEPAWAKE_URL` con un espacio o cambia `aquasense.keep-awake.interval-ms`.
+- **Primera visita:** tarda alrededor de un minuto; la app muestra «Activando el servidor...» y continúa sola. Mientras alguien usa la app (o el medidor envía una medición cada 10 s) no se duerme.
+- **Recordatorios, datos del USGS y pagos:** `.github/workflows/WakeUp.yml` lo despierta cada 3 horas unos 15 minutos; al despertar envía los recordatorios vencidos, importa los datos oficiales del USGS y revisa los pagos pendientes. Por eso un recordatorio puede llegar hasta unas 3 horas tarde si nadie usa la app. GitHub ejecuta los flujos programados cuando puede (a veces tarde) y los desactiva en un repositorio público tras 60 días sin actividad; se reactivan en **Actions → Despertar el backend → Enable workflow** y se puede lanzar a mano con **Run workflow**. Para otra dirección, crea la variable `KEEP_AWAKE_URL` en *Settings → Secrets and variables → Actions → Variables*.
+- **Alarma por alteración del pH:** la medición que la provoca despierta al backend, así que la alarma y su aviso salen igual.
+- **Consumo:** unas 2 horas al día (≈ 60 al mes) más el uso real, en vez de ≈ 730.
 
-**Principal: UptimeRobot (gratis, cada 5 minutos).** Hay que crear la cuenta; el repositorio no puede hacerlo.
-
-1. Entra a https://uptimerobot.com y crea una cuenta gratuita.
-2. **New monitor** → tipo **HTTP(s)**.
-3. *Friendly name*: `Aqua Assistant API`. *URL*: `https://aquasense-backend-willc372.onrender.com/actuator/health/liveness`.
-4. *Monitoring interval*: **5 minutes** (el mínimo del plan gratuito).
-5. Guarda. Además de mantenerla despierta, UptimeRobot avisa por correo si la API deja de responder.
-
-**Respaldo: GitHub Actions.** `.github/workflows/KeepAwake.yml` pide la misma consulta cada 5 minutos, pero GitHub ejecuta los flujos programados cuando puede: entre el 13 y el 14 de noviembre de 2026 corrió solo unas 6 veces en 30 horas, una cada 5 a 7 horas. Eso no basta para que Render no apague la instancia (15 minutos), así que **sin UptimeRobot la API se sigue apagando**. El flujo solo sirve para despertarla de vez en cuando y para comprobar a mano que responde. GitHub desactiva los flujos programados de un repositorio público tras 60 días sin actividad; se reactivan en **Actions → Keep the API awake → Enable workflow**. También se puede lanzar a mano con **Run workflow**. Para usar otra dirección, crea la variable `KEEP_AWAKE_URL` en *Settings → Secrets and variables → Actions → Variables*.
-
-**Costo.** Render da 750 horas gratis al mes por cuenta; una instancia encendida todo el mes usa unas 730. Si la cuenta tiene otro servicio gratuito encendido, las horas no alcanzan para los dos. Para volver al comportamiento anterior, pausa el monitor en UptimeRobot, desactiva el flujo en GitHub y define `AQUASENSE_KEEPAWAKE_URL` con un espacio.
+**Para tenerlo siempre despierto** (por ejemplo, el día de una presentación): en Render, *Environment* del backend, agrega `KEEP_AWAKE=true` y guarda. El propio servidor pide `/actuator/health/liveness` a su dirección pública cada 10 minutos (`config/KeepAwake.java`). Si además creaste un monitor en UptimeRobot, mientras esté activo también lo mantiene despierto: páusalo para que vuelva a dormirse. Quita la variable después para no gastar las horas del mes.
 
 ## Variables que fija `render.yaml`
 

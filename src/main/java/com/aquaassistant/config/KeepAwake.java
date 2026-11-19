@@ -13,11 +13,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * Keeps the free Render instance awake: Render stops a free web service after 15 minutes without incoming requests,
- * so every 10 minutes the server asks its own public address for the liveness probe (which does not touch the
- * database). The request goes out through the internet and comes back in through Render, so it counts as traffic.
- * Render sets RENDER_EXTERNAL_URL by itself; on a computer it is empty and nothing is sent. External monitors
- * (UptimeRobot) still help: they wake the server if Render restarts it.
+ * Optional: keeps the free Render instance awake. Render stops a free web service after 15 minutes without incoming
+ * requests; with KEEP_AWAKE=true the server asks its own public address for the liveness probe every 10 minutes (the
+ * request goes out through the internet and comes back in through Render, so it counts as traffic).
+ *
+ * <p>Off by default: the 750 free hours a month of Render are shared by the backend and the AI service, and a backend
+ * awake all month uses about 730 of them. Asleep, the first visit waits about a minute ("Activando el servidor...")
+ * and the GitHub workflow WakeUp.yml wakes it every 3 hours to send due reminders and import the USGS data.
  */
 @Component
 public class KeepAwake {
@@ -30,8 +32,9 @@ public class KeepAwake {
     private int failuresInARow;
 
     @Autowired
-    public KeepAwake(@Value("${aquasense.keep-awake.url:${RENDER_EXTERNAL_URL:}}") String baseUrl) {
-        this(baseUrl, HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(20)).build());
+    public KeepAwake(@Value("${aquasense.keep-awake.enabled:${KEEP_AWAKE:false}}") boolean enabled,
+                     @Value("${aquasense.keep-awake.url:${RENDER_EXTERNAL_URL:}}") String baseUrl) {
+        this(enabled ? baseUrl : null, HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(20)).build());
     }
 
     KeepAwake(String baseUrl, HttpClient http) {

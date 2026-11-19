@@ -32,8 +32,8 @@ public class TokenCleanup {
         this.clock = clock;
     }
 
-    /** Every 6 hours (the first run an hour after starting). */
-    @Scheduled(fixedDelay = 21_600_000, initialDelay = 3_600_000)
+    /** Every 6 hours, the first run 5 minutes after starting (the server sleeps when nobody uses it). */
+    @Scheduled(fixedDelay = 21_600_000, initialDelay = 300_000)
     @Transactional
     public int deleteFinishedTokens() {
         int deleted = tokens.deleteFinishedBefore(Instant.now(clock).minus(KEEP));

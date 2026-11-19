@@ -1,0 +1,30 @@
+# The backend sleeps when nobody uses it (Render stops a free instance after 15 minutes without requests), so the
+# 750 free hours of Render last for the backend and the AI service. Every 3 hours this wakes it for about 15 minutes:
+# on waking it sends the reminders that are due, imports the USGS official data and checks pending payments.
+# GitHub runs scheduled workflows when it can, so a run may come late. It can also be started by hand (Run workflow).
+name: Despertar el backend
+
+on:
+  schedule:
+    - cron: "23 */3 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Despertar el backend
+        env:
+          URL: ${{ vars.KEEP_AWAKE_URL || 'https://aquasense-backend-willc372.onrender.com/actuator/health/liveness' }}
+        run: |
+          for attempt in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 "$URL" || true)
+            if [ "$code" = "200" ]; then echo "El backend respondió $code (intento $attempt)."; exit 0; fi
+            echo "Intento $attempt: '$code'; puede estar arrancando, espero."
+            sleep 30
+          done
+          echo "::error::El backend no respondió 200 en 3 intentos."
+          exit 1

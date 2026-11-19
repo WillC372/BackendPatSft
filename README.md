@@ -301,7 +301,7 @@ Verificado en producción: el formulario de registro y el de medición de la pá
 
 - `render.yaml` crea el servicio con su verificación de salud (`/actuator/health`), genera `JWT_SECRET` (cópiala al servicio de IA) y fija las direcciones del frontend y del servicio de IA. Las claves (base de datos, `INTERNAL_API_KEY` y correo) se escriben en el panel de Render, nunca en el repositorio.
 - La base se configura con una sola variable, `DATABASE_URL`, con la cadena que entrega Neon (`postgresql://usuario:clave@host/db?sslmode=require`).
-- **Mantenerla despierta:** Render apaga la instancia gratuita tras 15 minutos sin uso. Un monitor de UptimeRobot (cada 5 minutos) consulta `/actuator/health/liveness`, que no toca la base de datos. El flujo `.github/workflows/KeepAwake.yml` hace lo mismo, pero GitHub lo ejecuta solo cada pocas horas, así que por sí solo no evita que se apague. Pasos en [`docs/Deployment.md`](docs/Deployment.md#mantener-la-api-despierta).
+- **Se duerme cuando nadie la usa:** Render apaga la instancia gratuita tras 15 minutos sin uso; así alcanzan las 750 horas del mes para este backend y el servicio de IA. La primera visita tarda alrededor de un minuto, y `.github/workflows/WakeUp.yml` la despierta cada 3 horas para enviar recordatorios e importar los datos del USGS. Con `KEEP_AWAKE=true` en Render se mantiene despierta ([detalle](docs/Deployment.md#el-backend-se-duerme-cuando-nadie-lo-usa)).
 - **Memoria que se limpia sola:** los intentos de inicio de sesión viejos se borran solos. En la base, los enlaces de recuperación y verificación usados o vencidos hace más de un día se borran cada 6 horas.
 - El `Dockerfile` está ajustado a instancias de 512 MB. Los informes PDF y los modelos de IA, lo que más memoria usaba, ahora corren en el servicio de IA.
 
@@ -311,7 +311,7 @@ Un backend en la nube no puede leer un medidor conectado a tu computador. Para l
 
 | Síntoma | Causa y solución |
 |---|---|
-| La primera visita tarda alrededor de un minuto | Render apagó la instancia por inactividad. Configura el monitor de UptimeRobot ([pasos](docs/Deployment.md#mantener-la-api-despierta)) y revisa que el flujo *Keep the API awake* esté activo en GitHub |
+| La primera visita tarda alrededor de un minuto | Render apagó la instancia por inactividad (se deja dormir para ahorrar horas). Espera el aviso «Activando el servidor...»; para una presentación, agrega `KEEP_AWAKE=true` en Render ([detalle](docs/Deployment.md#el-backend-se-duerme-cuando-nadie-lo-usa)). |
 | `JWT_SECRET must be set...` al arrancar | Define `JWT_SECRET` con 32 caracteres o más |
 | `Connection refused` a PostgreSQL | Verifica que el servicio esté activo y los valores de `DB_*` |
 | El frontend muestra "No se pudo conectar con el servidor" | Backend apagado, o el origen del frontend no está en `CORS_ORIGINS` |
