@@ -30,7 +30,6 @@ Acceso de demostración
 Acceso restringido
 Acciones
 Acciones recomendadas
-Acción
 Aceptada
 Acerca de
 Acondicionador de agua (acuario)
@@ -41,7 +40,7 @@ Activar
 Activas
 Actividad
 Actividad reciente
-Actividad reciente de la cuenta
+Actividad y sesiones
 Activo
 Activo hasta el
 Activos {0} días
@@ -83,6 +82,7 @@ Agua {0}
 Ahora es administrador.
 Ahora es usuario.
 Aireación intensa (cascadas, jacuzzi).
+Ajustes
 Al abrir a Aqua te saluda en voz alta y lee sus respuestas mientras las escribe. Si lo apagas, solo escribe.
 Al acidificar el agua, un pH bajo puede dañar tuberías y aspersores; hay que usar materiales resistentes o controlar bien el pH. Un pH no menor de {0} parece seguro para aspersores.
 Al menos un número
@@ -112,6 +112,7 @@ Anomalía
 Anomalías detectadas
 Anota cada vez que echas cloro, ácido o cambias agua. Así recuerdas qué hiciste y cuándo, y Aqua lo tiene en cuenta al revisar tus mediciones.
 Ante contaminación por heces o vómito, el primer paso del tratamiento es comprobar que el pH sea {0} o menor y ajustarlo si hace falta.
+Análisis avanzado
 Análisis histórico
 Apagada
 Apagados en este dispositivo.
@@ -150,7 +151,6 @@ Arquitectura
 Arriba, junto a tu nombre, aparece el lugar en el que estás. Tócalo para cambiar: Inicio, Historial, Medir y Cuidado pasan a mostrar ese lugar.
 Asegúrate de que tu medidor esté encendido y conectado al equipo donde corre el servidor de Aqua Assistant. Para Bluetooth, empareja primero el dispositivo desde el sistema operativo.
 Asignar
-Asistente IA
 Así está el agua de
 Así se verán los avisos en este dispositivo.
 Atención: el entrenamiento incluye datos del simulador, que no representan agua real.
@@ -188,6 +188,7 @@ Basadas en tu última medición: pH {0} ({1}) del {2} · Perfil {3}
 Basic
 Bearer
 Bearer {0}
+Biblioteca
 Biblioteca normativa
 Bicarbonato de sodio
 Bicarbonato de sodio (sube la alcalinidad)
@@ -239,7 +240,6 @@ Cada llamada queda registrada con su proveedor, tokens, latencia y costo estimad
 Cada lugar guarda sus propias mediciones. Elige uno y toda la app cambia a ese lugar.
 Cada sitio con agua que mides, por separado.
 Cada vez que calibras un punto queda aquí: con qué solución buffer, qué marcaba el medidor antes y si el medidor lo aceptó. Si la diferencia crece mucho, es hora de revisar o cambiar la sonda.
-Cada vez que entras queda una sesión: cuándo empezó, desde qué equipo y qué hiciste. Desde aquí cierras las sesiones abiertas en otros equipos.
 Cada vez que inicias sesión empieza una sesión nueva. Aquí queda lo que hiciste en cada una, desde que entraste hasta que la cerraste.
 Cada {0}
 Calcula cuánto producto echar, anota lo que le haces al agua y crea recordatorios.
@@ -354,15 +354,16 @@ Con una foto
 Con «Alertas por correo» te escribo cuando el agua sale del rango (como mucho un correo por hora). Los recordatorios también pueden llegar por correo si lo marcas al crearlos.
 Conclusión
 Conclusión de la IA
-Conecta aquí tu medidor de pH por USB o usa la cámara para leer su pantalla.
 Conecta tu medidor de pH a este computador por USB o Bluetooth, o léelo con la cámara si no tiene cable de datos.
 Conecta tu medidor de pH por USB (o por Bluetooth emparejado como puerto serie) al computador desde el que usas Aqua Assistant.
+Conecta tu medidor por USB o Bluetooth, léelo con la cámara y mira sus calibraciones
 Conecta tu medidor por USB o lee su pantalla con la cámara.
 Conectado
 Conectado por USB:
 Conectado: {0}
 Conectar medidor
 Conectar mi medidor
+Conectar, calibrar o cambiar mi medidor
 Conexión del dispositivo
 Conexión recuperada.
 Confianza
@@ -452,7 +453,7 @@ Cuidado
 Cuidado del agua
 Cuidado del agua: dosis, tratamientos y recordatorios
 Curva de aprendizaje
-Cuántas consultas de IA has usado
+Cuántas consultas de IA se han usado
 CÓMO SE ELABORÓ
 Cámara
 Cámara apagada
@@ -507,7 +508,6 @@ Describe el uso del perfil.
 Descripción del uso
 Desde
 Desde {0} · vence {1}
-Detalle
 Detección de anomalías
 Detención de medición en tiempo real
 Detención temprana: se guardan los pesos de la época con menor error de validación.
@@ -515,11 +515,11 @@ Detener
 Detener continuo
 Detener vivo
 Deutsch
-Diagnóstico IA
 Diagnóstico generado con reglas.
 Diagnóstico generado con {0}.
 Diagnóstico inteligente
 Diagnóstico orientativo basado en el pH. No reemplaza un análisis de laboratorio ni demuestra potabilidad.
+Diagnóstico y recomendaciones
 Diagnósticos anteriores
 Dicloro
 Dicloro {0} % (estabilizado)
@@ -570,7 +570,7 @@ El agua corrosiva (asociada a pH bajo) puede corroer hierro y cobre, manchar ins
 El agua de muy baja salinidad puede tener el pH fuera de rango porque casi no amortigua cambios. No debe alarmar, pero conviene un análisis completo de laboratorio; suele afectar poco a suelos y cultivos, aunque es muy corrosiva para tuberías, aspersores y equipos.
 El agua de riego con pH fuera del rango normal puede causar un desequilibrio nutricional o contener un ion tóxico.
 El agua está dentro del rango recomendado para
-El botón más importante: registra el pH con tu medidor, con una foto o escribiendo el valor.
+El botón más importante: registra el pH con tu medidor, con una foto o escribiendo el valor. Desde aquí también conectas y calibras tu medidor.
 El carbonato también sube la alcalinidad.
 El circuito no respondió como Atlas EZO-pH. Revisa el tipo de medidor y la velocidad ({0} por defecto).
 El circuito rechazó la calibración.
@@ -621,7 +621,6 @@ El pH máximo es {0}.
 El pH mínimo es {0}.
 El pH por sí solo no confirma ni descarta contaminación.
 El pH por sí solo no demuestra que el agua sea potable ni que esté libre de contaminantes.
-El pH real que miden hoy las estaciones del Servicio Geológico de EE. UU., para comparar tu agua con ríos de referencia.
 El pH va de {0} a {1}.
 El pH y el cloro (o bromo) se miden cada día antes de abrir; luego cada {0} horas con dosificación manual o cada {1} horas con dosificación automática mientras la piscina está abierta.
 El pago está en proceso en PayU. Verifica de nuevo en unos minutos.
@@ -1151,6 +1150,7 @@ Medidor desconectado.
 Medidor físico
 Medidor por cámara
 Medidor serie
+Medidor y actividad
 Medidor: {0}
 Medio
 Medio (pH {0})
@@ -1173,7 +1173,8 @@ Midiendo en tiempo real
 Midiendo... mantén la sonda sumergida.
 Miembro desde
 Mientras tanto la cuenta funciona como usuario normal.
-Mirar el futuro
+Mis conversaciones
+Mis lugares
 Missing font
 Modelo
 Moderado
@@ -1297,7 +1298,8 @@ Nombre actualizado.
 Nombre completo
 Nombre de medidor demasiado largo.
 Nombre del titular
-Normas oficiales sobre el pH del agua
+Normas
+Normas oficiales y datos oficiales de pH
 Nota
 Nota (opcional)
 Notificaciones de alertas
@@ -1376,7 +1378,6 @@ Perfil de pH
 Perfil duplicado. Ajusta sus rangos.
 Perfil eliminado.
 Perfil guardado.
-Perfiles
 Perfiles de agua
 Perfiles de uso
 Perfiles propios
@@ -1393,7 +1394,6 @@ Pidió un informe al agente de IA
 Pidió una predicción a
 Piscina
 Piscina de la casa
-Piscina, acuario, agua potable, riego… cada uno cambia el rango ideal de pH.
 Piscinas con desinfección por cloro. Fuera de este rango baja la eficacia del cloro y aumenta la irritación.
 Piscinas y recintos acuáticos. Fuera de {0}-{1} baja la eficacia del desinfectante; por debajo de {2} o por encima de {3} la CDC lo considera un riesgo inminente para la salud.
 Plan
@@ -1425,7 +1425,7 @@ Predicción
 Predicción a
 Predicción aprendida de tus propios datos
 Predicción con: {0}
-Predicción de tendencias
+Predicción del pH
 Predicción estadística a {0} horas basada en tu historial. No reemplaza una
 Predicción no disponible:
 Pregunta
@@ -1485,7 +1485,7 @@ Quitar rol de administrador
 Quitó a una persona de un lugar
 Quitó su foto de perfil
 Qué dicen las normas oficiales sobre este caso. Las citas se recuperan de la biblioteca normativa con búsqueda BM{0}.
-Qué hacer según tu última medición
+Qué hacer ahora
 Qué puede hacer quien se una
 Rango amplio de referencia para agua de uso cotidiano cuando no se conoce el uso final.
 Rango comunitario habitual en literatura acuarista. Requiere ajuste por especie.
@@ -1571,7 +1571,6 @@ Revisa los campos marcados.
 Revisa obstrucciones por carbonatos en goteros.
 Revisa tu conexión a internet e inténtalo de nuevo.
 Revisa tu conexión y recarga la página. Si se publicó una versión nueva de Aqua Assistant, recargar la descarga.
-Revisa tus mediciones y te dice el riesgo
 Revisando tus datos...
 Revisar la bomba
 Revisó las alertas recientes
@@ -1635,7 +1634,6 @@ Seguridad
 Selecciona un puerto serie válido.
 Send
 Serie horaria
-Sesiones
 Sesión actual
 Sesión cerrada
 Sesión cerrada.
@@ -1653,7 +1651,7 @@ Si está activo, cada medición con el medidor se guarda sin pedir confirmación
 Si los peces muestran estrés (respiración rápida, letargo), consulta a un especialista en acuarios.
 Si quieres que tu familia o tu técnico vean ese lugar desde su propia cuenta, toca «Compartir» y dales el código. Ellos lo escriben abajo, en «Unirme con un código».
 Si renuevas antes de que venza, los días se suman a tu fecha actual.
-Si tienes piscina y acuario, cada uno lleva su propio historial. Arriba ves en cuál estás y lo cambias con un toque.
+Si tienes piscina y acuario, cada uno lleva su propio historial. Arriba ves en cuál estás y lo cambias con un toque. Aquí también están los «Perfiles de uso»: piscina, acuario, agua potable o riego cambian el rango ideal de pH.
 Si una medición sale del rango, te aviso aquí.
 Si ya mediste con otro equipo
 Siguiente
@@ -1665,7 +1663,6 @@ Simulador conectado. Sus lecturas se marcaran como simuladas.
 Simulador de escenarios
 Simular
 Sin actividad registrada.
-Sin actividad.
 Sin actualizar en esta ronda:
 Sin alertas
 Sin anomalías en {0} días
@@ -1738,12 +1735,13 @@ También baja el pH: después súbelo con aireación (bomba, cascadas) más que 
 También sube el ácido cianúrico unos {0} mg/L y baja un poco el pH.
 También sube el ácido cianúrico unos {0} mg/L.
 Te ayudo a cuidar el pH de tu agua. En un minuto te muestro dónde está cada cosa.
+Te dice el riesgo de tu agua y qué hacer ahora
 Te enviaremos un enlace para restablecerla
 Te escribo a tu correo cuando una medición sale del rango (como mucho uno por hora).
 Te llevamos a la página segura de PayU...
 Tema
 Tema actualizado.
-Tema claro u oscuro, idioma, voz de Aqua, avisos al celular o por correo y tu cuenta. En el celular, desliza la barra hacia los lados para ver todo.
+Tema claro u oscuro, idioma, voz de Aqua, avisos al celular o por correo y tu cuenta. Arriba están también «Medidor» y «Actividad y sesiones», donde ves qué hiciste en cada sesión y cierras las abiertas en otros equipos.
 Temperatura
 Temperatura fuera de rango.
 Temperatura fuera de {0}-{1} °C: la compensación de pH puede no ser confiable.
@@ -1773,7 +1771,7 @@ Toca para abrir Aqua Assistant AI.
 Toca tu inicial o tu nombre para ver tu cuenta y para «Cerrar sesión».
 Toca una para ver su serie
 Toda la app cambia al idioma que elijas: pantallas, mensajes, respuestas y voz de Aqua, correos, avisos e informes. La primera vez en un idioma puede tardar unos segundos mientras se traduce.
-Todas tus conversaciones, en grande
+Todas tus conversaciones con Aqua
 Todas tus mediciones con gráficas, filtros y descarga.
 Todavía nadie ha iniciado un pago.
 Todavía no se ha unido nadie.
@@ -1819,7 +1817,7 @@ Tu plan de Aqua Assistant AI cambió
 Tu rol en Aqua Assistant AI cambió
 Tu última medición y si tu agua está bien para el uso que elegiste.
 Tuyo
-Tócame para chatear conmigo, pedir un diagnóstico, predecir tu pH o armar un informe. Toda la IA está aquí.
+Tócame para chatear conmigo, pedir un diagnóstico, predecir tu pH o armar un informe. En la «Biblioteca normativa» están las normas y los datos oficiales de pH, y en «Análisis avanzado», los modelos entrenados con tus datos.
 Tócame si quieres que analice tu agua.
 Tú:
 USB / serie
@@ -1900,7 +1898,6 @@ Ver la estación en el sitio del USGS
 Ver lo que se hizo
 Ver los {0} fragmentos
 Ver plan y pagos
-Ver por sesión
 Ver sesiones anteriores ({0} más)
 Ver sus sesiones y lo que hizo en cada una
 Ver todas mis conversaciones
