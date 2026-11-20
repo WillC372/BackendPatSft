@@ -1,30 +1,61 @@
-# The backend sleeps when nobody uses it (Render stops a free instance after 15 minutes without requests), so the
-# 750 free hours of Render last for the backend and the AI service. Every 3 hours this wakes it for about 15 minutes:
-# on waking it sends the reminders that are due, imports the USGS official data and checks pending payments.
-# GitHub runs scheduled workflows when it can, so a run may come late. It can also be started by hand (Run workflow).
-name: Despertar el backend
+# Render stops a free instance after 15 minutes without requests, and the next visit waits up to a minute while it
+# starts again. This workflow keeps the backend and the AI service awake.
+#
+# KEEP_AWAKE_MODE (repository variable, Settings > Secrets and variables > Actions > Variables):
+#   always (default): one run pings both services every 4 minutes for about 5 and a half hours and then starts the
+#                     next run itself, so they never sleep. Uses free instance hours all the time (both services
+#                     together use about 48 of Render's 750 free hours per day).
+#   3h:               the old behaviour: every 3 hours both are woken once (reminders, USGS data, pending payments
+#                     are processed on waking), and they sleep the rest of the time to save hours.
+# Scheduled runs can come late (GitHub runs them when it can); in "always" mode they only restart the chain if it broke.
+name: Despertar el backend y la IA
 
 on:
   schedule:
     - cron: "23 */3 * * *"
   workflow_dispatch:
 
-permissions: {}
+permissions:
+  actions: write
+
+concurrency:
+  group: keep-awake
+  cancel-in-progress: false
 
 jobs:
   wake:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 350
+    env:
+      MODE: ${{ vars.KEEP_AWAKE_MODE || 'always' }}
+      BACKEND_URL: ${{ vars.KEEP_AWAKE_URL || 'https://aquasense-backend-willc372.onrender.com/actuator/health/liveness' }}
+      AI_URL: ${{ vars.KEEP_AWAKE_AI_URL || 'https://aquasense-ai-willc372.onrender.com/actuator/health/liveness' }}
     steps:
-      - name: Despertar el backend
-        env:
-          URL: ${{ vars.KEEP_AWAKE_URL || 'https://aquasense-backend-willc372.onrender.com/actuator/health/liveness' }}
+      - name: Despertar y mantener despiertos
         run: |
-          for attempt in 1 2 3; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 "$URL" || true)
-            if [ "$code" = "200" ]; then echo "El backend respondió $code (intento $attempt)."; exit 0; fi
-            echo "Intento $attempt: '$code'; puede estar arrancando, espero."
-            sleep 30
+          ping() {
+            for attempt in 1 2 3; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 "$1" || true)
+              if [ "$code" = "200" ]; then echo "$(date -u +%H:%M) $2 respondió 200."; return 0; fi
+              echo "$(date -u +%H:%M) $2: '$code' (intento $attempt); puede estar arrancando."
+              sleep 20
+            done
+            echo "::warning::$2 no respondió 200 en 3 intentos."
+          }
+          ping "$BACKEND_URL" "Backend"
+          ping "$AI_URL" "Servicio de IA"
+          if [ "$MODE" != "always" ]; then
+            echo "Modo '$MODE': solo se despertaron una vez."
+            exit 0
+          fi
+          end=$((SECONDS + 330 * 60))
+          while [ $SECONDS -lt $end ]; do
+            sleep 240
+            ping "$BACKEND_URL" "Backend"
+            ping "$AI_URL" "Servicio de IA"
           done
-          echo "::error::El backend no respondió 200 en 3 intentos."
-          exit 1
+      - name: Lanzar la siguiente ronda
+        if: success() && env.MODE == 'always'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run WakeUp.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME"
