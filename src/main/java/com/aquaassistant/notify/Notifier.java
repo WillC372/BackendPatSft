@@ -1,30 +1,24 @@
 package com.aquaassistant.notify;
 
 import com.aquaassistant.user.MailService;
-import com.aquaassistant.user.User;
 import com.aquaassistant.user.UserRepository;
 import com.aquaassistant.user.UserSettings;
 import com.aquaassistant.user.UserSettingsRepository;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
  * Notifications outside the app: to the phone or computer (Web Push) and by email. They are sent in the background
- * so saving a measurement does not wait for them. Emails of the same kind go at most once per hour per person.
+ * so saving a measurement does not wait for them.
+ *
+ * <p>Client of two patterns: Bridge ({@link Notice} says what is notified and through which channels;
+ * {@link NoticeChannel} says how it is delivered) and Decorator (the push channel is translated into the person's
+ * language; the email channel lets through one notice of each kind per hour).
  */
 @Service
 public class Notifier {
-
-    private static final Logger log = LoggerFactory.getLogger(Notifier.class);
-    private static final Duration EMAIL_GAP = Duration.ofHours(1);
 
     /** {@code alarm}: an alteration of the pH; the notice is urgent, stays on screen and vibrates. */
     public record Message(String title, String body, String url, String emailSubject, List<String> emailParagraphs,
@@ -36,10 +30,9 @@ public class Notifier {
     }
 
     private final PushService push;
-    private final MailService mail;
-    private final UserRepository users;
     private final UserSettingsRepository settings;
-    private final Map<String, Instant> lastEmail = new ConcurrentHashMap<>();
+    private final NoticeChannel pushChannel;
+    private final NoticeChannel emailChannel;
     private final ExecutorService background = Executors.newVirtualThreadPerTaskExecutor();
     private com.aquaassistant.i18n.UserLanguage language;
     private com.aquaassistant.i18n.TranslationClient translations;
@@ -52,24 +45,23 @@ public class Notifier {
         this.translations = translations;
     }
 
-    /** Title and text of a notice in the person's language; Spanish if the translation is not available now. */
-    private String[] localized(Long userId, String title, String body) {
+    public Notifier(PushService push, MailService mail, UserRepository users, UserSettingsRepository settings) {
+        this.push = push;
+        this.settings = settings;
+        this.pushChannel = new TranslatedChannel(new WebPushChannel(push), this::localized);
+        this.emailChannel = new OncePerHourChannel(new EmailChannel(mail, users));
+    }
+
+    /** Texts in the person's language, in the same order; Spanish if the translation is not available now. */
+    private List<String> localized(Long userId, List<String> texts) {
         if (language == null || translations == null) {
-            return new String[] {title, body};
+            return texts;
         }
         String lang = language.of(userId);
         if (com.aquaassistant.i18n.Languages.isOriginal(lang)) {
-            return new String[] {title, body};
+            return texts;
         }
-        List<String> out = translations.translateAll(lang, List.of(title, body));
-        return new String[] {out.get(0), out.get(1)};
-    }
-
-    public Notifier(PushService push, MailService mail, UserRepository users, UserSettingsRepository settings) {
-        this.push = push;
-        this.mail = mail;
-        this.users = users;
-        this.settings = settings;
+        return translations.translateAll(lang, texts);
     }
 
     /**
@@ -78,60 +70,24 @@ public class Notifier {
      */
     public void alert(Long userId, Message message) {
         UserSettings s = settings.findById(userId).orElse(null);
-        boolean pushOn = s == null || s.isNotificationsEnabled();
-        boolean emailOn = s == null || s.isEmailAlerts();
-        send(userId, message, pushOn, emailOn, message.alarm() ? "alarm" : "alert");
+        Notice notice = new AlertNotice(pushChannel, emailChannel, s);
+        background.submit(() -> notice.send(userId, message));
     }
 
-    /**
-     * Whether an email to this address can arrive: the demonstration accounts used made-up addresses
-     * (@demo.aquaassistant) and the example accounts use @example.com, which do not receive mail.
-     */
+    /** Whether an email to this address can arrive (see {@link EmailChannel#deliverable}). */
     public static boolean deliverable(String email) {
-        String e = String.valueOf(email).toLowerCase(java.util.Locale.ROOT);
-        return e.contains("@") && !e.endsWith(".aquaassistant") && !e.endsWith("@example.com") && !e.endsWith(".test")
-            && !e.endsWith(".local");
+        return EmailChannel.deliverable(email);
     }
 
     /** Reminder: through the channels the reminder asks for. */
     public void reminder(Long userId, Message message, boolean byPush, boolean byEmail) {
-        send(userId, message, byPush, byEmail, "reminder:" + message.title());
+        Notice notice = new ReminderNotice(pushChannel, emailChannel, byPush, byEmail);
+        background.submit(() -> notice.send(userId, message));
     }
 
     /** Sends right away and tells how many devices got it (used by "Probar aviso"). */
     public int testPush(Long userId) {
-        String[] text = localized(userId, "Aqua Assistant AI", "Así se verán los avisos en este dispositivo.");
-        return push.send(userId, text[0], text[1], "/#/settings");
-    }
-
-    private void send(Long userId, Message message, boolean byPush, boolean byEmail, String kind) {
-        background.submit(() -> {
-            try {
-                if (byPush) {
-                    String[] text = localized(userId, message.title(), message.body());
-                    push.send(userId, text[0], text[1], message.url(), message.alarm());
-                }
-                if (byEmail && allowEmail(userId, kind)) {
-                    users.findById(userId).filter(User::isEnabled).filter(u -> deliverable(u.getEmail()))
-                        .ifPresent(u -> mail.sendNotice(u.getEmail(), message.emailSubject(), message.title(), message.emailParagraphs()));
-                }
-            } catch (Exception e) {
-                log.warn("Notification for user {} failed: {}", userId, e.getMessage());
-            }
-        });
-    }
-
-    private boolean allowEmail(Long userId, String kind) {
-        String key = userId + "|" + kind;
-        Instant now = Instant.now();
-        Instant previous = lastEmail.get(key);
-        if (previous != null && previous.plus(EMAIL_GAP).isAfter(now)) {
-            return false;
-        }
-        lastEmail.put(key, now);
-        if (lastEmail.size() > 5000) {
-            lastEmail.entrySet().removeIf(e -> e.getValue().plus(EMAIL_GAP).isBefore(now));
-        }
-        return true;
+        List<String> text = localized(userId, List.of("Aqua Assistant AI", "Así se verán los avisos en este dispositivo."));
+        return push.send(userId, text.get(0), text.get(1), "/#/settings");
     }
 }

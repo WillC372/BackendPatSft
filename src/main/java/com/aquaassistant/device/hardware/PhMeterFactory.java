@@ -1,33 +1,45 @@
 package com.aquaassistant.device.hardware;
 
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import com.fazecast.jSerialComm.SerialPort;
 import org.springframework.stereotype.Component;
 
 /**
- * Factory Method: creates the right adapter for the protocol chosen by the user.
- * Services ask for a {@link PhMeter} without knowing the concrete classes or the transport.
+ * Factory Method: creates the right meter for the protocol chosen by the user. Services ask for a {@link PhMeter}
+ * without knowing the concrete classes or the transport. Each real protocol is built by its family
+ * ({@link MeterKit}, Abstract Factory), which creates the link and the adapter that belong together.
  */
 @Component
 public class PhMeterFactory {
 
     private static final double SIMULATOR_BASELINE = 7.15;
 
-    public PhMeter create(MeterProtocol protocol, String port) {
-        return switch (protocol) {
-            case SIMULATOR -> new SimulatedPhMeter(SIMULATOR_BASELINE, System.nanoTime());
-            case ATLAS_EZO -> new AtlasEzoPhAdapter(createLink(port, "\r"));
-            case AQUASENSE_ESP32 -> new AquaAssistantFirmwareAdapter(createLink(port, "\n"));
-            case TEXT_METER -> new TextMeterAdapter(createLink(port, "\r\n"));
-        };
+    private final Map<MeterProtocol, MeterKit> kits = new EnumMap<>(MeterProtocol.class);
+
+    public PhMeterFactory() {
+        for (MeterKit kit : List.of(new AtlasEzoKit(), new Esp32FirmwareKit(), new TextMeterKit())) {
+            kits.put(kit.protocol(), kit);
+        }
     }
 
-    protected SerialLink createLink(String port, String terminator) {
-        if (port == null || port.isBlank() || SimulatedPhMeter.PORT.equals(port)) {
-            throw new DeviceException("Selecciona un puerto serie válido.");
+    public PhMeter create(MeterProtocol protocol, String port) {
+        if (protocol == MeterProtocol.SIMULATOR) {
+            return new SimulatedPhMeter(SIMULATOR_BASELINE, System.nanoTime());
         }
-        return new JSerialCommLink(port, terminator);
+        MeterKit kit = kitFor(protocol);
+        return kit.createMeter(kit.createLink(port));
+    }
+
+    /** The family that builds the meters of this protocol. */
+    public MeterKit kitFor(MeterProtocol protocol) {
+        MeterKit kit = kits.get(protocol);
+        if (kit == null) {
+            throw new DeviceException("Tipo de medidor no soportado: " + protocol);
+        }
+        return kit;
     }
 
     public List<DetectedPort> detectPorts() {
