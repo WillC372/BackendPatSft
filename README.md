@@ -135,6 +135,7 @@ docker compose --env-file .env up --build
 | `FRONTEND_ADMIN_VERIFY_URL` | No | Dirección de la pantalla que confirma el administrador (por defecto `http://localhost:5500/#/verify-admin`) |
 | `API_DOCS_ENABLED` | No | `false` por defecto: Swagger UI y `/v3/api-docs` no se publican, porque el mapa completo de la API ayuda a un atacante. Ponlo en `true` solo en desarrollo |
 | `CLIENT_IP_HEADER` | No | Cabecera con la dirección real del cliente que pone el proxy de delante (`CF-Connecting-IP` por defecto, la de Cloudflare en Render). Vacía: la dirección de la conexión. Fuera de Cloudflare, ponla vacía o con la cabecera de tu proxy |
+| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` | No | Alarma por SMS con Twilio ([pasos](docs/Deployment.md#alarma-por-sms-con-twilio)). Sin las tres, los SMS quedan apagados y la app lo dice |
 | `MAILJET_API_KEY`, `MAILJET_SECRET_KEY`, `MAIL_FROM`, `MAIL_SENDER_NAME` | No | **Canal recomendado.** API de envío de Mailjet por HTTPS (plan gratuito de 200 correos al día; funciona aunque el puerto SMTP esté bloqueado). `MAIL_FROM` debe ser un remitente validado en Mailjet |
 | `BREVO_API_KEY` | No | Alternativa: API de correo transaccional de Brevo |
 | `MAIL_PROVIDER` | No | `auto` (Mailjet, Brevo o SMTP, el primero configurado), `mailjet`, `brevo`, `smtp` o `none` |

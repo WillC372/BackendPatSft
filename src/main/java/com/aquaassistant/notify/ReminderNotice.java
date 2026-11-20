@@ -16,7 +16,7 @@ public class ReminderNotice extends Notice {
     }
 
     @Override
-    protected List<NoticeChannel> channels() {
+    protected List<NoticeChannel> channels(Notifier.Message message) {
         List<NoticeChannel> out = new ArrayList<>(2);
         if (byPush) {
             out.add(push);

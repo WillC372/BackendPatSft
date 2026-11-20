@@ -38,6 +38,10 @@ public class UserSettings {
     @Column(name = "voice_enabled")
     private boolean voiceEnabled = true;
 
+    /** Whether the pH alarm also goes by SMS to the account's mobile number (V30). */
+    @Column(name = "sms_alerts")
+    private boolean smsAlerts = true;
+
     protected UserSettings() {
     }
 
@@ -78,6 +82,12 @@ public class UserSettings {
 
 
     public boolean isVoiceEnabled() { return voiceEnabled; }
+
+    public boolean isSmsAlerts() { return smsAlerts; }
+
+    public void setSmsAlerts(boolean smsAlerts) {
+        this.smsAlerts = smsAlerts;
+    }
 
     public void setVoiceEnabled(boolean voiceEnabled) {
         this.voiceEnabled = voiceEnabled;
