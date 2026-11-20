@@ -70,20 +70,6 @@ Si Render asigna otra dirección (por ejemplo, porque el nombre ya existía), ha
 
 Si Vercel asigna otra dirección, hay que cambiarla en `CORS_ORIGINS`, `FRONTEND_RESET_URL`, `FRONTEND_ADMIN_VERIFY_URL` y `PAYMENTS_RESPONSE_URL` en Render.
 
-## Alarmas por WhatsApp (WhatsApp Cloud API de Meta)
-
-Cuando el pH se altera, además del aviso en el celular y del correo, la app manda un WhatsApp al número que cada persona guarda en **Configuración → Notificaciones**. Sin las variables de abajo, WhatsApp queda apagado y la app lo dice; no se finge ningún envío.
-
-1. En [developers.facebook.com](https://developers.facebook.com) crea una app de tipo **Empresa** y agrégale el producto **WhatsApp**. Meta da un número de prueba gratis.
-2. En **WhatsApp → Configuración de la API** copia el **Identificador del número de teléfono** (`WHATSAPP_PHONE_NUMBER_ID`) y genera un **token de acceso** (`WHATSAPP_TOKEN`). El token temporal dura 24 horas; para uno permanente, crea un **usuario del sistema** en el Business Manager con permiso `whatsapp_business_messaging`.
-3. En **Para (destinatarios)** agrega y verifica los celulares que recibirán avisos (con el número de prueba, hasta 5).
-4. En **Administrador de WhatsApp → Plantillas de mensajes** crea una plantilla con estos datos:
-   - Nombre: `alerta_ph`. Categoría: **Utilidad**. Idioma: **Español** (`es`).
-   - Cuerpo: `⚠️ {{1}}: {{2}} Abre Aqua Assistant AI para ver qué hacer.`
-   - Ejemplos para la revisión: `{{1}}` = «Alteración del pH en el agua» y `{{2}}` = «El pH subió de 7.30 a 12.67 en 5 minutos. Es peligroso».
-5. Cuando Meta la apruebe, que suele tardar de minutos a horas, pon en Render (backend → **Environment**) las variables `WHATSAPP_TOKEN` y `WHATSAPP_PHONE_NUMBER_ID`. Opcionales: `WHATSAPP_TEMPLATE` (por defecto `alerta_ph`) y `WHATSAPP_TEMPLATE_LANG` (por defecto `es`).
-6. En la app: **Configuración → Notificaciones**, escribe tu celular y pulsa «Enviar WhatsApp de prueba».
-
 ## Correos de los botones de acceso
 
 Los botones Usuario, Premium y Administrador usan cuentas compartidas. Para que sus correos lleguen (alarmas, avisos y recuperación de contraseña), usan buzones reales elegidos por el dueño: `candow372@gmail.com` (Usuario), `guifig1324@gmail.com` (Premium) y `adminaqua16@gmail.com` (Administrador), en `application.yml`. Se pueden cambiar en Render con `DEMO_USER_EMAIL`, `DEMO_PREMIUM_EMAIL` y `DEMO_ADMIN_EMAIL`. Al cambiarlos, cada cuenta conserva sus lugares, mediciones e historial. No uses el correo de una cuenta real de la app: el botón no podría entrar y los intentos fallidos bloquearían esa cuenta.
