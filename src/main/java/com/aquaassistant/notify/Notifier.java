@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
  * so saving a measurement does not wait for them.
  *
  * <p>Client of two patterns: Bridge ({@link Notice} says what is notified and through which channels;
- * {@link NoticeChannel} says how it is delivered) and Decorator (the push channel is translated into the person's
- * language; the email channel lets through one notice of each kind per hour).
+ * {@link NoticeChannel} says how it is delivered: Web Push, email or SMS) and Decorator (push and SMS are translated
+ * into the person's language; email and SMS let through one notice of each kind per hour).
  */
 @Service
 public class Notifier {
@@ -33,6 +33,7 @@ public class Notifier {
     private final UserSettingsRepository settings;
     private final NoticeChannel pushChannel;
     private final NoticeChannel emailChannel;
+    private final NoticeChannel smsChannel;
     private final ExecutorService background = Executors.newVirtualThreadPerTaskExecutor();
     private com.aquaassistant.i18n.UserLanguage language;
     private com.aquaassistant.i18n.TranslationClient translations;
@@ -45,11 +46,14 @@ public class Notifier {
         this.translations = translations;
     }
 
-    public Notifier(PushService push, MailService mail, UserRepository users, UserSettingsRepository settings) {
+    public Notifier(PushService push, MailService mail, UserRepository users, UserSettingsRepository settings,
+                    SmsService sms) {
         this.push = push;
         this.settings = settings;
         this.pushChannel = new TranslatedChannel(new WebPushChannel(push), this::localized);
         this.emailChannel = new OncePerHourChannel(new EmailChannel(mail, users));
+        // Each SMS costs: at most one per hour of each kind, translated like the push notice.
+        this.smsChannel = new OncePerHourChannel(new TranslatedChannel(new SmsChannel(sms, users), this::localized));
     }
 
     /** Texts in the person's language, in the same order; Spanish if the translation is not available now. */
@@ -70,7 +74,7 @@ public class Notifier {
      */
     public void alert(Long userId, Message message) {
         UserSettings s = settings.findById(userId).orElse(null);
-        Notice notice = new AlertNotice(pushChannel, emailChannel, s);
+        Notice notice = new AlertNotice(pushChannel, emailChannel, smsChannel, s);
         background.submit(() -> notice.send(userId, message));
     }
 

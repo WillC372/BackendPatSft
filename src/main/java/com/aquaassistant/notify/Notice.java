@@ -15,14 +15,21 @@ public abstract class Notice {
 
     protected final NoticeChannel push;
     protected final NoticeChannel email;
+    /** Text message to the mobile number; {@code null} when this kind of notice never goes by SMS. */
+    protected final NoticeChannel sms;
 
     protected Notice(NoticeChannel push, NoticeChannel email) {
-        this.push = push;
-        this.email = email;
+        this(push, email, null);
     }
 
-    /** The channels this notice uses for this person. */
-    protected abstract List<NoticeChannel> channels();
+    protected Notice(NoticeChannel push, NoticeChannel email, NoticeChannel sms) {
+        this.push = push;
+        this.email = email;
+        this.sms = sms;
+    }
+
+    /** The channels this notice uses for this person and this message. */
+    protected abstract List<NoticeChannel> channels(Notifier.Message message);
 
     /** The kind that groups repeated notices of this type. */
     protected abstract String kind(Notifier.Message message);
@@ -30,7 +37,7 @@ public abstract class Notice {
     /** Sends through every chosen channel; a channel that fails does not stop the others. */
     public final void send(Long userId, Notifier.Message message) {
         NoticeContent content = NoticeContent.of(kind(message), message);
-        for (NoticeChannel channel : channels()) {
+        for (NoticeChannel channel : channels(message)) {
             try {
                 channel.deliver(userId, content);
             } catch (RuntimeException e) {

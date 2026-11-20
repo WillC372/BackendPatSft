@@ -59,6 +59,10 @@ public class User {
     @Column(name = "avatar_updated_at")
     private Instant avatarUpdatedAt;
 
+    /** Mobile number in E.164 (+573001234567) for the pH alarm by SMS; null if the person did not give one. */
+    @jakarta.persistence.Column(name = "phone_number")
+    private String phoneNumber;
+
     /** Demonstration account of the login screen (see {@code DemoAccounts}). */
     private boolean demo;
 
@@ -209,4 +213,10 @@ public class User {
     public String getDisabledReason() { return disabledReason; }
     public Instant getDisabledAt() { return disabledAt; }
     public Instant getLastLoginAt() { return lastLoginAt; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+
+    public void changePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }

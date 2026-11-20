@@ -17,6 +17,8 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | POST | `/users/me/password` | `{ currentPassword, newPassword }`. Pide la contraseña actual; cierra las demás sesiones y responde con el token nuevo de esta (las anteriores dejan de servir). 400 si la actual no es correcta o la nueva no cumple las reglas |
 | PUT · DELETE | `/users/me/avatar` | Sube (`multipart`, campo `file`, JPEG o PNG de hasta 10 MB) o quita la foto de perfil. El servidor recorta el cuadrado central, lo reduce a 256 px y lo vuelve a codificar como JPEG (sin metadatos como la ubicación). 415 si no es una imagen |
 | GET | `/users/me/avatar` | La foto (JPEG) del usuario autenticado; 404 sin foto. No hay fotos públicas |
+| GET · PUT | `/users/me/phone` | `{ phoneNumber, smsAlerts }`. El celular de la cuenta para la alarma por SMS, guardado en formato internacional (un celular colombiano de 10 dígitos recibe `+57`), y si la persona quiere el SMS. La respuesta dice además `smsConfigured`: si el servidor tiene Twilio. 400 si el número no es válido |
+| POST | `/users/me/phone/test` | Envía un SMS de prueba al celular guardado (con límite de frecuencia). `{ sent, detail }`, donde `detail` explica en palabras simples por qué no salió (por ejemplo, número no verificado en la cuenta de prueba de Twilio) |
 | DELETE | `/users/me` | `{ password }`. Elimina la propia cuenta y todos sus datos (204); 400 si la contraseña no coincide, 409 si es el último administrador activo o tiene pagos reales |
 | GET / PUT | `/users/me/settings` | Tema, notificaciones, guardado automático, perfil activo |
 | GET | `/users/me/activity` | Últimas 50 operaciones, con su nombre legible (`label`) y la sesión en que se hicieron (`sessionId`) |

@@ -40,6 +40,19 @@ class NoticeBridgeTest {
     }
 
     @Test
+    void onlyTheAlarmGoesBySmsAndThePersonCanTurnItOff() {
+        Recorder sms = new Recorder();
+        new AlertNotice(push, email, sms, null).send(1L, message(false));
+        assertThat(sms.got).isEmpty();
+        new AlertNotice(push, email, sms, null).send(1L, message(true));
+        assertThat(sms.got).extracting(NoticeContent::kind).containsExactly("alarm");
+        UserSettings off = UserSettings.defaultsFor(1L, null);
+        off.setSmsAlerts(false);
+        new AlertNotice(push, email, sms, off).send(1L, message(true));
+        assertThat(sms.got).hasSize(1);
+    }
+
+    @Test
     void aFailingChannelDoesNotStopTheOthers() {
         NoticeChannel broken = (userId, content) -> {
             throw new IllegalStateException("push service down");
