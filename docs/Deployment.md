@@ -86,7 +86,7 @@ Cuando el pH se altera, además del aviso en el celular y del correo, la app man
 
 ## Correos de los botones de acceso
 
-Los botones Usuario, Premium y Administrador usan cuentas compartidas. Para que sus correos lleguen (alarmas, avisos y recuperación de contraseña), pon en Render buzones reales que sean tuyos: `DEMO_USER_EMAIL`, `DEMO_PREMIUM_EMAIL` y `DEMO_ADMIN_EMAIL`. Al cambiarlos, cada cuenta conserva sus lugares, mediciones e historial. Vacíos, siguen las direcciones inventadas `@demo.aquaassistant`, que no reciben correo.
+Los botones Usuario, Premium y Administrador usan cuentas compartidas. Para que sus correos lleguen (alarmas, avisos y recuperación de contraseña), usan buzones reales elegidos por el dueño: `candow372@gmail.com` (Usuario), `guifig1324@gmail.com` (Premium) y `adminaqua16@gmail.com` (Administrador), en `application.yml`. Se pueden cambiar en Render con `DEMO_USER_EMAIL`, `DEMO_PREMIUM_EMAIL` y `DEMO_ADMIN_EMAIL`. Al cambiarlos, cada cuenta conserva sus lugares, mediciones e historial. No uses el correo de una cuenta real de la app: el botón no podría entrar y los intentos fallidos bloquearían esa cuenta.
 
 ## Límites de los planes gratuitos
 
