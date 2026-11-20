@@ -1,5 +1,6 @@
 package com.aquaassistant.place;
 
+import com.aquaassistant.measurement.Measurers;
 import com.aquaassistant.common.BusinessException;
 import com.aquaassistant.measurement.Measurement;
 import com.aquaassistant.measurement.MeasurementRepository;
@@ -37,6 +38,7 @@ public class OfficialDataService {
     public record Result(String stationId, String stationName, int added, int alreadyThere, Instant from, Instant to) {
     }
 
+    private final Measurers measurers;
     private final PlaceAccess places;
     private final ReferenceStationRepository stations;
     private final ReferenceReadingRepository readings;
@@ -45,8 +47,9 @@ public class OfficialDataService {
     private final PhClassifier classifier;
 
     public OfficialDataService(PlaceAccess places, ReferenceStationRepository stations, ReferenceReadingRepository readings,
-                               MeasurementRepository measurements, WaterProfileRepository profiles, PhClassifier classifier) {
+                               MeasurementRepository measurements, WaterProfileRepository profiles, PhClassifier classifier, Measurers measurers) {
         this.places = places;
+        this.measurers = measurers;
         this.stations = stations;
         this.readings = readings;
         this.measurements = measurements;
@@ -56,6 +59,7 @@ public class OfficialDataService {
 
     @Transactional
     public Result load(Long userId, Long placeId, String stationId, int days) {
+        measurers.require(userId);
         Place place = places.editable(userId, placeId);
         ReferenceStation station = stations.findById(stationId == null ? "" : stationId)
             .orElseThrow(() -> BusinessException.notFound("La estación no existe en los datos oficiales."));
