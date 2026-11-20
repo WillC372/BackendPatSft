@@ -22,6 +22,11 @@ public class JSerialCommLink implements SerialLink {
         this.terminator = terminator;
     }
 
+    /** The characters added after every command (each meter model expects its own). */
+    public String terminator() {
+        return terminator;
+    }
+
     @Override
     public void open() {
         port = SerialPort.getCommPort(portName);
