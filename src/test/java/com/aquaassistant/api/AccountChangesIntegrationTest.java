@@ -57,7 +57,7 @@ class AccountChangesIntegrationTest {
     }
 
     @Test
-    void theNameCanBeChangedExceptOnDemoAccounts() throws Exception {
+    void theNameCanBeChangedAlsoOnDemoAccounts() throws Exception {
         String token = json(mvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"fullName\":\"Nombre Viejo\",\"email\":\"nombre-" + UUID.randomUUID() + "@aquasense.test\",\"password\":\"Clave1234\"}"))
             .andReturn()).path("token").asText();
@@ -70,10 +70,11 @@ class AccountChangesIntegrationTest {
         JsonNode demos = json(mvc.perform(get("/api/v1/auth/demo-accounts")).andReturn());
         String demo = login(demos.get(0).path("email").asText(), demos.get(0).path("password").asText());
         mvc.perform(put("/api/v1/users/me").header("Authorization", "Bearer " + demo).contentType(MediaType.APPLICATION_JSON)
-            .content("{\"fullName\":\"Otro\"}")).andExpect(status().isForbidden());
-        mvc.perform(post("/api/v1/users/me/password").header("Authorization", "Bearer " + demo).contentType(MediaType.APPLICATION_JSON)
-            .content("{\"currentPassword\":\"" + demos.get(0).path("password").asText() + "\",\"newPassword\":\"Nueva12345\"}"))
-            .andExpect(status().isForbidden());
+            .content("{\"fullName\":\"Otro\"}")).andExpect(status().isOk());
+        // The next login with the button puts the shown name back.
+        String again = login(demos.get(0).path("email").asText(), demos.get(0).path("password").asText());
+        assertThat(json(mvc.perform(get("/api/v1/users/me").header("Authorization", "Bearer " + again)).andReturn())
+            .path("fullName").asText()).isEqualTo("Usuario Demo");
     }
 
     private String login(String email, String password) throws Exception {

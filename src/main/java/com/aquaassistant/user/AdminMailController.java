@@ -40,7 +40,8 @@ public class AdminMailController {
 
     @PostMapping("/test")
     public Map<String, Object> test() {
-        demo.forbidFor(CurrentUser.id(), "La cuenta de demostración de administrador no puede enviar correos.");
+        demo.forbidFor(CurrentUser.id(), "La cuenta de demostración no tiene un buzón real: el correo de prueba se envía al "
+            + "correo de quien inicia sesión, así que solo funciona con una cuenta propia.");
         User admin = userRepository.findById(CurrentUser.id()).orElseThrow(() -> BusinessException.notFound("Usuario no encontrado."));
         try {
             mailService.sendTest(admin.getEmail());

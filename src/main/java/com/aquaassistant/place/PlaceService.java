@@ -116,7 +116,6 @@ public class PlaceService {
     /** Creates (or renews) the code that lets other accounts join the place. Only the owner shares. */
     @Transactional
     public PlaceResponse share(Long userId, Long placeId, PlaceRole role) {
-        demoAccounts.forbidFor(userId, "Las cuentas de demostración no pueden compartir lugares. Crea tu cuenta para hacerlo.");
         Place place = owned(userId, placeId);
         String code;
         do {
@@ -139,7 +138,6 @@ public class PlaceService {
     /** Joins the place of the code with the role chosen by its owner, and makes it the active place. */
     @Transactional
     public PlaceResponse join(Long userId, String rawCode) {
-        demoAccounts.forbidFor(userId, "Las cuentas de demostración no pueden unirse a lugares. Crea tu cuenta para hacerlo.");
         String code = rawCode.trim().toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]", "");
         Place place = places.findByShareCode(code)
             .orElseThrow(() -> BusinessException.notFound("El código no existe o ya no está activo. Pídele uno nuevo a quien te lo compartió."));

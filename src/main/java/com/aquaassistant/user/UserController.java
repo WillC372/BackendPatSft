@@ -56,9 +56,6 @@ public class UserController {
     @Transactional
     public UserResponse rename(@Valid @RequestBody RenameRequest request) {
         User user = userRepository.findById(CurrentUser.id()).orElseThrow(() -> BusinessException.notFound("La cuenta no existe."));
-        if (user.isDemo()) {
-            throw new BusinessException(org.springframework.http.HttpStatus.FORBIDDEN, "Las cuentas de demostración no pueden cambiar su nombre.");
-        }
         String name = request.fullName().trim().replaceAll("\\s+", " ");
         if (!name.equals(user.getFullName())) {
             auditService.record(user.getId(), "NAME_CHANGED", user.getFullName() + " → " + name);

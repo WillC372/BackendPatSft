@@ -80,7 +80,7 @@ public class MeasurementService {
 
     @Transactional
     public Measurement record(Long userId, NewReading reading) {
-        com.aquaassistant.place.Place place = places.editable(userId, places.activeId(userId));
+        com.aquaassistant.place.Place place = places.activeForRecording(userId);
         WaterProfile profile = profileService.activeProfile(userId);
         ValidationReport report = validationChain.validate(contextFor(userId, reading));
         if (report.isRejected()) {

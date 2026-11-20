@@ -71,7 +71,7 @@ class AvatarIntegrationTest {
     }
 
     @Test
-    void filesThatAreNotPhotosAndDemoAccountsAreRejected() throws Exception {
+    void filesThatAreNotPhotosAreRejectedButDemoAccountsCanHaveOne() throws Exception {
         String token = register();
         mvc.perform(upload(token, "nota.txt", "text/plain", "no es una imagen".getBytes()))
             .andExpect(status().isUnsupportedMediaType());
@@ -84,7 +84,7 @@ class AvatarIntegrationTest {
                 .content("{\"email\":\"" + demos.get(0).path("email").asText() + "\",\"password\":\"" + demos.get(0).path("password").asText() + "\"}"))
             .andReturn()).path("token").asText();
         mvc.perform(upload(demo, "foto.png", "image/png", png(new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB))))
-            .andExpect(status().isForbidden());
+            .andExpect(status().is2xxSuccessful());
     }
 
     private MockMultipartHttpServletRequestBuilder upload(String token, String name, String type, byte[] bytes) {

@@ -53,6 +53,8 @@ public class AuthController {
         // Per account, only failures count: whoever tries passwords from many addresses is stopped after 5 in 15 minutes,
         // and the shared demo accounts keep working for everyone who uses them correctly.
         String account = "login-account:" + request.email().trim().toLowerCase(java.util.Locale.ROOT);
+        // A demonstration account is put back as the button offers it, whatever the last person did with it.
+        demoAccounts.restoreBeforeLogin(request.email());
         rateLimiter.ensureAllowed(account, ACCOUNT_FAILURES, ACCOUNT_WINDOW);
         try {
             return authService.login(request, http.getHeader("User-Agent"));

@@ -79,7 +79,10 @@ class PlacesIntegrationTest {
             .andExpect(status().isOk()).andExpect(jsonPath("$.role").value("VIEWER")).andExpect(jsonPath("$.active").value(true))
             .andExpect(jsonPath("$.shareCode").doesNotExist());
         mvc.perform(auth(get("/api/v1/measurements"), guest)).andExpect(jsonPath("$.content[0].ph").value(7.5));
-        measure(guest, "{\"ph\":7.1}").andExpect(status().isForbidden());
+        // A viewer cannot record in the shared place: the measurement goes to their own place, now the active one.
+        JsonNode own = json(measure(guest, "{\"ph\":7.1}").andExpect(status().isCreated()).andReturn());
+        assertThat(own.get("placeId").asLong()).isNotEqualTo(id);
+        assertThat(json(mvc.perform(auth(get("/api/v1/places/" + own.get("placeId").asLong()), guest)).andReturn()).get("active").asBoolean()).isTrue();
 
         // With an editor code the guest can measure; the owner sees it and can remove the guest.
         String editorCode = json(mvc.perform(auth(post("/api/v1/places/" + id + "/share"), owner).contentType(MediaType.APPLICATION_JSON)

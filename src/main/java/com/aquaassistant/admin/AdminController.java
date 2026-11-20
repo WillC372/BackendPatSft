@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/admin")
 public class AdminController {
 
-    static final String DEMO_READ_ONLY = "La cuenta de demostración de administrador solo puede consultar: no puede hacer cambios.";
-    static final String DEMO_PRIVATE = "La cuenta de demostración no puede ver el detalle de las cuentas reales; abre una cuenta de demostración.";
+    static final String DEMO_PRIVATE = "Es la cuenta de una persona real: el administrador de demostración no puede verla ni cambiarla. "
+        + "Puede hacerlo con las cuentas de demostración y las de ejemplo (@example.com).";
 
     private final AdminUserService service;
     private final com.aquaassistant.user.DemoAccounts demo;
@@ -39,19 +39,15 @@ public class AdminController {
         this.demo = demo;
     }
 
-    /** The demonstration administrator sees real accounts with masked names and emails. */
+    /** The demonstration administrator sees the accounts of real people with masked names and emails. */
     private boolean viewerIsDemo() {
         return demo.isDemo(CurrentUser.id());
     }
 
     private void requireVisible(Long targetId) {
-        if (viewerIsDemo() && !demo.isDemo(targetId)) {
+        if (viewerIsDemo() && !demo.isOpenToDemo(targetId)) {
             throw new com.aquaassistant.common.BusinessException(org.springframework.http.HttpStatus.FORBIDDEN, DEMO_PRIVATE);
         }
-    }
-
-    private void requireRealAdmin() {
-        demo.forbidFor(CurrentUser.id(), DEMO_READ_ONLY);
     }
 
     @GetMapping("/summary")
@@ -69,7 +65,7 @@ public class AdminController {
         if (!viewerIsDemo()) {
             return result;
         }
-        return new UserPage(result.items().stream().map(r -> r.demo() ? r : new com.aquaassistant.admin.AdminDtos.UserRow(r.id(),
+        return new UserPage(result.items().stream().map(r -> demo.isOpenToDemo(r.id()) ? r : new com.aquaassistant.admin.AdminDtos.UserRow(r.id(),
             com.aquaassistant.user.DemoAccounts.maskEmail(r.email()), com.aquaassistant.user.DemoAccounts.maskName(r.fullName()), r.role(),
             r.plan(), r.premiumUntil(), r.manualPremium(), r.enabled(), r.createdAt(), r.lastLoginAt(), r.measurements(), r.self(),
             r.configuredAdmin(), false)).toList(), result.total(), result.page(), result.size(), result.totalPages());
@@ -84,25 +80,25 @@ public class AdminController {
     /** {@code days}: Premium duration; without it, Premium does not expire. Ignored for the FREE plan. */
     @PutMapping("/users/{id}/plan")
     public UserDetail plan(@PathVariable Long id, @Valid @RequestBody PlanChange request) {
-        requireRealAdmin();
+        requireVisible(id);
         return service.changePlan(CurrentUser.id(), id, request);
     }
 
     @PutMapping("/users/{id}/role")
     public UserDetail role(@PathVariable Long id, @Valid @RequestBody RoleChange request) {
-        requireRealAdmin();
+        requireVisible(id);
         return service.changeRole(CurrentUser.id(), id, request.role());
     }
 
     @PutMapping("/users/{id}/status")
     public UserDetail status(@PathVariable Long id, @Valid @RequestBody StatusChange request) {
-        requireRealAdmin();
+        requireVisible(id);
         return service.changeStatus(CurrentUser.id(), id, request.enabled(), request.reason());
     }
 
     @org.springframework.web.bind.annotation.DeleteMapping("/users/{id}")
     public org.springframework.http.ResponseEntity<Void> delete(@PathVariable Long id) {
-        requireRealAdmin();
+        requireVisible(id);
         service.deleteUser(CurrentUser.id(), id);
         return org.springframework.http.ResponseEntity.noContent().build();
     }
@@ -127,7 +123,7 @@ public class AdminController {
         if (!viewerIsDemo()) {
             return rows;
         }
-        return rows.stream().map(p -> new PaymentRow(p.id(), p.userId(), com.aquaassistant.user.DemoAccounts.maskEmail(p.userEmail()),
+        return rows.stream().map(p -> demo.isOpenToDemo(p.userId()) ? p : new PaymentRow(p.id(), p.userId(), com.aquaassistant.user.DemoAccounts.maskEmail(p.userEmail()),
             p.referenceCode(), p.amount(), p.currency(), p.periodDays(), p.status(), p.statusLabel(), p.paymentMethod(),
             p.testMode(), p.createdAt(), p.premiumUntil())).toList();
     }
@@ -135,8 +131,8 @@ public class AdminController {
     @GetMapping("/activity")
     public List<ActivityRow> activity(@RequestParam(defaultValue = "30") int limit) {
         List<ActivityRow> rows = service.adminActivity(limit);
-        // Administration actions name real accounts; the demonstration administrator only sees its own.
-        return viewerIsDemo() ? rows.stream().filter(r -> demo.isDemo(r.userId())).toList() : rows;
+        // Administration actions name real accounts; the demonstration administrator only sees the open ones.
+        return viewerIsDemo() ? rows.stream().filter(r -> demo.isOpenToDemo(r.userId())).toList() : rows;
     }
 
     public enum AccountStatus { ACTIVE, DISABLED }
