@@ -182,9 +182,6 @@ public class AuthService {
     @Transactional
     public void deleteOwnAccount(Long userId, String password) {
         User user = userRepository.findById(userId).orElseThrow(() -> BusinessException.notFound("La cuenta ya no existe."));
-        if (user.isDemo()) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "Las cuentas de demostración no se pueden eliminar.");
-        }
         if (password == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
             throw BusinessException.badRequest("La contraseña no es correcta.");
         }
@@ -210,9 +207,6 @@ public class AuthService {
     @Transactional
     public AuthResponse changePassword(Long userId, Long sessionId, String current, String next) {
         User user = userRepository.findById(userId).orElseThrow(() -> BusinessException.notFound("La cuenta ya no existe."));
-        if (user.isDemo()) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "Las cuentas de demostración no pueden cambiar su contraseña.");
-        }
         if (current == null || !passwordEncoder.matches(current, user.getPasswordHash())) {
             auditService.recordIndependently(userId, "PASSWORD_CHANGE_FAILED", "Contraseña actual incorrecta");
             throw BusinessException.badRequest("La contraseña actual no es correcta.");

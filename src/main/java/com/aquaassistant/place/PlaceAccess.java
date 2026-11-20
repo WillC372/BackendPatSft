@@ -107,6 +107,24 @@ public class PlaceAccess {
         return active(userId).getId();
     }
 
+    /**
+     * The active place if the person can record in it. If it is shared with them only to look, the first place they
+     * can record in becomes the active one (their own "Mi agua", created if needed), so a measurement taken with the
+     * meter, a photo or by hand is never lost.
+     */
+    @Transactional
+    public Place activeForRecording(Long userId) {
+        Place active = active(userId);
+        if (roleIn(userId, active).map(PlaceRole::canEdit).orElse(false)) {
+            return active;
+        }
+        Place writable = places.findAccessibleTo(userId).stream()
+            .filter(p -> roleIn(userId, p).map(PlaceRole::canEdit).orElse(false))
+            .findFirst().orElseGet(() -> provision(userId));
+        settings.findById(userId).ifPresent(s -> s.activatePlace(writable.getId()));
+        return writable;
+    }
+
     public boolean canEditActive(Long userId) {
         Place place = active(userId);
         return roleIn(userId, place).map(PlaceRole::canEdit).orElse(false);

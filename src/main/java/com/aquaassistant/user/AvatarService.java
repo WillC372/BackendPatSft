@@ -60,10 +60,6 @@ public class AvatarService {
 
     private User editable(Long userId) {
         User user = users.findById(userId).orElseThrow(() -> BusinessException.notFound("La cuenta no existe."));
-        if (user.isDemo()) {
-            throw new BusinessException(HttpStatus.FORBIDDEN,
-                "Las cuentas de demostración son compartidas y no pueden cambiar su foto. Crea tu propia cuenta para tener la tuya.");
-        }
         return user;
     }
 }

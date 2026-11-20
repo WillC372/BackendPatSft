@@ -64,7 +64,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminUserService {
 
     static final int MAX_PAGE_SIZE = 100;
-    static final String DEMO_LOCKED = "Es una cuenta de demostración: no se puede modificar para que los botones de acceso sigan funcionando.";
     private static final DateTimeFormatter LONG_DATE = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy",
         Locale.forLanguageTag("es-CO")).withZone(ZoneId.of("America/Bogota"));
 
@@ -172,9 +171,6 @@ public class AdminUserService {
     @Transactional
     public UserDetail changePlan(Long adminId, Long userId, PlanChange change) {
         User user = find(userId);
-        if (user.isDemo()) {
-            throw BusinessException.conflict(DEMO_LOCKED);
-        }
         if (user.isUnlimited()) {
             throw BusinessException.conflict("Los administradores no tienen límites: su plan es Premium permanente y no se cambia.");
         }
@@ -268,9 +264,6 @@ public class AdminUserService {
 
     /** Reason why the account cannot be deleted, or {@code null} if it can. */
     String deleteBlockedReason(Long adminId, User user) {
-        if (user.isDemo()) {
-            return DEMO_LOCKED;
-        }
         if (user.getId().equals(adminId)) {
             return "No puedes eliminar tu propia cuenta desde aquí; usa Configuración.";
         }
@@ -299,9 +292,6 @@ public class AdminUserService {
 
     /** Reason why the user cannot be moved to {@code target}, or {@code null} if it is allowed. */
     String roleBlockedReason(Long adminId, User user, Role target) {
-        if (user.isDemo()) {
-            return DEMO_LOCKED;
-        }
         if (user.getId().equals(adminId)) {
             return "No puedes cambiar tu propio rol.";
         }
@@ -321,9 +311,6 @@ public class AdminUserService {
 
     /** Reason why the account cannot be enabled ({@code enable}) or disabled, or {@code null} if it is allowed. */
     String statusBlockedReason(Long adminId, User user, boolean enable) {
-        if (user.isDemo()) {
-            return DEMO_LOCKED;
-        }
         if (enable) {
             return null;
         }

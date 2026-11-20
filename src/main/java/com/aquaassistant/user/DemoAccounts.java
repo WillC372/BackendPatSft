@@ -17,15 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Demonstration accounts shown as buttons on the login screen, one per role of the case study: a user with the free
- * plan, a Premium user and an administrator. They are real accounts of the database (created at startup if missing),
- * shared by everyone who presses the button, so they have limits:
- * <ul>
- *   <li>They cannot be deleted, change or recover their password, or pay.</li>
- *   <li>The demonstration administrator can only look: it cannot change plans, roles or states, delete accounts or
- *       send mail, and it does not see the data of real accounts (their names and emails are masked and their detail
- *       is not shown).</li>
- *   <li>Real administrators cannot modify them either, so the buttons always work.</li>
- * </ul>
+ * plan, a Premium user and an administrator. They are real accounts of the database, shared by everyone who presses
+ * the button, and they can do everything a normal account of their role does (pay in the PayU sandbox, change their
+ * name, photo or password, share places, delete the account...). So the buttons always work, each account is put back
+ * as it was (created again if it was deleted, with its password, name, role and plan) every time someone logs in with
+ * it, and at startup.
+ * <p>The demonstration administrator manages the demonstration accounts and the example accounts (@example.com) like
+ * any administrator, but the accounts of real people stay private: it sees their names and emails masked and cannot
+ * open or change them.
  * Disabled with {@code DEMO_ACCOUNTS_ENABLED=false}.
  */
 @Component
@@ -35,10 +34,12 @@ public class DemoAccounts implements ApplicationRunner {
 
     /** The accounts offered on the login screen. */
     public enum Kind {
-        PREMIUM("premium@demo.aquaassistant", "Usuario Premium Demo", "Usuario Premium",
-            "Plan Premium: 200 consultas de IA al día y análisis de hasta 365 días.", Role.USER, Plan.PREMIUM),
+        USER("usuario@demo.aquaassistant", "Usuario Demo", "Usuario",
+            "Plan gratuito, con sus límites: 20 consultas de IA al día y análisis de los últimos 30 días.", Role.USER, Plan.FREE),
+        PREMIUM("premium@demo.aquaassistant", "Usuario Premium Demo", "Premium",
+            "Plan Premium: todas las funciones, 200 consultas de IA al día y análisis de hasta 365 días.", Role.USER, Plan.PREMIUM),
         ADMIN("admin@demo.aquaassistant", "Administrador Demo", "Administrador",
-            "Panel de administración en modo de solo lectura, sin límites de IA ni de historial.", Role.ADMIN, Plan.PREMIUM);
+            "Todo lo de Premium, sin límites de IA, y el panel de administración.", Role.ADMIN, Plan.PREMIUM);
 
         final String email;
         final String fullName;
@@ -57,11 +58,8 @@ public class DemoAccounts implements ApplicationRunner {
         }
     }
 
-    /**
-     * Demonstration accounts no longer offered (the free "Usuario" one was removed from the login screen). Their
-     * password is public, so they are disabled instead of left open; their data stays.
-     */
-    static final List<String> RETIRED = List.of("usuario@demo.aquaassistant");
+    /** Demonstration accounts no longer offered. Their password is public, so they are disabled; their data stays. */
+    static final List<String> RETIRED = List.of();
 
     public record DemoAccount(String key, String label, String description, String email, String password) {
     }
@@ -84,7 +82,7 @@ public class DemoAccounts implements ApplicationRunner {
         this.profiles = profiles;
     }
 
-    /** Accounts for the login buttons. Their password is public on purpose: it only opens these limited accounts. */
+    /** Accounts for the login buttons. Their password is public on purpose: it only opens these shared accounts. */
     public List<DemoAccount> list() {
         if (!enabled) {
             return List.of();
@@ -100,37 +98,7 @@ public class DemoAccounts implements ApplicationRunner {
             return;
         }
         for (Kind kind : Kind.values()) {
-            Optional<User> found = users.findByEmailIgnoreCase(kind.email);
-            if (found.isPresent() && !found.get().isDemo()) {
-                log.warn("{} belongs to a normal account; it is not used as a demonstration account.", kind.email);
-                continue;
-            }
-            User user = found.orElseGet(() -> {
-                User created = users.save(new User(kind.email, kind.fullName, encoder.encode(password), Role.USER));
-                settings.save(UserSettings.defaultsFor(created.getId(), profiles.defaultProfile().getId()));
-                profiles.provisionFirstPlace(created.getId());
-                return created;
-            });
-            user.markDemo();
-            if (!kind.fullName.equals(user.getFullName())) {
-                user.rename(kind.fullName);
-            }
-            if (!encoder.matches(password, user.getPasswordHash())) {
-                user.changePassword(encoder.encode(password));
-            }
-            if (!user.isEnabled()) {
-                user.enable();
-            }
-            if (user.getRole() != kind.role) {
-                if (kind.role == Role.ADMIN) {
-                    user.promoteToAdmin();
-                } else {
-                    user.demoteToUser();
-                }
-            }
-            if (user.getPlan() != kind.plan || user.getPremiumUntil() != null) {
-                user.changePlan(kind.plan, null);
-            }
+            restore(kind);
         }
         for (String email : RETIRED) {
             users.findByEmailIgnoreCase(email).filter(u -> u.isDemo() && u.isEnabled()).ifPresent(u -> {
@@ -139,6 +107,68 @@ public class DemoAccounts implements ApplicationRunner {
             });
         }
         log.info("Demonstration accounts ready ({}).", Arrays.toString(Kind.values()));
+    }
+
+    /**
+     * Puts the demonstration account back as the button offers it: created again if it was deleted, enabled, with the
+     * public password, its name, role and plan. Its places, measurements and history stay.
+     */
+    @Transactional
+    public void restore(Kind kind) {
+        Optional<User> found = users.findByEmailIgnoreCase(kind.email);
+        if (found.isPresent() && !found.get().isDemo()) {
+            log.warn("{} belongs to a normal account; it is not used as a demonstration account.", kind.email);
+            return;
+        }
+        User user = found.orElseGet(() -> {
+            User created = users.save(new User(kind.email, kind.fullName, encoder.encode(password), Role.USER));
+            settings.save(UserSettings.defaultsFor(created.getId(), profiles.defaultProfile().getId()));
+            profiles.provisionFirstPlace(created.getId());
+            return created;
+        });
+        user.markDemo();
+        if (!kind.fullName.equals(user.getFullName())) {
+            user.rename(kind.fullName);
+        }
+        if (!encoder.matches(password, user.getPasswordHash())) {
+            user.changePassword(encoder.encode(password));
+        }
+        if (!user.isEnabled()) {
+            user.enable();
+        }
+        if (user.getRole() != kind.role) {
+            if (kind.role == Role.ADMIN) {
+                user.promoteToAdmin();
+            } else {
+                user.demoteToUser();
+            }
+        }
+        if (user.getPlan() != kind.plan || user.getPremiumUntil() != null) {
+            user.changePlan(kind.plan, null);
+        }
+    }
+
+    /** Restores the demonstration account with that email before someone logs in with it (no-op for other emails). */
+    @Transactional
+    public void restoreBeforeLogin(String email) {
+        if (!enabled || email == null) {
+            return;
+        }
+        String normalized = email.trim();
+        for (Kind kind : Kind.values()) {
+            if (kind.email.equalsIgnoreCase(normalized)) {
+                restore(kind);
+            }
+        }
+    }
+
+    /**
+     * Whether the demonstration administrator may see and change this account: the demonstration accounts and the
+     * example accounts (@example.com). The accounts of real people stay private.
+     */
+    public boolean isOpenToDemo(Long userId) {
+        return userId != null && users.findById(userId)
+            .map(u -> u.isDemo() || u.getEmail().toLowerCase(java.util.Locale.ROOT).endsWith("@example.com")).orElse(false);
     }
 
     /** Rejects the operation if {@code userId} is a demonstration account. */
