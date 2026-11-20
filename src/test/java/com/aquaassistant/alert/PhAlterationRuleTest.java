@@ -37,6 +37,20 @@ class PhAlterationRuleTest {
     }
 
     @Test
+    void aCriticalReadingSoundsTheAlarmEvenWithNothingMeasuredInTheLastHour() {
+        // H-056: a photo of 12.67 an hour and 16 minutes after the last reading created no alarm.
+        WaterProfile wide = new WaterProfile(null, "Agua potable", ProfileType.DRINKING, new PhRange(6.5, 8.5, 6.0, 9.0), "", "");
+        Anomaly a = rule.evaluate(at(2, 12.67, 0, wide), List.of(at(1, 7.3, 76 * 60, wide)), wide).orElseThrow();
+        assertThat(a.severity()).isEqualTo(Anomaly.Severity.CRITICAL);
+        assertThat(a.message()).startsWith("El pH subió de 7.30 a 12.67 en 1 hora y 16 minutos.").contains("Es peligroso")
+            .contains("No tomes esta agua");
+        // The first measurement of a place, if critical, too.
+        assertThat(rule.evaluate(at(3, 3.1, 0, wide), List.of(), wide).orElseThrow().message()).startsWith("El pH está en 3.10.");
+        // A reading that is not critical after a long gap is not an alteration.
+        assertThat(rule.evaluate(at(4, 8.8, 0, wide), List.of(at(1, 7.3, 3 * 3600, wide)), wide)).isEmpty();
+    }
+
+    @Test
     void aMeterEverySecondsSeesAChangeThatBuildsUpOverMinutes() {
         // Every 10 s the pH drops 0.05: never 0.5 between two readings, but 0.6 in two minutes.
         List<Measurement> before = new ArrayList<>();
@@ -74,10 +88,13 @@ class PhAlterationRuleTest {
     }
 
     @Test
-    void smallChangesOldReadingsAndStayingCriticalAreNotAnAlteration() {
+    void smallChangesOldReadingsThatAreNotCriticalAndStayingCriticalAreNotAnAlteration() {
         assertThat(rule.evaluate(at(2, 7.6, 0, pool), List.of(at(1, 7.4, 60, pool)), pool)).isEmpty();
-        assertThat(rule.evaluate(at(2, 5.0, 0, pool), List.of(at(1, 7.5, 2 * 3600, pool)), pool)).isEmpty();
+        assertThat(rule.evaluate(at(2, 7.9, 0, pool), List.of(at(1, 7.3, 2 * 3600, pool)), pool)).isEmpty();
         assertThat(rule.evaluate(at(2, 6.5, 0, pool), List.of(at(1, 6.6, 60, pool)), pool)).isEmpty();
-        assertThat(rule.evaluate(at(1, 5.0, 0, pool), List.of(), pool)).isEmpty();
+        assertThat(rule.evaluate(at(1, 7.4, 0, pool), List.of(), pool)).isEmpty();
+        // A critical reading after a long gap, or the first one of a place, does sound (H-056).
+        assertThat(rule.evaluate(at(2, 5.0, 0, pool), List.of(at(1, 7.5, 2 * 3600, pool)), pool)).isPresent();
+        assertThat(rule.evaluate(at(1, 5.0, 0, pool), List.of(), pool)).isPresent();
     }
 }
