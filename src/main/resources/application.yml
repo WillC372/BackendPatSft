@@ -87,11 +87,11 @@ aquasense:
   demo:
     enabled: ${DEMO_ACCOUNTS_ENABLED:true}
     password: ${DEMO_ACCOUNTS_PASSWORD:AquaAssistant-Demo-2026}
-    # Real mailboxes for the three login buttons (Usuario, Premium, Administrador). Empty: the old made-up addresses.
-    # Changing them keeps each account with its data.
-    user-email: ${DEMO_USER_EMAIL:}
-    premium-email: ${DEMO_PREMIUM_EMAIL:}
-    admin-email: ${DEMO_ADMIN_EMAIL:}
+    # Real mailboxes for the three login buttons (Usuario, Premium, Administrador), chosen by the owner so the alarms and
+    # emails arrive. Changing them keeps each account with its data; DEMO_*_EMAIL in Render overrides them.
+    user-email: ${DEMO_USER_EMAIL:candow372@gmail.com}
+    premium-email: ${DEMO_PREMIUM_EMAIL:guifig1324@gmail.com}
+    admin-email: ${DEMO_ADMIN_EMAIL:adminaqua16@gmail.com}
   security:
     jwt-secret: ${JWT_SECRET:}
     access-token-hours: 8
