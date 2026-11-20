@@ -74,6 +74,34 @@ Si Vercel asigna otra dirección, hay que cambiarla en `CORS_ORIGINS`, `FRONTEND
 
 Los botones Usuario, Premium y Administrador usan cuentas compartidas. Para que sus correos lleguen (alarmas, avisos y recuperación de contraseña), usan buzones reales elegidos por el dueño: `candow372@gmail.com` (Usuario), `guifig1324@gmail.com` (Premium) y `adminaqua16@gmail.com` (Administrador), en `application.yml`. Se pueden cambiar en Render con `DEMO_USER_EMAIL`, `DEMO_PREMIUM_EMAIL` y `DEMO_ADMIN_EMAIL`. Al cambiarlos, cada cuenta conserva sus lugares, mediciones e historial. No uses el correo de una cuenta real de la app: el botón no podría entrar y los intentos fallidos bloquearían esa cuenta.
 
+## Correos en la bandeja principal (dominio propio)
+
+Hoy los correos salen por Mailjet con un remitente `@gmail.com`. Gmail desconfía de un correo que dice venir de `@gmail.com` pero no salió de los servidores de Google, y lo manda a spam. La solución es enviar desde un **dominio propio autenticado**:
+
+1. **Compra un dominio** (unos 10 USD al año en Namecheap, Porkbun o Cloudflare), por ejemplo `aquaassistant.co`.
+2. En **Mailjet → Account settings → Sender domains & addresses → Add domain**, escribe el dominio. Mailjet muestra los registros que hay que copiar.
+3. En el **DNS del dominio** (en la página donde lo compraste) crea estos registros TXT:
+   - **SPF**, en el nombre `@` (la raíz): `v=spf1 include:spf.mailjet.com ~all`. Si ya hay un registro `v=spf1`, agrega `include:spf.mailjet.com` al existente; no puede haber dos.
+   - **DKIM**, en el nombre `mailjet._domainkey`: el valor largo que muestra Mailjet (empieza por `k=rsa; p=`).
+   - **DMARC**, en el nombre `_dmarc`: `v=DMARC1; p=none; rua=mailto:tu-correo@gmail.com`.
+   - El registro de **verificación** que pide Mailjet, si lo pide.
+4. Espera a que Mailjet marque **SPF y DKIM: OK** (unos minutos, a veces hasta un día).
+5. En Render, servicio del backend → **Environment**, cambia `MAIL_FROM` a una dirección del dominio, por ejemplo `alertas@aquaassistant.co`, y deja `MAIL_SENDER_NAME=Aqua Assistant AI`.
+6. Prueba: entra como administrador, abre **Configuración** y pulsa **Enviarme un correo de prueba**. Si el primer correo llega a spam, márcalo como «No es spam»: con el dominio autenticado, Gmail aprende rápido.
+
+Los correos ya van en texto plano y HTML, con el nombre del remitente. Lo que faltaba era autenticar el remitente.
+
+## Alarma por SMS con Twilio
+
+Cuando el pH se altera, la alarma llega también como mensaje de texto al celular que la persona guarda en **Configuración → Notificaciones → Alarma por SMS** (solo la alarma, como máximo un SMS por hora, porque cada SMS cuesta). Para encenderla:
+
+1. Crea una cuenta en [twilio.com](https://www.twilio.com/try-twilio) y verifica tu correo y tu celular.
+2. En la consola, **Phone Numbers → Buy a number** (en la cuenta de prueba es gratis): elige uno con la capacidad *SMS*.
+3. En **Messaging → Settings → Geo permissions**, activa **Colombia** (y cualquier otro país al que vayas a enviar).
+4. Con la cuenta de prueba, solo llegan SMS a números verificados: agrégalos en **Phone Numbers → Verified Caller IDs** (el tuyo ya lo está). Twilio antepone «Sent from your Twilio trial account». Para enviar a cualquiera, actualiza la cuenta (pago por mensaje).
+5. En Render, servicio del backend → **Environment**, agrega `TWILIO_ACCOUNT_SID` y `TWILIO_AUTH_TOKEN` (en la página principal de la consola de Twilio) y `TWILIO_FROM_NUMBER` (el número comprado, con `+`). Render reinicia el backend.
+6. En la app, guarda tu celular y pulsa **Enviar SMS de prueba**. Si no llega, la app muestra el motivo que dio Twilio.
+
 ## Límites de los planes gratuitos
 
 - **Render** apaga el backend tras 15 minutos sin uso (se deja dormir a propósito, ver abajo). La primera visita después tarda alrededor de un minuto; la interfaz avisa que el servidor se está activando.
