@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Alteration of the pH: the water was one way and, within the last hour, it changed by half a unit or more (something
- * fell into it, a dosing pump failed...), or it went into the critical level of its profile. It compares with every
+ * fell into it, a dosing pump failed...), or it went into the critical level of its profile. A reading in the critical
+ * level sounds it even when nothing was measured in the last hour. It compares with every
  * measurement of the last hour, not only the previous one, so a meter that measures every few seconds also detects a
  * change that builds up over several minutes.
  *
@@ -37,7 +38,18 @@ public class PhAlterationRule implements AnomalyRule {
             return !age.isNegative() && age.compareTo(WINDOW) <= 0;
         }).toList();
         if (recent.isEmpty()) {
-            return Optional.empty();
+            // Nothing measured in the last hour: a reading in the critical level still sounds the alarm (H-056),
+            // compared with the previous reading when there is one, however old.
+            if (current.getStatus() != PhStatus.CRITICAL) {
+                return Optional.empty();
+            }
+            Optional<Measurement> before = previous.stream()
+                .filter(m -> m.getMeasuredAt().isBefore(current.getMeasuredAt()))
+                .max(Comparator.comparing(Measurement::getMeasuredAt));
+            String start = before.map(b -> change(b, current))
+                .orElse(String.format(Locale.US, "El pH está en %.2f.", current.getPh()));
+            return Optional.of(new Anomaly(TYPE, Anomaly.Severity.CRITICAL, TITLE, start + " " + danger(current, profile),
+                current.getId(), current.getMeasuredAt(), current.getPh()));
         }
         Measurement last = recent.get(recent.size() - 1);
         Measurement farthest = recent.stream()
@@ -56,7 +68,10 @@ public class PhAlterationRule implements AnomalyRule {
 
     static String change(Measurement from, Measurement current) {
         long minutes = Duration.between(from.getMeasuredAt(), current.getMeasuredAt()).toMinutes();
-        String time = minutes < 1 ? "menos de un minuto" : minutes == 1 ? "1 minuto" : minutes + " minutos";
+        String time = minutes < 1 ? "menos de un minuto" : minutes == 1 ? "1 minuto" : minutes < 60 ? minutes + " minutos"
+            : minutes < 48 * 60 ? (minutes / 60 == 1 ? "1 hora" : minutes / 60 + " horas")
+                + (minutes % 60 == 0 ? "" : minutes % 60 == 1 ? " y 1 minuto" : " y " + minutes % 60 + " minutos")
+            : minutes / (24 * 60) + " días";
         return String.format(Locale.US, "El pH %s de %.2f a %.2f en %s.", current.getPh() > from.getPh() ? "subió" : "bajó",
             from.getPh(), current.getPh(), time);
     }
