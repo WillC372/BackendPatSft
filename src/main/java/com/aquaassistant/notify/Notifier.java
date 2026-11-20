@@ -65,14 +65,6 @@ public class Notifier {
         return new String[] {out.get(0), out.get(1)};
     }
 
-    private WhatsAppService whatsApp;
-
-    /** WhatsApp for the alarms (optional: without it, push and email only). */
-    @org.springframework.beans.factory.annotation.Autowired(required = false)
-    public void setWhatsApp(WhatsAppService whatsApp) {
-        this.whatsApp = whatsApp;
-    }
-
     public Notifier(PushService push, MailService mail, UserRepository users, UserSettingsRepository settings) {
         this.push = push;
         this.mail = mail;
@@ -81,19 +73,14 @@ public class Notifier {
     }
 
     /**
-     * Alert of a measurement: push if notifications are on, email if the person kept "alertas por correo", and, for an
-     * alteration of the pH (the alarm), WhatsApp if the account has a mobile number and kept "avisos por WhatsApp".
-     * The alarm's email does not wait behind the email of an earlier, milder alert.
+     * Alert of a measurement: push if notifications are on, email if the person kept "alertas por correo". The alarm's
+     * email (an alteration of the pH) does not wait behind the email of an earlier, milder alert.
      */
     public void alert(Long userId, Message message) {
         UserSettings s = settings.findById(userId).orElse(null);
         boolean pushOn = s == null || s.isNotificationsEnabled();
         boolean emailOn = s == null || s.isEmailAlerts();
         send(userId, message, pushOn, emailOn, message.alarm() ? "alarm" : "alert");
-        if (message.alarm() && whatsApp != null && whatsApp.configured() && (s == null || s.isWhatsappAlerts())) {
-            background.submit(() -> users.findById(userId).filter(User::isEnabled).map(User::getPhoneNumber)
-                .ifPresent(phone -> whatsApp.send(phone, message.title(), message.body())));
-        }
     }
 
     /**

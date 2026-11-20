@@ -78,12 +78,6 @@ aquasense:
     api-key: ${USGS_API_KEY:}
     # Featured USGS stations that report pH continuously (rivers in different states).
     featured: ${REFERENCE_STATIONS:USGS-01467200,USGS-01463500,USGS-04231600,USGS-03374100,USGS-08062500,USGS-09070500,USGS-11467000,USGS-14211010}
-  # WhatsApp Cloud API (Meta) for the pH alarms. Empty token or number id: WhatsApp is off and the app says so.
-  whatsapp:
-    token: ${WHATSAPP_TOKEN:}
-    phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:}
-    template: ${WHATSAPP_TEMPLATE:alerta_ph}
-    template-language: ${WHATSAPP_TEMPLATE_LANG:es}
   demo:
     enabled: ${DEMO_ACCOUNTS_ENABLED:true}
     password: ${DEMO_ACCOUNTS_PASSWORD:AquaAssistant-Demo-2026}
