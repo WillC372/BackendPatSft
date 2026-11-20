@@ -8,14 +8,14 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 |---|---|---|
 | POST | `/auth/register` | Crear cuenta (pública) |
 | POST | `/auth/login` | Iniciar sesión; `rememberMe` extiende la sesión a 30 días (pública) |
-| GET | `/auth/demo-accounts` | Cuentas de demostración para los botones del inicio de sesión, Usuario Premium y Administrador, con su correo y contraseña. Son cuentas reales con límites: no se pueden eliminar, recuperar la contraseña ni pagar; el administrador de demostración solo consulta (no hace cambios, ve enmascarados los datos de las cuentas reales y no abre su detalle). Se desactivan con `DEMO_ACCOUNTS_ENABLED=false` |
+| GET | `/auth/demo-accounts` | Las tres cuentas de demostración de los botones del inicio de sesión (Usuario con plan gratuito, Premium y Administrador), con su correo y la contraseña pública. Son cuentas reales que pueden hacer todo lo de su rol; al iniciar sesión con una, vuelve a su plan, nombre, rol y contraseña (y se crea otra vez si se borró). El administrador de demostración gestiona las cuentas de demostración y las de ejemplo (`@example.com`); las de personas reales le aparecen enmascaradas y no puede abrirlas. Se desactivan con `DEMO_ACCOUNTS_ENABLED=false` |
 | POST | `/auth/logout` | Cierra la sesión actual: su token deja de servir y la sesión queda guardada en el historial. Cada token lleva su sesión (`sid`) |
 | POST | `/auth/forgot-password` | Enviar enlace de restablecimiento (pública; no revela si el correo existe) |
 | POST | `/auth/reset-password` | Cambiar contraseña con el token (pública) |
 | GET | `/users/me` | Datos de la cuenta. `avatarVersion`: momento de la foto de perfil, o `null` sin foto |
-| PUT | `/users/me` | `{ fullName }`. Cambia el nombre que muestra la app (403 en las cuentas de demostración) |
-| POST | `/users/me/password` | `{ currentPassword, newPassword }`. Pide la contraseña actual; cierra las demás sesiones y responde con el token nuevo de esta (las anteriores dejan de servir). 400 si la actual no es correcta o la nueva no cumple las reglas, 403 en las cuentas de demostración |
-| PUT · DELETE | `/users/me/avatar` | Sube (`multipart`, campo `file`, JPEG o PNG de hasta 10 MB) o quita la foto de perfil. El servidor recorta el cuadrado central, lo reduce a 256 px y lo vuelve a codificar como JPEG (sin metadatos como la ubicación). 403 en las cuentas de demostración, 415 si no es una imagen |
+| PUT | `/users/me` | `{ fullName }`. Cambia el nombre que muestra la app |
+| POST | `/users/me/password` | `{ currentPassword, newPassword }`. Pide la contraseña actual; cierra las demás sesiones y responde con el token nuevo de esta (las anteriores dejan de servir). 400 si la actual no es correcta o la nueva no cumple las reglas |
+| PUT · DELETE | `/users/me/avatar` | Sube (`multipart`, campo `file`, JPEG o PNG de hasta 10 MB) o quita la foto de perfil. El servidor recorta el cuadrado central, lo reduce a 256 px y lo vuelve a codificar como JPEG (sin metadatos como la ubicación). 415 si no es una imagen |
 | GET | `/users/me/avatar` | La foto (JPEG) del usuario autenticado; 404 sin foto. No hay fotos públicas |
 | DELETE | `/users/me` | `{ password }`. Elimina la propia cuenta y todos sus datos (204); 400 si la contraseña no coincide, 409 si es el último administrador activo o tiene pagos reales |
 | GET / PUT | `/users/me/settings` | Tema, notificaciones, guardado automático, perfil activo |
@@ -30,7 +30,7 @@ Base: `http://localhost:8080/api/v1`. Salvo las rutas de `auth` indicadas, todas
 | POST | `/profiles/{id}/duplicate` | Duplicar (Prototype) |
 | POST | `/profiles/{id}/activate` | Activar perfil |
 | GET | `/measurements` | Historial paginado. Filtros: `from`, `to`, `source`, `status`, `page`, `size` |
-| POST | `/measurements` | Registro manual (origen `MANUAL`) |
+| POST | `/measurements` | Registro manual (origen `MANUAL`). 403 si la cuenta es de administrador: el administrador no mide (vale también para el medidor, la foto y la carga de datos del USGS) |
 | GET | `/measurements/latest` | Última medición (204 si no hay) |
 | GET | `/measurements/series` | Puntos para graficar (`days` o `from`/`to`) |
 | GET / DELETE | `/measurements/{id}` | Detalle o borrado |

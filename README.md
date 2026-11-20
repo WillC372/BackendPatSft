@@ -22,7 +22,7 @@ Los dos servicios usan la misma base de datos y la misma sesión: el servicio de
 - Registrar usuarios, iniciar y cerrar sesión, recuperar contraseñas (JWT + Argon2id).
 - Guardar la **foto de perfil**: se recorta en cuadrado, se reduce a 256 px y se vuelve a codificar (se borran los metadatos, como la ubicación). Solo la ve su dueño.
 - Guardar el **historial de sesiones**: cada inicio de sesión abre una sesión que agrupa todo lo que el usuario hace hasta cerrarla.
-- Mantener las **cuentas de demostración** de los botones del inicio de sesión, Usuario Premium y Administrador.
+- Mantener las **cuentas de demostración** de los tres botones del inicio de sesión: Usuario, Premium y Administrador.
 - Importar **datos oficiales de pH** del Servicio Geológico de EE. UU. (USGS) cada 3 horas y guardarlos aparte de las mediciones de los usuarios.
 - Guardar y consultar mediciones con su origen: `REAL` (medidor), `MANUAL` o `PHOTO` (foto leída por el servicio de IA, que la envía a `POST /api/v1/internal/measurements`). El origen `SIMULATED` solo existe en las pruebas automáticas.
 - Validar cada lectura (cadena de validación) y clasificarla según el perfil de agua activo.
@@ -182,22 +182,20 @@ Cada inicio de sesión (o registro) crea una fila en `user_sessions` con inicio,
 
 ## Cuentas de demostración
 
-`DemoAccounts` crea al arrancar dos cuentas reales:
+El docente revisa la app solo con los botones del inicio de sesión, así que `DemoAccounts` mantiene tres cuentas reales, una por rol del caso de estudio:
 
-| Botón | Correo | Rol y plan |
+| Botón | Correo (por defecto) | Rol y plan |
 |---|---|---|
-| Usuario Premium | `premium@demo.aquaassistant` | Usuario, Premium sin vencimiento |
-| Administrador | `admin@demo.aquaassistant` | Administrador de solo lectura |
+| Usuario | `candow372@gmail.com` | Usuario, plan gratuito con sus límites (20 consultas de IA al día, análisis de 30 días) |
+| Premium | `guifig1324@gmail.com` | Usuario, Premium sin vencimiento (200 consultas al día, hasta 365 días) |
+| Administrador | `adminaqua16@gmail.com` | Administrador: cuentas, planes, pagos, consumo de IA, datos oficiales y sesiones. No mide pH |
 
-La cuenta gratuita de demostración (`usuario@demo.aquaassistant`) se retiró del inicio de sesión el 15 nov 2026. Como su contraseña era pública, al arrancar se desactiva; sus datos se conservan. Para probar el plan gratuito, crea una cuenta propia.
-
-`GET /auth/demo-accounts` las entrega al frontend con la contraseña (pública a propósito). Como cualquiera puede usarlas, tienen límites que aplica el servidor:
-
-- No se pueden eliminar, recuperar la contraseña ni pagar.
-- Los administradores reales no pueden cambiarlas, para que los botones sigan funcionando.
-- El administrador de demostración no puede cambiar planes, roles ni estados, borrar cuentas ni enviar correos.
-- Ese administrador ve enmascarados el nombre y el correo de las cuentas reales y no puede abrir su detalle ni sus sesiones.
-- El "último administrador activo" se cuenta sin él.
+- Los correos son buzones reales elegidos por el dueño, así llegan las alarmas, los avisos y la recuperación de contraseña. Se cambian con `DEMO_USER_EMAIL`, `DEMO_PREMIUM_EMAIL` y `DEMO_ADMIN_EMAIL`; al cambiarlos, cada cuenta conserva sus lugares, mediciones e historial.
+- `GET /auth/demo-accounts` las entrega al frontend con la contraseña (`DEMO_ACCOUNTS_PASSWORD`, pública a propósito: solo abre estas cuentas compartidas).
+- Pueden hacer todo lo de su rol: pagar en el sandbox de PayU, cambiar nombre, foto y contraseña, compartir lugares, eliminar la cuenta.
+- Para que el botón siempre funcione, `restoreBeforeLogin` deja la cuenta como se ofrece (plan, nombre, rol y contraseña) cada vez que alguien entra con ella, y la crea otra vez si se borró.
+- El administrador de demostración gestiona como cualquier administrador las cuentas de demostración y las de ejemplo (`@example.com`). Las cuentas de personas reales le aparecen enmascaradas y no puede abrirlas ni cambiarlas.
+- Las direcciones viejas (`@demo.aquaassistant`) quedan desactivadas, con sus datos.
 
 ## Datos oficiales (USGS)
 
@@ -224,6 +222,7 @@ La pantalla "Administración" (solo rol `ADMIN`) muestra las cifras del sistema 
 
 Reglas que aplica el servidor, aunque la interfaz ya desactive el botón:
 
+- El administrador trabaja para la empresa y **no mide el pH**: cualquier medición de una cuenta con rol `ADMIN` (a mano, con el medidor, por foto o al cargar datos del USGS) responde 403 (`Measurers.require`). El frontend le muestra otra aplicación.
 - Un administrador no cambia su propio rol ni desactiva su propia cuenta.
 - El administrador de `ADMIN_EMAIL` no pierde el rol ni se desactiva desde la pantalla.
 - Siempre queda al menos un administrador activo.
@@ -269,7 +268,7 @@ El simulador de medidor solo se usa en las pruebas automáticas (`SIMULATOR_ENAB
 mvn test
 ```
 
-112 pruebas automatizadas (las de la IA están en AIPatSft). Cubren:
+130 pruebas automatizadas (las de la IA están en AIPatSft). Cubren:
 
 - Patrones de diseño, algoritmos de análisis, adaptadores de hardware y máquina de estados.
 - El flujo completo de la API: registro, aislamiento entre usuarios, simulador, cierre de sesión y roles.
@@ -277,6 +276,9 @@ mvn test
 - La importación de datos oficiales con respuestas grabadas del USGS.
 - La alarma por alteración del pH: caída en una piscina (peligroso, salir del agua), cambio que crece con un medidor cada 10 s, consejo por tipo de agua, entrada en nivel crítico, y una sola alerta para varias lecturas seguidas.
 - Las rutas internas con la clave compartida y la traducción de correos: primero la tabla compartida, luego el servicio de IA, y en español si no responde.
+- Los siete patrones vistos en clase con su función: las familias de medidor (Abstract Factory), los avisos (Bridge) y sus canales decorados (Decorator), además de Factory Method, Adapter, Facade y Proxy.
+- Los tres botones de acceso: la cuenta vuelve a su estado al entrar, y el administrador de demostración solo abre cuentas de demostración o de ejemplo.
+- Que el administrador no pueda registrar mediciones (403) y que una medición crítica haga sonar la alarma aunque no haya mediciones en la última hora.
 
 Se ejecutan con H2 en modo PostgreSQL y una copia de las migraciones de DBPatSft (`java scripts/SyncMigrations.java ../DBPatSft` la actualiza); para correrlas contra PostgreSQL real:
 
@@ -285,7 +287,7 @@ mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/aquasense_test
   -Dspring.datasource.username=aquasense -Dspring.datasource.password=TU_CLAVE
 ```
 
-GitHub Actions las corre en cada cambio de `main` (`.github/workflows/Tests.yml`). Último resultado (19 nov 2026): 112/112 aprobadas, en local y en GitHub Actions.
+GitHub Actions las corre en cada cambio de `main` (`.github/workflows/Tests.yml`). Último resultado (20 nov 2026, con BackendPatSft#12): 130/130 aprobadas, en local y en GitHub Actions.
 
 ## Despliegue
 
