@@ -238,7 +238,7 @@ public class AuthService {
     @Transactional
     public boolean requestPasswordReset(String rawEmail) {
         // A disabled account receives no links; the response to the user is the same so its status is not revealed.
-        return userRepository.findByEmailIgnoreCase(normalize(rawEmail)).filter(u -> u.isEnabled() && !u.isDemo()).map(user -> {
+        return userRepository.findByEmailIgnoreCase(normalize(rawEmail)).filter(u -> u.isEnabled() && (!u.isDemo() || com.aquaassistant.notify.Notifier.deliverable(u.getEmail()))).map(user -> {
             String rawToken = newToken();
             resetTokenRepository.save(new PasswordResetToken(user.getId(), sha256(rawToken),
                 Instant.now().plus(RESET_TOKEN_LIFETIME)));

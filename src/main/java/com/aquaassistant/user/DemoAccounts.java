@@ -71,9 +71,18 @@ public class DemoAccounts implements ApplicationRunner {
     private final PasswordEncoder encoder;
     private final ProfileService profiles;
 
+    /** The address of each account: configurable, so the buttons can use real mailboxes (DEMO_USER_EMAIL...). */
+    private final java.util.Map<Kind, String> emails = new java.util.EnumMap<>(Kind.class);
+
     public DemoAccounts(@Value("${aquasense.demo.enabled:true}") boolean enabled,
                         @Value("${aquasense.demo.password:AquaAssistant-Demo-2026}") String password,
+                        @Value("${aquasense.demo.user-email:}") String userEmail,
+                        @Value("${aquasense.demo.premium-email:}") String premiumEmail,
+                        @Value("${aquasense.demo.admin-email:}") String adminEmail,
                         UserRepository users, UserSettingsRepository settings, PasswordEncoder encoder, ProfileService profiles) {
+        emails.put(Kind.USER, blank(userEmail) ? Kind.USER.email : userEmail.trim().toLowerCase(java.util.Locale.ROOT));
+        emails.put(Kind.PREMIUM, blank(premiumEmail) ? Kind.PREMIUM.email : premiumEmail.trim().toLowerCase(java.util.Locale.ROOT));
+        emails.put(Kind.ADMIN, blank(adminEmail) ? Kind.ADMIN.email : adminEmail.trim().toLowerCase(java.util.Locale.ROOT));
         this.enabled = enabled;
         this.password = password;
         this.users = users;
@@ -88,7 +97,7 @@ public class DemoAccounts implements ApplicationRunner {
             return List.of();
         }
         return Arrays.stream(Kind.values())
-            .map(k -> new DemoAccount(k.name(), k.label, k.description, k.email, password)).toList();
+            .map(k -> new DemoAccount(k.name(), k.label, k.description, emailOf(k), password)).toList();
     }
 
     @Override
@@ -115,13 +124,22 @@ public class DemoAccounts implements ApplicationRunner {
      */
     @Transactional
     public void restore(Kind kind) {
-        Optional<User> found = users.findByEmailIgnoreCase(kind.email);
+        String email = emailOf(kind);
+        Optional<User> found = users.findByEmailIgnoreCase(email);
         if (found.isPresent() && !found.get().isDemo()) {
-            log.warn("{} belongs to a normal account; it is not used as a demonstration account.", kind.email);
+            log.warn("{} belongs to a normal account; it is not used as a demonstration account.", email);
             return;
         }
+        if (found.isEmpty() && !email.equalsIgnoreCase(kind.email)) {
+            // The address changed in the configuration: the account keeps its places, measurements and history.
+            found = users.findByEmailIgnoreCase(kind.email).filter(User::isDemo);
+            found.ifPresent(u -> {
+                u.changeEmail(email);
+                log.info("Demonstration account {} now uses {}.", kind, email);
+            });
+        }
         User user = found.orElseGet(() -> {
-            User created = users.save(new User(kind.email, kind.fullName, encoder.encode(password), Role.USER));
+            User created = users.save(new User(email, kind.fullName, encoder.encode(password), Role.USER));
             settings.save(UserSettings.defaultsFor(created.getId(), profiles.defaultProfile().getId()));
             profiles.provisionFirstPlace(created.getId());
             return created;
@@ -156,7 +174,7 @@ public class DemoAccounts implements ApplicationRunner {
         }
         String normalized = email.trim();
         for (Kind kind : Kind.values()) {
-            if (kind.email.equalsIgnoreCase(normalized)) {
+            if (emailOf(kind).equalsIgnoreCase(normalized)) {
                 restore(kind);
             }
         }
@@ -169,6 +187,14 @@ public class DemoAccounts implements ApplicationRunner {
     public boolean isOpenToDemo(Long userId) {
         return userId != null && users.findById(userId)
             .map(u -> u.isDemo() || u.getEmail().toLowerCase(java.util.Locale.ROOT).endsWith("@example.com")).orElse(false);
+    }
+
+    public String emailOf(Kind kind) {
+        return emails.get(kind);
+    }
+
+    private static boolean blank(String value) {
+        return value == null || value.isBlank();
     }
 
     /** Rejects the operation if {@code userId} is a demonstration account. */

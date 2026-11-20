@@ -21,6 +21,10 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    /** Mobile number in E.164 (+573001234567) for the WhatsApp alarms; null if the person did not give one. */
+    @jakarta.persistence.Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
@@ -163,6 +167,16 @@ public class User {
 
     public Long getId() { return id; }
     public String getEmail() { return email; }
+    public String getPhoneNumber() { return phoneNumber; }
+
+    public void changePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    /** Only for the demonstration accounts, whose address can be changed in the configuration. */
+    public void changeEmail(String email) {
+        this.email = email;
+    }
     public String getFullName() { return fullName; }
     public String getPasswordHash() { return passwordHash; }
     public Role getRole() { return role; }

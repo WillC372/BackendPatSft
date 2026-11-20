@@ -35,6 +35,9 @@ public class UserSettings {
     @Column(name = "email_alerts")
     private boolean emailAlerts = true;
 
+    @Column(name = "whatsapp_alerts")
+    private boolean whatsappAlerts = true;
+
     @Column(name = "voice_enabled")
     private boolean voiceEnabled = true;
 
@@ -75,6 +78,11 @@ public class UserSettings {
     public String getLanguage() { return language; }
     public Long getActivePlaceId() { return activePlaceId; }
     public boolean isEmailAlerts() { return emailAlerts; }
+    public boolean isWhatsappAlerts() { return whatsappAlerts; }
+
+    public void setWhatsappAlerts(boolean whatsappAlerts) {
+        this.whatsappAlerts = whatsappAlerts;
+    }
 
     public boolean isVoiceEnabled() { return voiceEnabled; }
 

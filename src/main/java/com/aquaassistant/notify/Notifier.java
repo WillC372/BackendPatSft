@@ -65,6 +65,14 @@ public class Notifier {
         return new String[] {out.get(0), out.get(1)};
     }
 
+    private WhatsAppService whatsApp;
+
+    /** WhatsApp for the alarms (optional: without it, push and email only). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setWhatsApp(WhatsAppService whatsApp) {
+        this.whatsApp = whatsApp;
+    }
+
     public Notifier(PushService push, MailService mail, UserRepository users, UserSettingsRepository settings) {
         this.push = push;
         this.mail = mail;
@@ -72,12 +80,30 @@ public class Notifier {
         this.settings = settings;
     }
 
-    /** Alert of a measurement: push if notifications are on, email if the person kept "alertas por correo". */
+    /**
+     * Alert of a measurement: push if notifications are on, email if the person kept "alertas por correo", and, for an
+     * alteration of the pH (the alarm), WhatsApp if the account has a mobile number and kept "avisos por WhatsApp".
+     * The alarm's email does not wait behind the email of an earlier, milder alert.
+     */
     public void alert(Long userId, Message message) {
         UserSettings s = settings.findById(userId).orElse(null);
         boolean pushOn = s == null || s.isNotificationsEnabled();
         boolean emailOn = s == null || s.isEmailAlerts();
-        send(userId, message, pushOn, emailOn, "alert");
+        send(userId, message, pushOn, emailOn, message.alarm() ? "alarm" : "alert");
+        if (message.alarm() && whatsApp != null && whatsApp.configured() && (s == null || s.isWhatsappAlerts())) {
+            background.submit(() -> users.findById(userId).filter(User::isEnabled).map(User::getPhoneNumber)
+                .ifPresent(phone -> whatsApp.send(phone, message.title(), message.body())));
+        }
+    }
+
+    /**
+     * Whether an email to this address can arrive: the demonstration accounts used made-up addresses
+     * (@demo.aquaassistant) and the example accounts use @example.com, which do not receive mail.
+     */
+    public static boolean deliverable(String email) {
+        String e = String.valueOf(email).toLowerCase(java.util.Locale.ROOT);
+        return e.contains("@") && !e.endsWith(".aquaassistant") && !e.endsWith("@example.com") && !e.endsWith(".test")
+            && !e.endsWith(".local");
     }
 
     /** Reminder: through the channels the reminder asks for. */
@@ -99,7 +125,7 @@ public class Notifier {
                     push.send(userId, text[0], text[1], message.url(), message.alarm());
                 }
                 if (byEmail && allowEmail(userId, kind)) {
-                    users.findById(userId).filter(User::isEnabled).filter(u -> !u.isDemo())
+                    users.findById(userId).filter(User::isEnabled).filter(u -> deliverable(u.getEmail()))
                         .ifPresent(u -> mail.sendNotice(u.getEmail(), message.emailSubject(), message.title(), message.emailParagraphs()));
                 }
             } catch (Exception e) {
