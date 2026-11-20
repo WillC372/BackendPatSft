@@ -93,6 +93,19 @@ class DemoAccountsIntegrationTest {
         assertThat(login(accounts.get(0)).path("user").path("plan").asText()).isEqualTo("FREE");
     }
 
+    @Test
+    void theAdministratorDoesNotMeasureInAnyWay() throws Exception {
+        // H-061: the administrator works for the company; measuring is for the user accounts.
+        String admin = login(accounts().get(2)).path("token").asText();
+        String body = mvc.perform(post("/api/v1/measurements").header("Authorization", "Bearer " + admin)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"ph\":7.2}"))
+            .andExpect(status().isForbidden()).andReturn().getResponse().getContentAsString();
+        assertThat(body).contains("no registra mediciones");
+        String user = login(accounts().get(0)).path("token").asText();
+        mvc.perform(post("/api/v1/measurements").header("Authorization", "Bearer " + user)
+            .contentType(MediaType.APPLICATION_JSON).content("{\"ph\":7.2}")).andExpect(status().isCreated());
+    }
+
     private JsonNode accounts() throws Exception {
         return json(mvc.perform(get("/api/v1/auth/demo-accounts")).andExpect(status().isOk()).andReturn());
     }

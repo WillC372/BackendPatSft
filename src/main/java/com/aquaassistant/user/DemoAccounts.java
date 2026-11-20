@@ -39,7 +39,8 @@ public class DemoAccounts implements ApplicationRunner {
         PREMIUM("premium@demo.aquaassistant", "Usuario Premium Demo", "Premium",
             "Plan Premium: todas las funciones, 200 consultas de IA al día y análisis de hasta 365 días.", Role.USER, Plan.PREMIUM),
         ADMIN("admin@demo.aquaassistant", "Administrador Demo", "Administrador",
-            "Todo lo de Premium, sin límites de IA, y el panel de administración.", Role.ADMIN, Plan.PREMIUM);
+            "Trabaja para la empresa: cuentas, planes, pagos, consumo de IA, datos oficiales y sesiones. No mide pH.",
+            Role.ADMIN, Plan.PREMIUM);
 
         final String email;
         final String fullName;

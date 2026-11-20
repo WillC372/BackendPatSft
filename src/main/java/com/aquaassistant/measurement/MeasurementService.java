@@ -45,6 +45,7 @@ public class MeasurementService {
 
     private static final int MAX_PAGE_SIZE = 100;
 
+    private final Measurers measurers;
     private final MeasurementRepository repository;
     private final MeasurementValidationChain validationChain;
     private final PhClassifier classifier;
@@ -59,8 +60,9 @@ public class MeasurementService {
                               PhClassifier classifier, ProfileService profileService,
                               WaterProfileRepository profileRepository, MeasurementPublisher publisher,
                               DeviceDirectory deviceDirectory, AuditService auditService,
-                              com.aquaassistant.place.PlaceAccess places) {
+                              com.aquaassistant.place.PlaceAccess places, Measurers measurers) {
         this.repository = repository;
+        this.measurers = measurers;
         this.validationChain = validationChain;
         this.classifier = classifier;
         this.profileService = profileService;
@@ -80,6 +82,7 @@ public class MeasurementService {
 
     @Transactional
     public Measurement record(Long userId, NewReading reading) {
+        measurers.require(userId);
         com.aquaassistant.place.Place place = places.activeForRecording(userId);
         WaterProfile profile = profileService.activeProfile(userId);
         ValidationReport report = validationChain.validate(contextFor(userId, reading));
